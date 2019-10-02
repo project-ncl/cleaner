@@ -176,6 +176,10 @@
         <version>${quarkus.version}</version>
         <configuration>
           <uberJar>true</uberJar>
+          <ignoredEntries>
+              <ignoredEntry>META-INF/BCKEY.DSA</ignoredEntry>
+              <ignoredEntry>META-INF/BCKEY.SF</ignoredEntry>
+          </ignoredEntries>
           <finalName>cleaner</finalName>
         </configuration>
         <executions>
