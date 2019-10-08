@@ -17,6 +17,7 @@
  */
 package org.jboss.pnc.cleaner.auth;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.keycloak.representations.AccessTokenResponse;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -30,17 +31,17 @@ import java.time.temporal.ChronoUnit;
 @ApplicationScoped
 public class DefaultKeycloakServiceClient implements KeycloakServiceClient {
 
-    private KeycloakClientConfig keycloakServiceAccountConfig;
-    private long serviceTokenRefreshIfExpiresInSeconds;
+    @Inject
+    KeycloakClientConfig keycloakServiceAccountConfig;
+
+    @ConfigProperty(defaultValue = "86400", name = "keycloak.refreshifexpiresinseconds")
+    long serviceTokenRefreshIfExpiresInSeconds;
 
     private AccessTokenResponse keycloakToken;
 
     private Instant expiresAt;
 
-    @Inject
     public DefaultKeycloakServiceClient() {
-        keycloakServiceAccountConfig = null; // TODO read from config
-        serviceTokenRefreshIfExpiresInSeconds = 60 * 60 * 24 * 2; // TODO read from config
     }
 
     @Override

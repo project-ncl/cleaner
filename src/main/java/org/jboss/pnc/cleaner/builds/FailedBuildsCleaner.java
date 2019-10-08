@@ -1,5 +1,7 @@
 package org.jboss.pnc.cleaner.builds;
 
+import io.quarkus.scheduler.Scheduled;
+
 import org.commonjava.indy.client.core.Indy;
 import org.commonjava.indy.client.core.IndyClientException;
 import org.commonjava.indy.client.core.IndyClientModule;
@@ -14,6 +16,7 @@ import org.commonjava.indy.model.core.StoreType;
 import org.commonjava.indy.model.core.io.IndyObjectMapper;
 import org.commonjava.util.jhttpc.model.SiteConfig;
 import org.commonjava.util.jhttpc.model.SiteConfigBuilder;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.cleaner.auth.KeycloakServiceClient;
 import org.jboss.pnc.cleaner.orchapi.BuildRecordEndpoint;
@@ -23,10 +26,12 @@ import org.jboss.pnc.spi.BuildCoordinationStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
 import java.text.MessageFormat;
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -35,16 +40,28 @@ import java.util.regex.Pattern;
 
 import static org.commonjava.indy.pkg.maven.model.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 
+@ApplicationScoped
 public class FailedBuildsCleaner {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
     @RestClient
-    private BuildRecordEndpoint buildRecordService;
+    BuildRecordEndpoint buildRecordService;
 
     @Inject
-    private KeycloakServiceClient serviceClient;
+    KeycloakServiceClient serviceClient;
+
+    /** Retention time in hours. */
+    @ConfigProperty(name = "failedbuildscleaner.retention")
+    Integer retention;
+
+    /** Base URL of Indy. */
+    @ConfigProperty(name = "failedbuildscleaner.indyurl")
+    String indyUrl;
+
+    @ConfigProperty(name = "failedbuildscleaner.indy.requesttimeout")
+    int indyRequestTimeout;
 
     private static List<BuildCoordinationStatus> failedStatuses;
 
@@ -52,6 +69,12 @@ public class FailedBuildsCleaner {
         failedStatuses = new ArrayList<>(2);
         failedStatuses.add(BuildCoordinationStatus.DONE_WITH_ERRORS);
         failedStatuses.add(BuildCoordinationStatus.SYSTEM_ERROR);
+    }
+
+    @Scheduled(cron = "{failedbuildscleaner.cron}")
+    void cleanRegularly() {
+        Instant limit = Instant.now().minus(retention, ChronoUnit.HOURS);
+        cleanOlder(limit);
     }
 
     /**
@@ -86,11 +109,8 @@ public class FailedBuildsCleaner {
             authenticator = new OAuth20BearerTokenAuthenticator(accessToken);
         }
         try {
-            String baseUrl = "http://indy-master-devel.psi.redhat.com/"; // TODO read from config
-            final int DEFAULT_REQUEST_TIMEOUT = 30; // TODO read from config
-
-            SiteConfig siteConfig = new SiteConfigBuilder("indy", baseUrl)
-                    .withRequestTimeoutSeconds(DEFAULT_REQUEST_TIMEOUT)
+            SiteConfig siteConfig = new SiteConfigBuilder("indy", indyUrl)
+                    .withRequestTimeoutSeconds(indyRequestTimeout)
                     // this client is used in single thread, we don't need more than 1 connection at a time
                     .withMaxConnections(1)
                     .build();

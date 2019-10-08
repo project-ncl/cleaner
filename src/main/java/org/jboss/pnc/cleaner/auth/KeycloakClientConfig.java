@@ -17,44 +17,29 @@
  */
 package org.jboss.pnc.cleaner.auth;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
-import javax.ws.rs.DefaultValue;
-import java.util.Map;
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+
+import javax.enterprise.context.ApplicationScoped;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
  */
 @Getter
+@ApplicationScoped
 public class KeycloakClientConfig {
-    private final String realm;
-    private final String realmPublicKey;
-    private final String authServerUrl;
-    private final Boolean sslRequired;
-    private final String resource;
-    private final Map<String, String> credentials;
+    @ConfigProperty(name = "serviceaccount.realm")
+    String realm;
+    @ConfigProperty(name = "serviceaccount.realmpublickey")
+    String realmPublicKey;
+    @ConfigProperty(name = "serviceaccount.authserverurl")
+    String authServerUrl;
+    @ConfigProperty(name = "serviceaccount.sslrequired")
+    Boolean sslRequired;
+    @ConfigProperty(name = "serviceaccount.resource")
+    String resource;
+    @ConfigProperty(name = "serviceaccount.secret")
+    String secret;
 
-    @JsonCreator
-    public KeycloakClientConfig(
-            @JsonProperty("realm") String realm,
-            @JsonProperty("realm-public-key") String realmPublicKey,
-            @JsonProperty("auth-server-url") String authServerUrl,
-            @JsonProperty("ssl-required") Boolean sslRequired,
-            @JsonProperty("resource") String resource,
-            @JsonProperty("credentials") @DefaultValue("{}") Map<String, String> credentials) {
-        this.realm = realm;
-        this.realmPublicKey = realmPublicKey;
-        this.authServerUrl = authServerUrl;
-        this.sslRequired = sslRequired;
-        this.resource = resource;
-        this.credentials = credentials;
-    }
-
-    @JsonIgnore
-    public String getSecret() {
-        return credentials.get("secret");
-    }
 }
