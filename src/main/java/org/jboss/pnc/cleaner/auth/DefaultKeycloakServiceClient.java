@@ -19,6 +19,8 @@ package org.jboss.pnc.cleaner.auth;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.keycloak.representations.AccessTokenResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -31,8 +33,20 @@ import java.time.temporal.ChronoUnit;
 @ApplicationScoped
 public class DefaultKeycloakServiceClient implements KeycloakServiceClient {
 
-    @Inject
-    KeycloakClientConfig keycloakServiceAccountConfig;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    @ConfigProperty(name = "serviceaccount.realm")
+    String realm;
+    @ConfigProperty(name = "serviceaccount.realmpublickey")
+    String realmPublicKey;
+    @ConfigProperty(name = "serviceaccount.authserverurl")
+    String authServerUrl;
+    @ConfigProperty(name = "serviceaccount.sslrequired")
+    Boolean sslRequired;
+    @ConfigProperty(name = "serviceaccount.resource")
+    String resource;
+    @ConfigProperty(name = "serviceaccount.secret")
+    String secret;
 
     @ConfigProperty(defaultValue = "86400", name = "keycloak.refreshifexpiresinseconds")
     long serviceTokenRefreshIfExpiresInSeconds;
@@ -47,12 +61,14 @@ public class DefaultKeycloakServiceClient implements KeycloakServiceClient {
     @Override
     public String getAuthToken() {
         if (keycloakToken == null || refreshRequired()) {
-            keycloakToken = KeycloakClient.getAuthTokensBySecret(
-                    keycloakServiceAccountConfig.getAuthServerUrl(),
-                    keycloakServiceAccountConfig.getRealm(),
-                    keycloakServiceAccountConfig.getResource(),
-                    keycloakServiceAccountConfig.getSecret(),
-                    keycloakServiceAccountConfig.getSslRequired());
+            logger.debug("Requesting new service account auth token using values:\n"
+                    + "authServerUrl {}\n"
+                    + "realm {}\n"
+                    + "resource {}\n"
+                    + "secret {}\n"
+                    + "sslRequired {}",
+                    authServerUrl, realm, resource, secret.replaceAll(".", "*"), sslRequired);
+            keycloakToken = KeycloakClient.getAuthTokensBySecret(authServerUrl, realm, resource, secret, sslRequired);
             expiresAt = Instant.now().plus(keycloakToken.getExpiresIn(), ChronoUnit.SECONDS);
         }
         return keycloakToken.getToken();
