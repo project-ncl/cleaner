@@ -73,7 +73,9 @@ public class FailedBuildsCleaner {
 
     @Scheduled(cron = "{failedbuildscleaner.cron}")
     void cleanRegularly() {
+        logger.info("Starting regular failed builds cleanup job.");
         Instant limit = Instant.now().minus(retention, ChronoUnit.HOURS);
+        logger.debug("Cleaning up failed builds older than {}.", limit);
         cleanOlder(limit);
     }
 
@@ -83,7 +85,9 @@ public class FailedBuildsCleaner {
      * @param limit point in time marking the line which builds should be deleted
      */
     public void cleanOlder(Instant limit) {
+        logger.info("Retrieving service account auth token.");
         String serviceAccountToken = serviceClient.getAuthToken();
+
         Indy indyClient = initIndy(serviceAccountToken);
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
@@ -106,6 +110,7 @@ public class FailedBuildsCleaner {
     private Indy initIndy(String accessToken) {
         IndyClientAuthenticator authenticator = null;
         if (accessToken != null) {
+            logger.debug("Creating Indy authenticator.");
             authenticator = new OAuth20BearerTokenAuthenticator(accessToken);
         }
         try {
