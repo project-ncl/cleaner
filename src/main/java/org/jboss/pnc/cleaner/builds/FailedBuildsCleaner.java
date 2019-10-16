@@ -88,12 +88,13 @@ public class FailedBuildsCleaner {
         logger.info("Retrieving service account auth token.");
         String serviceAccountToken = serviceClient.getAuthToken();
 
+        logger.info("Initializing Indy client.");
         Indy indyClient = initIndy(serviceAccountToken);
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
         // get list of build group names from Indy
+        logger.info("Loading list of existing repository groups from Indy.");
         List<String> groupNames = getGroupNames(session);
-
 
         // cycle through them and clean one by one
         for (String groupName : groupNames) {
@@ -161,29 +162,34 @@ public class FailedBuildsCleaner {
      * @param session cleaner session
      */
     private void cleanBuildIfNeeded(String groupName, FailedBuildsCleanerSession session) {
+        logger.debug("Loading build record for group {}.", groupName);
         BuildRecordRest br = getBuildRecord(groupName);
 
         if ((br != null) && br.getEndTime().toInstant().isBefore(session.getTo())
                 && failedStatuses.contains(br.getStatus())) {
             String buildContentId = br.getBuildContentId();
+            logger.info("Cleaning repositories for {}.", buildContentId);
             IndyStoresClientModule stores = session.getStores();
             try {
                 //delete the content
                 String pkgKey = MAVEN_PKG_KEY;
+                logger.debug("Cleaning Maven group and hosted repository {}.", buildContentId);
                 deleteGroupAndHostedRepo(pkgKey, buildContentId, stores);
 
+                logger.debug("Searching for generic-http stores for {}.", buildContentId);
                 List<StoreKey> genericRepos = findGenericRepos(buildContentId, session);
                 for (StoreKey genericRepo : genericRepos) {
                     stores.delete(genericRepo, "Scheduled cleanup of failed builds.");
                 }
 
-                //delete the tracking record - mostly not needed, only in case the build failed in
+                // delete the tracking record - mostly not needed, only in case the build failed in
                 // promotion phase and the tracking report was already sealed
                 IndyFoloAdminClientModule foloAdmin = session.getFoloAdmin();
+                logger.debug("Cleaning tracking record {} (if present).", buildContentId);
                 foloAdmin.clearTrackingRecord(buildContentId);
             } catch (IndyClientException e) {
-                String description = MessageFormat.format("Failed to delete temporary hosted repository"
-                        + " identified by buildContentId {0}.", buildContentId);
+                String description = MessageFormat.format("Failed to perform cleanups in Indy for {}",
+                        buildContentId);
                 logger.error(description, e);
             }
         }
@@ -241,11 +247,13 @@ public class FailedBuildsCleaner {
             throws IndyClientException {
         StoreKey groupKey = new StoreKey(pkgKey, StoreType.group, repoName);
         if (stores.exists(groupKey)) {
+            logger.trace("{} group {} exists - deleting...", pkgKey, repoName);
             stores.delete(groupKey, "Scheduled cleanup of failed builds.");
         }
 
         StoreKey storeKey = new StoreKey(pkgKey, StoreType.hosted, repoName);
         if (stores.exists(storeKey)) {
+            logger.trace("{} hosted repo {} exists - deleting...", pkgKey, repoName);
             stores.delete(storeKey, "Scheduled cleanup of failed builds.");
         }
     }
