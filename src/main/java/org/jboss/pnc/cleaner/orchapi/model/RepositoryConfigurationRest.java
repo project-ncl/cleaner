@@ -15,11 +15,43 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package org.jboss.pnc.cleaner.orchapi.model;
 
-package org.jboss.pnc.cleaner.orchapi;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import org.jboss.pnc.rest.restmodel.response.Singleton;
+/**
+ * The REST entity that contains configuration of the SCM repositories.
+ *
+ * @author Jakub Bartecek
+ */
+@EqualsAndHashCode
+@ToString
+@Builder
+@AllArgsConstructor
+public class RepositoryConfigurationRest {
 
-public class BuildRecordIds extends Singleton<Integer> {
+    @Getter
+    @Setter
+    private Integer id;
+
+    @Getter
+    @Setter
+    private String internalUrl;
+
+    @Getter
+    @Setter
+    private String externalUrl;
+
+    @Getter
+    @Setter
+    private Boolean preBuildSyncEnabled;
+
+    public RepositoryConfigurationRest() {
+    }
 
 }

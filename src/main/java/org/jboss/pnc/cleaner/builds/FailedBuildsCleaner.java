@@ -21,8 +21,8 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.cleaner.auth.KeycloakServiceClient;
 import org.jboss.pnc.cleaner.orchapi.BuildRecordEndpoint;
-import org.jboss.pnc.cleaner.orchapi.BuildRecordPage;
-import org.jboss.pnc.rest.restmodel.BuildRecordRest;
+import org.jboss.pnc.cleaner.orchapi.model.BuildRecordPage;
+import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
 import org.jboss.pnc.spi.BuildCoordinationStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,9 +147,9 @@ public class FailedBuildsCleaner {
         try {
             StoreListingDTO<Group> groupsListing = indyStores.listGroups(MAVEN_PKG_KEY);
             if (groupsListing == null) {
-				throw new RuntimeException("Error getting Maven group list from Indy. The result "
+                throw new RuntimeException("Error getting Maven group list from Indy. The result "
                         + "was empty. Check Indy URL.");
-			}
+            }
             groups = groupsListing.getItems();
         } catch (IndyClientException e) {
             throw new RuntimeException("Error getting Maven group list from Indy: " + e.toString(), e);
@@ -171,7 +171,7 @@ public class FailedBuildsCleaner {
         logger.debug("Loading build record for group {}.", groupName);
         BuildRecordRest br = getBuildRecord(groupName);
 
-        if ((br != null) && br.getEndTime().toInstant().isBefore(session.getTo())
+        if ((br != null) && br.getEndTimeInstant().isBefore(session.getTo())
                 && failedStatuses.contains(br.getStatus())) {
             String buildContentId = br.getBuildContentId();
             logger.info("Cleaning repositories for {}.", buildContentId);
@@ -231,9 +231,9 @@ public class FailedBuildsCleaner {
      */
     private BuildRecordRest getBuildRecord(String buildContentId) {
         BuildRecordPage page = buildRecordService.getAll(0, 2, null, "buildContentId==" + buildContentId);
-        if (page.getPageSize() > 1) {
+        if (page != null && page.getContent() != null && page.getContent().size() > 1) {
             logger.error("Multiple build records found for buildContentId = {}", buildContentId);
-        } else if (page.getPageSize() == 0) {
+        } else if (page == null || page.getContent() == null || page.getContent().size() == 0) {
             logger.warn("Build record NOT found for buildContentId = {}", buildContentId);
         } else {
             return page.getContent().iterator().next();
