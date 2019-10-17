@@ -185,14 +185,14 @@ public class FailedBuildsCleaner {
                 logger.debug("Searching for generic-http stores for {}.", buildContentId);
                 List<StoreKey> genericRepos = findGenericRepos(buildContentId, session);
                 for (StoreKey genericRepo : genericRepos) {
-                    //stores.delete(genericRepo, "Scheduled cleanup of failed builds.");
+                    stores.delete(genericRepo, "Scheduled cleanup of failed builds.");
                 }
 
                 // delete the tracking record - mostly not needed, only in case the build failed in
                 // promotion phase and the tracking report was already sealed
                 IndyFoloAdminClientModule foloAdmin = session.getFoloAdmin();
                 logger.debug("Cleaning tracking record {} (if present).", buildContentId);
-                //foloAdmin.clearTrackingRecord(buildContentId);
+                foloAdmin.clearTrackingRecord(buildContentId);
             } catch (IndyClientException e) {
                 String description = MessageFormat.format("Failed to perform cleanups in Indy for {}",
                         buildContentId);
@@ -254,13 +254,13 @@ public class FailedBuildsCleaner {
         StoreKey groupKey = new StoreKey(pkgKey, StoreType.group, repoName);
         if (stores.exists(groupKey)) {
             logger.trace("{} group {} exists - deleting...", pkgKey, repoName);
-            //stores.delete(groupKey, "Scheduled cleanup of failed builds.");
+            stores.delete(groupKey, "Scheduled cleanup of failed builds.");
         }
 
         StoreKey storeKey = new StoreKey(pkgKey, StoreType.hosted, repoName);
         if (stores.exists(storeKey)) {
             logger.trace("{} hosted repo {} exists - deleting...", pkgKey, repoName);
-            //stores.delete(storeKey, "Scheduled cleanup of failed builds.");
+            stores.delete(storeKey, "Scheduled cleanup of failed builds.");
         }
     }
 
