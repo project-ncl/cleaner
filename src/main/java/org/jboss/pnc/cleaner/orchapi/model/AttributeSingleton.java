@@ -51,7 +51,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.pnc.cleaner.orchapi;
+package org.jboss.pnc.cleaner.orchapi.model;
 
 import org.jboss.pnc.rest.restmodel.response.Singleton;
 

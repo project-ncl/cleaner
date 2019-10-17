@@ -18,7 +18,13 @@
 package org.jboss.pnc.cleaner.orchapi;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import org.jboss.pnc.rest.restmodel.BuildRecordRest;
+import org.jboss.pnc.cleaner.orchapi.model.ArtifactPage;
+import org.jboss.pnc.cleaner.orchapi.model.AttributeSingleton;
+import org.jboss.pnc.cleaner.orchapi.model.BuildConfigurationAuditedSingleton;
+import org.jboss.pnc.cleaner.orchapi.model.BuildRecordPage;
+import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
+import org.jboss.pnc.cleaner.orchapi.model.BuildRecordSingleton;
+import org.jboss.pnc.cleaner.orchapi.model.BuildStatus;
 import org.jboss.pnc.rest.validation.exceptions.RepositoryViolationException;
 
 import javax.ws.rs.Consumes;

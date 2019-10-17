@@ -52,10 +52,7 @@
  * limitations under the License.
  */
 
-package org.jboss.pnc.cleaner.orchapi;
-
-import org.jboss.pnc.rest.restmodel.ArtifactRest;
-import org.jboss.pnc.rest.restmodel.response.Page;
+package org.jboss.pnc.cleaner.orchapi.model;
 
 public class ArtifactPage extends Page<ArtifactRest> {
 

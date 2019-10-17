@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-package org.jboss.pnc.cleaner.orchapi;
+package org.jboss.pnc.cleaner.orchapi.model;
 
-import org.jboss.pnc.rest.restmodel.BuildRecordRest;
+import org.jboss.pnc.rest.restmodel.BuildConfigurationAuditedRest;
 import org.jboss.pnc.rest.restmodel.response.Singleton;
 
-public class BuildRecordSingleton extends Singleton<BuildRecordRest> {
+public class BuildConfigurationAuditedSingleton extends Singleton<BuildConfigurationAuditedRest> {
 
 }
