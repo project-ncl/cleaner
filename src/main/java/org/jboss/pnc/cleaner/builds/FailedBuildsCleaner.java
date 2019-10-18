@@ -23,6 +23,7 @@ import org.jboss.pnc.cleaner.auth.KeycloakServiceClient;
 import org.jboss.pnc.cleaner.orchapi.BuildRecordEndpoint;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordPage;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
+import org.jboss.pnc.cleaner.orchapi.model.BuildRecordSingleton;
 import org.jboss.pnc.spi.BuildCoordinationStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +38,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.commonjava.indy.pkg.maven.model.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
@@ -45,6 +47,8 @@ import static org.commonjava.indy.pkg.maven.model.MavenPackageTypeDescriptor.MAV
 public class FailedBuildsCleaner {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
+
+    private final Pattern buildNumPattern = Pattern.compile("build-(\\d+)");
 
     @Inject
     @RestClient
@@ -140,7 +144,7 @@ public class FailedBuildsCleaner {
      * @return the loaded list of group names, can be empty, never <code>null</code>
      */
     private List<String> getGroupNames(FailedBuildsCleanerSession session) {
-        Pattern pattern = Pattern.compile("build(-\\d+|_.+)");
+        Pattern pattern = Pattern.compile("build(-\\d+|_.+_\\d{8}\\.\\d{4})");
         IndyStoresClientModule indyStores = session.getStores();
 
         List<Group> groups;
@@ -230,12 +234,26 @@ public class FailedBuildsCleaner {
      * @return found build record or null
      */
     private BuildRecordRest getBuildRecord(String buildContentId) {
+        logger.debug("Looking for build record with query \"buildContentId==" + buildContentId + "\"");
         BuildRecordPage page = buildRecordService.getAll(0, 2, null, "buildContentId==" + buildContentId);
         if (page != null && page.getContent() != null && page.getContent().size() > 1) {
             logger.error("Multiple build records found for buildContentId = {}", buildContentId);
         } else if (page == null || page.getContent() == null || page.getContent().size() == 0) {
             logger.warn("Build record NOT found for buildContentId = {}", buildContentId);
+            Matcher matcher = buildNumPattern.matcher(buildContentId);
+            if (matcher.matches()) {
+                Integer id = Integer.valueOf(matcher.group(1));
+                logger.debug("Build record NOT found for buildContentId = {}", buildContentId);
+                BuildRecordSingleton singleton = buildRecordService.getSpecific(id);
+                if (singleton == null) {
+                    logger.warn("Build record NOT found even by ID = {}", id);
+                    return null;
+                } else {
+                    return singleton.getContent();
+                }
+            }
         } else {
+            logger.debug("Build with buildContentId = {} found.");
             return page.getContent().iterator().next();
         }
         return null;
