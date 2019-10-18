@@ -16,9 +16,9 @@
  * limitations under the License.
  */
 
-package org.jboss.pnc.cleaner.orchapi.model;
+package org.jboss.pnc.cleaner.orchapi.model.response;
 
-import org.jboss.pnc.rest.provider.collection.CollectionInfo;
+import org.jboss.pnc.cleaner.orchapi.provider.collection.CollectionInfo;
 
 import java.util.Collection;
 import java.util.Collections;

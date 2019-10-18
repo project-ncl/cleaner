@@ -54,6 +54,8 @@
 
 package org.jboss.pnc.cleaner.orchapi.model;
 
+import org.jboss.pnc.cleaner.orchapi.model.response.Page;
+
 public class BuildRecordPage extends Page<BuildRecordRest> {
 
 }

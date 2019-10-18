@@ -18,7 +18,7 @@
 
 package org.jboss.pnc.cleaner.orchapi.model;
 
-import org.jboss.pnc.rest.restmodel.response.Singleton;
+import org.jboss.pnc.cleaner.orchapi.model.response.Singleton;
 
 public class BuildRecordIds extends Singleton<Integer> {
 
