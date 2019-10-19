@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 
 import java.text.MessageFormat;
 import java.time.Instant;
@@ -173,35 +175,47 @@ public class FailedBuildsCleaner {
      */
     private void cleanBuildIfNeeded(String groupName, FailedBuildsCleanerSession session) {
         logger.debug("Loading build record for group {}.", groupName);
-        BuildRecordRest br = getBuildRecord(groupName);
-
-        if ((br != null) && br.getEndTimeInstant().isBefore(session.getTo())
-                && failedStatuses.contains(br.getStatus())) {
-            String buildContentId = br.getBuildContentId();
-            logger.info("Cleaning repositories for {}.", buildContentId);
-            IndyStoresClientModule stores = session.getStores();
-            try {
-                //delete the content
-                String pkgKey = MAVEN_PKG_KEY;
-                logger.debug("Cleaning Maven group and hosted repository {}.", buildContentId);
-                deleteGroupAndHostedRepo(pkgKey, buildContentId, stores);
-
-                logger.debug("Searching for generic-http stores for {}.", buildContentId);
-                List<StoreKey> genericRepos = findGenericRepos(buildContentId, session);
-                for (StoreKey genericRepo : genericRepos) {
-                    stores.delete(genericRepo, "Scheduled cleanup of failed builds.");
-                }
-
-                // delete the tracking record - mostly not needed, only in case the build failed in
-                // promotion phase and the tracking report was already sealed
-                IndyFoloAdminClientModule foloAdmin = session.getFoloAdmin();
-                logger.debug("Cleaning tracking record {} (if present).", buildContentId);
-                foloAdmin.clearTrackingRecord(buildContentId);
-            } catch (IndyClientException e) {
-                String description = MessageFormat.format("Failed to perform cleanups in Indy for {}",
-                        buildContentId);
-                logger.error(description, e);
+        try {
+            BuildRecordRest br = getBuildRecord(groupName);
+            boolean clean = false;
+            if (br == null) {
+                logger.warn("Build record for group {} not found. Assuming it was removed by "
+                        + "temporary builds cleaner before failed builds cleaner got to it. Cleaning...",
+                        groupName);
+                clean = true;
+            } else if (br.getEndTimeInstant().isBefore(session.getTo()) && failedStatuses.contains(br.getStatus())) {
+                logger.debug("Build record for group {} is older than the limit. Cleaning...", groupName);
+                clean = true;
             }
+
+            if (clean) {
+                logger.info("Cleaning repositories for {}.", groupName);
+                IndyStoresClientModule stores = session.getStores();
+                try {
+                    //delete the content
+                    String pkgKey = MAVEN_PKG_KEY;
+                    logger.debug("Cleaning Maven group and hosted repository {}.", groupName);
+                    deleteGroupAndHostedRepo(pkgKey, groupName, stores);
+
+                    logger.debug("Searching for generic-http stores for {}.", groupName);
+                    List<StoreKey> genericRepos = findGenericRepos(groupName, session);
+                    for (StoreKey genericRepo : genericRepos) {
+                        stores.delete(genericRepo, "Scheduled cleanup of failed builds.");
+                    }
+
+                    // delete the tracking record - mostly not needed, only in case the build failed in
+                    // promotion phase and the tracking report was already sealed
+                    IndyFoloAdminClientModule foloAdmin = session.getFoloAdmin();
+                    logger.debug("Cleaning tracking record {} (if present).", groupName);
+                    foloAdmin.clearTrackingRecord(groupName);
+                } catch (IndyClientException e) {
+                    String description = MessageFormat.format("Failed to perform cleanups in Indy for {}",
+                            groupName);
+                    logger.error(description, e);
+                }
+            }
+        } catch (CleanerException ex) {
+            logger.error("Error loading build record for group " + groupName + ". Skipping.", ex);;
         }
     }
 
@@ -233,7 +247,7 @@ public class FailedBuildsCleaner {
      * @param buildContentId id of the wanted build
      * @return found build record or null
      */
-    private BuildRecordRest getBuildRecord(String buildContentId) {
+    private BuildRecordRest getBuildRecord(String buildContentId) throws CleanerException {
         logger.debug("Looking for build record with query \"buildContentId==" + buildContentId + "\"");
         BuildRecordPage page = buildRecordService.getAll(0, 2, null, "buildContentId==" + buildContentId);
         if (page != null && page.getContent() != null && page.getContent().size() > 1) {
@@ -243,10 +257,21 @@ public class FailedBuildsCleaner {
             Matcher matcher = buildNumPattern.matcher(buildContentId);
             if (matcher.matches()) {
                 Integer id = Integer.valueOf(matcher.group(1));
-                logger.debug("Build record NOT found for buildContentId = {}", buildContentId);
-                BuildRecordSingleton singleton = buildRecordService.getSpecific(id);
+                logger.debug("Attempting to find build record by id {}", id);
+                BuildRecordSingleton singleton = null;
+                try {
+                    singleton = buildRecordService.getSpecific(id);
+                } catch (WebApplicationException ex) {
+                    int status = ex.getResponse().getStatus();
+                    if (status == Response.Status.NOT_FOUND.getStatusCode()) {
+                        logger.warn("Build record NOT found even by ID = {}", id);
+                        return null;
+                    } else {
+                        throw new CleanerException("Error when getting build record ID = %d, status %d.", ex, id, status);
+                    }
+                }
                 if (singleton == null) {
-                    logger.warn("Build record NOT found even by ID = {}", id);
+                    logger.error("Wrong response - OK with no content for build record ID = {}", id);
                     return null;
                 } else {
                     return singleton.getContent();
