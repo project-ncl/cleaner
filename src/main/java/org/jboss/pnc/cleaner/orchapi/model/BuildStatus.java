@@ -17,8 +17,6 @@
  */
 package org.jboss.pnc.cleaner.orchapi.model;
 
-import javax.persistence.Transient;
-
 /**
  * Status of a running or completed build.
  * 
@@ -87,7 +85,6 @@ public enum BuildStatus {
         this.completedSuccessfully = completedSuccessfully;
     }
 
-    @Transient
     public boolean completedSuccessfully() {
         return completedSuccessfully;
     }
