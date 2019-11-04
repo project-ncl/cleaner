@@ -18,10 +18,10 @@
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.pnc.cleaner.orchapi.model.BuildConfigSetRecordRest;
+import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
+import org.jboss.pnc.cleaner.orchapi.validation.exceptions.RepositoryViolationException;
 import org.jboss.pnc.common.util.TimeUtils;
-import org.jboss.pnc.rest.restmodel.BuildConfigSetRecordRest;
-import org.jboss.pnc.rest.restmodel.BuildRecordRest;
-import org.jboss.pnc.rest.validation.exceptions.RepositoryViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

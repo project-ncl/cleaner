@@ -18,12 +18,11 @@
 package org.jboss.pnc.cleaner.orchapi;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import org.jboss.pnc.rest.validation.exceptions.RepositoryViolationException;
+import org.jboss.pnc.cleaner.orchapi.model.BuildConfigurationSetRecordPage;
+import org.jboss.pnc.cleaner.orchapi.validation.exceptions.RepositoryViolationException;
 
-import javax.validation.constraints.NotNull;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -32,9 +31,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.PAGE_INDEX_DEFAULT_VALUE;
 import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.PAGE_INDEX_QUERY_PARAM;
-import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.PAGE_SIZE_DEFAULT_VALUE;
 import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.PAGE_SIZE_QUERY_PARAM;
 import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.QUERY_QUERY_PARAM;
 import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.SORTING_QUERY_PARAM;
