@@ -1,6 +1,8 @@
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.pnc.cleaner.orchapi.BuildConfigSetRecordEndpoint;
+import org.jboss.pnc.cleaner.orchapi.BuildConfigurationSetRecordPage;
 import org.jboss.pnc.cleaner.orchapi.BuildRecordEndpoint;
 import org.jboss.pnc.cleaner.orchapi.BuildRecordPage;
 import org.jboss.pnc.rest.restmodel.BuildConfigSetRecordRest;
@@ -30,6 +32,10 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     @RestClient
     BuildRecordEndpoint buildRecordService;
 
+    @Inject
+    @RestClient
+    BuildConfigSetRecordEndpoint buildConfigSetRecordEndpoint;
+
     @Override
     public Collection<BuildRecordRest> findTemporaryBuildsOlderThan(Date expirationDate) {
         final int pageSize = 50;
@@ -39,7 +45,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         boolean condition;
 
         do {
-            BuildRecordPage buildRecordPage = buildRecordService.getAllTemporaryOlderThanTimestamp(currentPage, pageSize, null, null, expirationDate.getTime());
+            BuildRecordPage buildRecordPage = buildRecordService.getAllTemporaryOlderThanTimestamp(currentPage,
+                    pageSize, null, null, expirationDate.getTime());
             buildRecordRests.addAll(buildRecordPage.getContent());
 
             currentPage++;
@@ -51,16 +58,31 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
     @Override
     public void deleteTemporaryBuild(Integer id) throws RepositoryViolationException {
-        buildRecordService.delete(id);
+        buildRecordService.delete(id); // TODO wait for async opperation completion and report results
     }
 
     @Override
-    public List<BuildConfigSetRecordRest> findTemporaryBuildConfigSetRecordsOlderThan(Date expirationDate) {
-        return null;
+    public Collection<BuildConfigSetRecordRest> findTemporaryBuildConfigSetRecordsOlderThan(Date expirationDate) {
+        final int pageSize = 50;
+
+        Collection<BuildConfigSetRecordRest> buildConfigSetRecords = new HashSet<>();
+        int currentPage = 0;
+        boolean condition;
+
+        do {
+            BuildConfigurationSetRecordPage buildConfigurationSetRecordPage = buildConfigSetRecordEndpoint
+                    .getAllTemporaryOlderThanTimestamp(currentPage, pageSize, null, null, expirationDate.getTime());
+            buildConfigSetRecords.addAll(buildConfigurationSetRecordPage.getContent());
+
+            currentPage++;
+            condition = currentPage < buildConfigurationSetRecordPage.getTotalPages();
+        } while (condition);
+
+        return buildConfigSetRecords;
     }
 
     @Override
     public void deleteTemporaryBuildConfigSetRecord(Integer id) throws RepositoryViolationException {
-        throw new RepositoryViolationException("");
+        buildConfigSetRecordEndpoint.delete(id); // TODO wait for async opperation completion and report results
     }
 }
