@@ -71,6 +71,16 @@ public interface BuildRecordEndpoint {
             @QueryParam("status") BuildStatus status,
             @QueryParam("search") String search);
 
+
+    @GET
+    @Path("/temporary-older-than-timestamp")
+    BuildRecordPage getAllTemporaryOlderThanTimestamp(
+            @QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
+            @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
+            @QueryParam(SORTING_QUERY_PARAM) String sort,
+            @QueryParam(QUERY_QUERY_PARAM) String q,
+            @QueryParam("timestamp") long timestamp);
+
     @GET
     @Path("/{id}")
     BuildRecordSingleton getSpecific(@PathParam("id") Integer id);
