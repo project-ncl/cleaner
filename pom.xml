@@ -14,7 +14,7 @@
 
     <indy.version>1.9.2</indy.version>
     <keycloak.version>4.5.0.Final</keycloak.version>
-    <pnc.version>1.7.5</pnc.version>
+    <pnc.version>1.8.0-SNAPSHOT</pnc.version>
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
     <quarkus.version>0.27.0</quarkus.version>
     <resteasy.version>3.6.1.Final</resteasy.version>
@@ -101,6 +101,10 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-swagger-ui</artifactId>
     </dependency>
+    <!-- Quarkus dependencies END !-->
+
+
+    <!-- PNC dependencies !-->
     <dependency>
       <groupId>org.jboss.pnc</groupId>
       <artifactId>spi</artifactId>
@@ -111,6 +115,9 @@
         </exclusion>
       </exclusions>
     </dependency>
+    <!-- PNC dependencies END !-->
+
+    <!-- Other dependencies !-->
     <dependency>
       <groupId>org.commonjava.indy</groupId>
       <artifactId>indy-client-core-java</artifactId>
