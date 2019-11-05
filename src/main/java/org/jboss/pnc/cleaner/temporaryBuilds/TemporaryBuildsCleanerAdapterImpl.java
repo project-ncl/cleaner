@@ -57,7 +57,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
     @Override
     public void deleteTemporaryBuild(Integer id) throws RepositoryViolationException {
-        buildRecordService.delete(id); // TODO wait for async opperation completion and report results
+        buildRecordService.delete(id); // TODO wait for async operation completion and report results
     }
 
     @Override
@@ -82,6 +82,6 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
     @Override
     public void deleteTemporaryBuildConfigSetRecord(Integer id) throws RepositoryViolationException {
-        buildConfigSetRecordEndpoint.delete(id); // TODO wait for async opperation completion and report results
+        buildConfigSetRecordEndpoint.delete(id); // TODO wait for async operation completion and report results
     }
 }
