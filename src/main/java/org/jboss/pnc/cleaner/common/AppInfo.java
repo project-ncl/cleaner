@@ -1,9 +1,12 @@
 package org.jboss.pnc.cleaner.common;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+@Slf4j
 public class AppInfo {
 
     static Properties appProperties;
@@ -18,7 +21,7 @@ public class AppInfo {
         try {
             appProperties.load(inputStream);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.warn("AppInfo initialization failed. Read of git.properties file failed!", e);
         }
     }
 
