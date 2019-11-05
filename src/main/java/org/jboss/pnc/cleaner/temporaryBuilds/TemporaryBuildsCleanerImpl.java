@@ -58,7 +58,7 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
         log.info("Regular cleanup of expired temporary builds finished.");
     }
 
-    private void deleteExpiredBuildConfigSetRecords(Date expirationThreshold) {
+    void deleteExpiredBuildConfigSetRecords(Date expirationThreshold) {
         Collection<BuildConfigSetRecordRest> expiredBCSRecords = temporaryBuildsCleanerAdapter
                 .findTemporaryBuildConfigSetRecordsOlderThan(expirationThreshold);
 
@@ -73,7 +73,7 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
         }
     }
 
-    private void deleteExpiredBuildRecords(Date expirationThreshold) {
+    void deleteExpiredBuildRecords(Date expirationThreshold) {
         Collection<BuildRecordRest> expiredBuilds = temporaryBuildsCleanerAdapter.findTemporaryBuildsOlderThan
                 (expirationThreshold);
 

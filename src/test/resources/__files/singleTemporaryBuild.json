@@ -1,0 +1,90 @@
+{
+  "pageIndex": 0,
+  "pageSize": 50,
+  "totalPages": 1,
+  "content": [
+    {
+      "id": 100,
+      "submitTime": 1570282430000,
+      "startTime": 1570282430010,
+      "endTime": 1570282435000,
+      "status": "DONE_WITH_ERRORS",
+      "buildConfigurationId": 135,
+      "buildConfigurationName": "com.networknt-json-schema-validator-0.1.23-with-extension",
+      "buildConfigurationRev": 275,
+      "projectId": 119,
+      "projectName": "ncl-5287",
+      "userId": 109,
+      "username": "ncross",
+      "scmRepoURL": "http://repo.com/gerrit/networknt/json-schema-validator.git",
+      "scmRevision": "2e7863a237b1834b54bac426f5b37fe9c4df462d",
+      "scmTag": "0.1.23.temporary-redhat-00001",
+      "buildEnvironmentId": null,
+      "attributes": {},
+      "liveLogsUri": null,
+      "buildConfigSetRecordId": null,
+      "buildContentId": "build-508",
+      "temporaryBuild": true,
+      "productMilestoneId": null,
+      "user": {
+        "id": 109,
+        "email": "user@redhat.com",
+        "firstName": null,
+        "lastName": null,
+        "username": "user"
+      },
+      "buildConfigurationAudited": {
+        "id": 135,
+        "rev": 275,
+        "idRev": {
+          "id": 135,
+          "rev": 275
+        },
+        "name": "com.networknt-json-schema-validator-0.1.23-with-extension",
+        "description": null,
+        "buildScript": "which mvn\n\nmvn -X compile package deploy -DskipTests=true",
+        "repositoryConfiguration": {
+          "id": 124,
+          "internalUrl": "git+ssh://repo.com/networknt/json-schema-validator.git",
+          "externalUrl": "https://github.com/networknt/json-schema-validator.git",
+          "preBuildSyncEnabled": true
+        },
+        "scmRevision": "0.1.23",
+        "creationTime": null,
+        "lastModificationTime": null,
+        "projectId": 119,
+        "environmentId": 38,
+        "project": {
+          "id": 119,
+          "name": "ncl-5287",
+          "description": null,
+          "issueTrackerUrl": null,
+          "projectUrl": null,
+          "configurationIds": [
+            134,
+            135
+          ],
+          "licenseId": null
+        },
+        "environment": {
+          "id": 38,
+          "name": "OpenJDK 1.8.0; Mvn 3.3.9, Ant 1.10.1; STAGE",
+          "description": "OpenJDK 1.8.0; Mvn 3.3.9, Ant 1.10.1; STAGE",
+          "systemImageRepositoryUrl": "registery.com",
+          "systemImageId": "newcastle-stage/builder-rhel-7-j8-mvn3.3.9-ant1.10.1:latest",
+          "attributes": {},
+          "systemImageType": "DOCKER_IMAGE",
+          "deprecated": false,
+          "imageRepositoryUrl": "registery.com"
+        },
+        "genericParameters": {
+          "CUSTOM_PME_PARAMETERS": "-DpluginRemoval=org.sonatype.plugins:nexus-staging-maven-plugin,org.jacoco:jacoco-maven-plugin"
+        }
+      },
+      "executionRootName": "com.networknt:json-schema-validator",
+      "executionRootVersion": "0.1.23.temporary-redhat-00001",
+      "dependentBuildRecordIds": [],
+      "dependencyBuildRecordIds": []
+    }
+  ]
+}
