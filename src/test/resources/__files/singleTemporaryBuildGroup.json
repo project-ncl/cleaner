@@ -1,0 +1,23 @@
+{
+  "pageIndex": 0,
+  "pageSize": 50,
+  "totalPages": 1,
+  "content": [
+    {
+      "id": 102,
+      "buildConfigurationSetId": 100,
+      "buildConfigurationSetName": "Example Build Group 1",
+      "startTime": 1573472832582,
+      "endTime": 1573472925193,
+      "status": "FAILED",
+      "userId": 115,
+      "username": "jbartece",
+      "productVersionId": 100,
+      "buildRecordIds": [
+        545,
+        543
+      ],
+      "temporaryBuild": true
+    }
+  ]
+}
