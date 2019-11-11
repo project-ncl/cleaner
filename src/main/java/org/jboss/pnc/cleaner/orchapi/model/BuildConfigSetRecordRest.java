@@ -34,9 +34,9 @@ public class BuildConfigSetRecordRest {
 
     private String buildConfigurationSetName;
 
-    private Date startTime;
+    private Long startTime;
 
-    private Date endTime;
+    private Long endTime;
 
     private org.jboss.pnc.model.BuildStatus status;
 
@@ -63,19 +63,19 @@ public class BuildConfigSetRecordRest {
         this.id = id;
     }
 
-    public Date getStartTime() {
+    public Long getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(Long startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public Long getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(Long endTime) {
         this.endTime = endTime;
     }
 

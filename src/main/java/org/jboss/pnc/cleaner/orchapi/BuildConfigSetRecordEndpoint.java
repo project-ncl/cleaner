@@ -48,7 +48,7 @@ public interface BuildConfigSetRecordEndpoint {
 
     @GET
     @Path("/temporary-older-than-timestamp")
-    BuildConfigurationSetRecordPage getAllTemporaryOlderThanTimestamp(@QueryParam(PAGE_INDEX_QUERY_PARAM) int pageIndex,
+    Response getAllTemporaryOlderThanTimestamp(@QueryParam(PAGE_INDEX_QUERY_PARAM) int pageIndex,
                                                                       @QueryParam(PAGE_SIZE_QUERY_PARAM) int pageSize,
                                                                       @QueryParam(SORTING_QUERY_PARAM) String sort,
                                                                       @QueryParam(QUERY_QUERY_PARAM) String q,

@@ -48,6 +48,13 @@ public class TemporaryBuildsCleanerImplTest {
 
     static final String SINGLE_TEMPORARY_BUILD_FILE = "singleTemporaryBuild.json";
 
+    static final String BUILDS_GROUPS_ENDPOINT = "/build-config-set-records/";
+
+    static final String BUILD_GROUPS_TEMPORARY_OLDER_THAN_ENDPOINT = "/build-config-set-records/temporary-older-than-timestamp";
+
+    static final String SINGLE_TEMPORARY_BUILD_GROUP_FILE = "singleTemporaryBuildGroup.json";
+
+
     private WireMockServer wireMockServer = new WireMockServer(options().port(8082));
 
     @Inject
@@ -97,7 +104,7 @@ public class TemporaryBuildsCleanerImplTest {
     }
 
     @Test
-    public void shouldFailSafeIfRemoteServerIsNotWorking() {
+    public void shouldFailSafeBuildDeletionIfRemoteServerIsNotWorking() {
         // given
         wireMockServer.stubFor(get(urlMatching(BUILDS_TEMPORARY_OLDER_THAN_ENDPOINT + ".*")).willReturn(aResponse()
                 .withStatus(500)
@@ -108,4 +115,52 @@ public class TemporaryBuildsCleanerImplTest {
 
         // then - nothing should happen
     }
+
+    @Test
+    public void shouldDeleteATemporaryBuildGroup() {
+        // given
+        final int buildId = 102;
+        wireMockServer.stubFor(get(urlMatching(BUILD_GROUPS_TEMPORARY_OLDER_THAN_ENDPOINT + ".*")).willReturn(aResponse()
+                .withStatus(200)
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .withBodyFile(SINGLE_TEMPORARY_BUILD_GROUP_FILE)));
+
+        wireMockServer.stubFor(delete(BUILDS_GROUPS_ENDPOINT + buildId).willReturn(aResponse().withStatus(200)));
+
+        // when
+        temporaryBuildsCleaner.deleteExpiredBuildConfigSetRecords(TimeUtils.getDateXDaysAgo(14));
+
+        // then
+        wireMockServer.verify(deleteRequestedFor(urlEqualTo(BUILDS_GROUPS_ENDPOINT + buildId)));
+        wireMockServer.verify(1, deleteRequestedFor(urlMatching(BUILDS_GROUPS_ENDPOINT + ".*")));
+    }
+
+
+    @Test
+    public void shouldSucceedIfNoBuildGroupToBeDeleted() {
+        // given
+        wireMockServer.stubFor(get(urlMatching(BUILD_GROUPS_TEMPORARY_OLDER_THAN_ENDPOINT + ".*")).willReturn(aResponse()
+                .withStatus(204)
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+
+        // when
+        temporaryBuildsCleaner.deleteExpiredBuildConfigSetRecords(TimeUtils.getDateXDaysAgo(14));
+
+        // then
+        wireMockServer.verify(0, deleteRequestedFor(urlMatching(BUILDS_GROUPS_ENDPOINT + ".*")));
+    }
+
+    @Test
+    public void shouldFailSafeBuildGroupDeletionIfRemoteServerIsNotWorking() {
+        // given
+        wireMockServer.stubFor(get(urlMatching(BUILD_GROUPS_TEMPORARY_OLDER_THAN_ENDPOINT + ".*")).willReturn(aResponse()
+                .withStatus(500)
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+
+        // when
+        temporaryBuildsCleaner.deleteExpiredBuildConfigSetRecords(TimeUtils.getDateXDaysAgo(14));
+
+        // then - nothing should happen
+    }
+
 }

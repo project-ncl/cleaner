@@ -89,12 +89,33 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         boolean condition;
 
         do {
-            BuildConfigurationSetRecordPage buildConfigurationSetRecordPage = buildConfigSetRecordEndpoint
-                    .getAllTemporaryOlderThanTimestamp(currentPage, pageSize, null, null, expirationDate.getTime());
-            buildConfigSetRecords.addAll(buildConfigurationSetRecordPage.getContent());
 
-            currentPage++;
-            condition = currentPage < buildConfigurationSetRecordPage.getTotalPages();
+            Response response;
+            try {
+                response = buildConfigSetRecordEndpoint.getAllTemporaryOlderThanTimestamp(currentPage, pageSize, null, null,
+                        expirationDate.getTime());
+            } catch (Exception e) {
+                log.warn("Querying of temporary builds from Orchestrator failed with exception", e);
+                return buildConfigSetRecords;
+            }
+
+            switch (response.getStatus()) {
+                case 200:
+                    BuildConfigurationSetRecordPage buildConfigurationSetRecordPage = response.readEntity(BuildConfigurationSetRecordPage.class);
+                    buildConfigSetRecords.addAll(buildConfigurationSetRecordPage.getContent());
+
+                    currentPage++;
+                    condition = currentPage < buildConfigurationSetRecordPage.getTotalPages();
+                    break;
+                case 204:
+                    return buildConfigSetRecords;
+                default:
+                    log.warn("Querying of temporary build groups from Orchestrator failed with [status: {}, message: {}]",
+                            response.getStatus(), response.readEntity(String.class));
+                    return buildConfigSetRecords;
+            }
+
+
         } while (condition);
 
         return buildConfigSetRecords;
