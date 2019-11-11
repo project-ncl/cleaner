@@ -19,9 +19,7 @@ package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import io.quarkus.test.junit.QuarkusTest;
-import org.jboss.pnc.cleaner.temporaryBuilds.TemporaryBuildsCleaner;
 import org.jboss.pnc.common.util.TimeUtils;
-import org.jboss.pnc.spi.exception.ValidationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,17 +28,13 @@ import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
-import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
-import static com.github.tomakehurst.wiremock.client.WireMock.verify;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
-
-import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
-import static com.github.tomakehurst.wiremock.client.WireMock.head;
-import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 
 /**
  * @author Jakub Bartecek
@@ -48,9 +42,9 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 @QuarkusTest
 public class TemporaryBuildsCleanerImplTest {
 
-    static final String BUILD_RECORD_ENDPOINT = "/build-records/";
+    static final String BUILDS_ENDPOINT = "/build-records/";
 
-    static final String TEMPORARY_OLDER_THAN_ENDPOINT = "/build-records/temporary-older-than-timestamp";
+    static final String BUILDS_TEMPORARY_OLDER_THAN_ENDPOINT = "/build-records/temporary-older-than-timestamp";
 
     static final String SINGLE_TEMPORARY_BUILD_FILE = "singleTemporaryBuild.json";
 
@@ -70,23 +64,48 @@ public class TemporaryBuildsCleanerImplTest {
     }
 
     @Test
-    public void shouldDeleteATemporaryBuild() throws ValidationException {
+    public void shouldDeleteATemporaryBuild() {
         // given
         final int buildId = 100;
-        wireMockServer.stubFor(get(urlMatching(TEMPORARY_OLDER_THAN_ENDPOINT + ".*")).willReturn(aResponse()
+        wireMockServer.stubFor(get(urlMatching(BUILDS_TEMPORARY_OLDER_THAN_ENDPOINT + ".*")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .withBodyFile(SINGLE_TEMPORARY_BUILD_FILE)));
 
-        wireMockServer.stubFor(delete(BUILD_RECORD_ENDPOINT + buildId)
-        .willReturn(aResponse().withStatus(200)));
+        wireMockServer.stubFor(delete(BUILDS_ENDPOINT + buildId).willReturn(aResponse().withStatus(200)));
 
         // when
         temporaryBuildsCleaner.deleteExpiredBuildRecords(TimeUtils.getDateXDaysAgo(14));
 
         // then
-        wireMockServer.verify(deleteRequestedFor(urlEqualTo(BUILD_RECORD_ENDPOINT + buildId)));
-        wireMockServer.verify(1, deleteRequestedFor(urlMatching(BUILD_RECORD_ENDPOINT + ".*")));
+        wireMockServer.verify(deleteRequestedFor(urlEqualTo(BUILDS_ENDPOINT + buildId)));
+        wireMockServer.verify(1, deleteRequestedFor(urlMatching(BUILDS_ENDPOINT + ".*")));
     }
 
+    @Test
+    public void shouldSucceedIfNoBuildToBeDeleted() {
+        // given
+        wireMockServer.stubFor(get(urlMatching(BUILDS_TEMPORARY_OLDER_THAN_ENDPOINT + ".*")).willReturn(aResponse()
+                .withStatus(204)
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+
+        // when
+        temporaryBuildsCleaner.deleteExpiredBuildRecords(TimeUtils.getDateXDaysAgo(14));
+
+        // then
+        wireMockServer.verify(0, deleteRequestedFor(urlMatching(BUILDS_ENDPOINT + ".*")));
+    }
+
+    @Test
+    public void shouldFailSafeIfRemoteServerIsNotWorking() {
+        // given
+        wireMockServer.stubFor(get(urlMatching(BUILDS_TEMPORARY_OLDER_THAN_ENDPOINT + ".*")).willReturn(aResponse()
+                .withStatus(500)
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+
+        // when
+        temporaryBuildsCleaner.deleteExpiredBuildRecords(TimeUtils.getDateXDaysAgo(14));
+
+        // then - nothing should happen
+    }
 }

@@ -1,5 +1,6 @@
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
+import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.cleaner.orchapi.BuildConfigSetRecordEndpoint;
 import org.jboss.pnc.cleaner.orchapi.model.BuildConfigurationSetRecordPage;
@@ -13,9 +14,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.ws.rs.core.Response;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Implementation of an adapter providing high-level operations on Orchestrator REST API
@@ -23,9 +26,8 @@ import java.util.HashSet;
  * @author Jakub Bartecek
  */
 @ApplicationScoped
+@Slf4j
 public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleanerAdapter {
-
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
     @RestClient
@@ -44,12 +46,30 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         boolean condition;
 
         do {
-            BuildRecordPage buildRecordPage = buildRecordService.getAllTemporaryOlderThanTimestamp(currentPage,
-                    pageSize, null, null, expirationDate.getTime());
-            buildRecordRests.addAll(buildRecordPage.getContent());
+            Response response;
+            try {
+                response = buildRecordService.getAllTemporaryOlderThanTimestamp(currentPage, pageSize, null, null,
+                        expirationDate.getTime());
+            } catch (Exception e) {
+                log.warn("Querying of temporary builds from Orchestrator failed with exception", e);
+                return buildRecordRests;
+            }
 
-            currentPage++;
-            condition = currentPage < buildRecordPage.getTotalPages();
+            switch (response.getStatus()) {
+                case 200:
+                    BuildRecordPage buildRecordPage = response.readEntity(BuildRecordPage.class);
+                    buildRecordRests.addAll(buildRecordPage.getContent());
+
+                    currentPage++;
+                    condition = currentPage < buildRecordPage.getTotalPages();
+                    break;
+                case 204:
+                    return buildRecordRests;
+                default:
+                    log.warn("Querying of temporary builds from Orchestrator failed with [status: {}, message: {}]",
+                            response.getStatus(), response.readEntity(String.class));
+                    return buildRecordRests;
+            }
         } while (condition);
 
         return buildRecordRests;
