@@ -17,7 +17,9 @@
  */
 package org.jboss.pnc.cleaner.orchapi;
 
+import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jboss.pnc.cleaner.auth.DefaultKeycloakServiceClient;
 import org.jboss.pnc.cleaner.orchapi.model.ArtifactPage;
 import org.jboss.pnc.cleaner.orchapi.model.AttributeSingleton;
 import org.jboss.pnc.cleaner.orchapi.model.BuildConfigurationAuditedSingleton;
@@ -39,7 +41,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
 import java.util.List;
 
 import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.PAGE_INDEX_DEFAULT_VALUE;
@@ -54,6 +55,10 @@ import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.SORTING_QUERY_PARAM
 @Produces(MediaType.APPLICATION_JSON)
 @Consumes(MediaType.APPLICATION_JSON)
 public interface BuildRecordEndpoint {
+
+    default String[] getAccessToken() {
+        return new String[]{"Bearer " + DefaultKeycloakServiceClient.getAuthTokenStatic()};
+    }
 
     @GET
     BuildRecordPage getAll(
@@ -72,7 +77,6 @@ public interface BuildRecordEndpoint {
             @QueryParam("status") BuildStatus status,
             @QueryParam("search") String search);
 
-
     @GET
     @Path("/temporary-older-than-timestamp")
     Response getAllTemporaryOlderThanTimestamp(
@@ -82,14 +86,15 @@ public interface BuildRecordEndpoint {
             @QueryParam(QUERY_QUERY_PARAM) String q,
             @QueryParam("timestamp") long timestamp);
 
+
     @GET
     @Path("/{id}")
     BuildRecordSingleton getSpecific(@PathParam("id") Integer id);
 
     @DELETE
     @Path("/{id}")
-    void delete(@PathParam("id") Integer id)
-            throws RepositoryViolationException;
+    @ClientHeaderParam(name = "Authorization", value = "{getAccessToken}")
+    void delete(@PathParam("id") Integer id) throws RepositoryViolationException;
 
     @GET
     @Path("/{id}/log")

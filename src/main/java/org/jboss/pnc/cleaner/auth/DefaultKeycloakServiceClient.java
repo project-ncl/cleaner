@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
+import javax.enterprise.inject.spi.CDI;
 import javax.inject.Inject;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -56,6 +57,18 @@ public class DefaultKeycloakServiceClient implements KeycloakServiceClient {
     private Instant expiresAt;
 
     public DefaultKeycloakServiceClient() {
+    }
+
+    /**
+     * A static method providing functionality to get authentication token for static methods
+     * using manual CDI lookup of the KeycloakServiceClient bean
+     *
+     * @return A valid token
+     */
+    public static String getAuthTokenStatic() {
+        KeycloakServiceClient serviceClient = CDI
+                .current().select(KeycloakServiceClient.class).get();
+        return serviceClient.getAuthToken();
     }
 
     @Override

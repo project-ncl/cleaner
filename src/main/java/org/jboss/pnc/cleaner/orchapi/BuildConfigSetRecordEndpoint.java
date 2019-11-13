@@ -17,7 +17,9 @@
  */
 package org.jboss.pnc.cleaner.orchapi;
 
+import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
+import org.jboss.pnc.cleaner.auth.DefaultKeycloakServiceClient;
 import org.jboss.pnc.cleaner.orchapi.model.BuildConfigurationSetRecordPage;
 import org.jboss.pnc.cleaner.orchapi.validation.exceptions.RepositoryViolationException;
 
@@ -42,8 +44,13 @@ import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.SORTING_QUERY_PARAM
 @Consumes(MediaType.APPLICATION_JSON)
 public interface BuildConfigSetRecordEndpoint {
 
+    default String[] getAccessToken() {
+        return new String[]{"Bearer " + DefaultKeycloakServiceClient.getAuthTokenStatic()};
+    }
+
     @DELETE
     @Path("/{id}")
+    @ClientHeaderParam(name = "Authorization", value = "{getAccessToken}")
     Response delete(@PathParam("id") Integer id) throws RepositoryViolationException;
 
     @GET
