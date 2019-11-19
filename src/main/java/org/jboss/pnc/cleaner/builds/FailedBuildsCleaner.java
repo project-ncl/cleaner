@@ -115,7 +115,7 @@ public class FailedBuildsCleaner {
      * @param accessToken
      * @return
      */
-    private Indy initIndy(String accessToken) {
+    Indy initIndy(String accessToken) {
         IndyClientAuthenticator authenticator = null;
         if (accessToken != null) {
             logger.debug("Creating Indy authenticator.");
@@ -145,7 +145,7 @@ public class FailedBuildsCleaner {
      * @param indy initialized Indy client, cannot be <code>null</code>
      * @return the loaded list of group names, can be empty, never <code>null</code>
      */
-    private List<String> getGroupNames(FailedBuildsCleanerSession session) {
+    List<String> getGroupNames(FailedBuildsCleanerSession session) {
         Pattern pattern = Pattern.compile("build(-\\d+|_.+_\\d{8}\\.\\d{4})");
         IndyStoresClientModule indyStores = session.getStores();
 
@@ -173,20 +173,10 @@ public class FailedBuildsCleaner {
      * @param groupName the potentially cleaned group name
      * @param session cleaner session
      */
-    private void cleanBuildIfNeeded(String groupName, FailedBuildsCleanerSession session) {
+    void cleanBuildIfNeeded(String groupName, FailedBuildsCleanerSession session) {
         logger.debug("Loading build record for group {}.", groupName);
         try {
-            BuildRecordRest br = getBuildRecord(groupName);
-            boolean clean = false;
-            if (br == null) {
-                logger.warn("Build record for group {} not found. Assuming it was removed by "
-                        + "temporary builds cleaner before failed builds cleaner got to it. Cleaning...",
-                        groupName);
-                clean = true;
-            } else if (br.getEndTimeInstant().isBefore(session.getTo()) && failedStatuses.contains(br.getStatus())) {
-                logger.debug("Build record for group {} is older than the limit. Cleaning...", groupName);
-                clean = true;
-            }
+            boolean clean = shouldClean(groupName, session);
 
             if (clean) {
                 logger.info("Cleaning repositories for {}.", groupName);
@@ -209,7 +199,7 @@ public class FailedBuildsCleaner {
                     logger.debug("Cleaning tracking record {} (if present).", groupName);
                     foloAdmin.clearTrackingRecord(groupName);
                 } catch (IndyClientException e) {
-                    String description = MessageFormat.format("Failed to perform cleanups in Indy for {}",
+                    String description = MessageFormat.format("Failed to perform cleanups in Indy for %s",
                             groupName);
                     logger.error(description, e);
                 }
@@ -217,6 +207,32 @@ public class FailedBuildsCleaner {
         } catch (CleanerException ex) {
             logger.error("Error loading build record for group " + groupName + ". Skipping.", ex);;
         }
+    }
+
+    /**
+     * Checks if repo group with given name should be cleaned. It says so if the build record with
+     * matching buildContentId could not be found (probably dropped before by temporary builds
+     * cleaner) or if the loaded build record has one of the statuses listed in failedStatuses
+     * and
+     *
+     * @param groupName
+     * @param session
+     * @return
+     * @throws CleanerException in case of an error when loading the build record
+     */
+    boolean shouldClean(String groupName, FailedBuildsCleanerSession session) throws CleanerException {
+        BuildRecordRest br = getBuildRecord(groupName);
+        boolean clean = false;
+        if (br == null) {
+            logger.warn("Build record for group {} not found. Assuming it was removed by "
+                    + "temporary builds cleaner before failed builds cleaner got to it. Cleaning...",
+                    groupName);
+            clean = true;
+        } else if (br.getEndTimeInstant().isBefore(session.getTo()) && failedStatuses.contains(br.getStatus())) {
+            logger.debug("Build record for group {} is older than the limit. Cleaning...", groupName);
+            clean = true;
+        }
+        return clean;
     }
 
     /**
@@ -228,7 +244,7 @@ public class FailedBuildsCleaner {
      * @param buildContentId the build content ID
      * @return the list of matching store keys, might be empty, never null
      */
-    private List<StoreKey> findGenericRepos(String buildContentId, FailedBuildsCleanerSession session) {
+    List<StoreKey> findGenericRepos(String buildContentId, FailedBuildsCleanerSession session) {
         List<StoreKey> result = new ArrayList<>();
         for (Group genericGroup : session.getGenericGroups()) {
             if (genericGroup.getName().startsWith("g-") && genericGroup.getName().endsWith("-" + buildContentId)) {
