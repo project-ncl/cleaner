@@ -1,0 +1,99 @@
+{
+  "pageIndex": 0,
+  "pageSize": 50,
+  "totalPages": 1,
+  "content": [
+    {
+      "id": 36001,
+      "submitTime": 1573173948382,
+      "startTime": 1573173948390,
+      "endTime": 1573175814256,
+      "status": "DONE",
+      "buildConfigurationId": 1841,
+      "buildConfigurationName": "org.keycloak-keycloak-connect-8.x",
+      "buildConfigurationRev": 18823,
+      "projectId": 131,
+      "projectName": "keycloak-connect",
+      "userId": 83,
+      "username": "service-account-rhsso-ci",
+      "scmRepoURL": "http://code.engineering.redhat.com/gerrit/keycloak-nodejs-connect.git",
+      "scmRevision": "5c76e6ad29400730955b4dfeb2605981adf11882",
+      "scmTag": "8.0.0.dev-temporary-redhat-00109",
+      "buildEnvironmentId": null,
+      "attributes": {},
+      "liveLogsUri": null,
+      "buildConfigSetRecordId": null,
+      "buildContentId": "build-36001",
+      "temporaryBuild": true,
+      "productMilestoneId": null,
+      "user": {
+        "id": 83,
+        "email": "service-account-rhsso-ci@placeholder.org",
+        "firstName": null,
+        "lastName": null,
+        "username": "service-account-rhsso-ci"
+      },
+      "buildConfigurationAudited": {
+        "id": 1841,
+        "rev": 18823,
+        "idRev": {
+          "id": 1841,
+          "rev": 18823
+        },
+        "name": "org.keycloak-keycloak-connect-8.x",
+        "description": null,
+        "buildScript": "npm config set strict-ssl=false\nnpm config set cafile /tmp/indy-proxy-ca.crt\nmvn -B -f product/pom.xml deploy -DskipTests=true -Dfrontend.registry.url=http://indy.newcastle.svc.cluster.local/api/folo/track/$buildContentId/npm/remote/npmjs/ -Dfrontend.download.root=http://rcm-guest.app.eng.bos.redhat.com/rcm-guest/staging/rh-sso",
+        "repositoryConfiguration": {
+          "id": 5,
+          "internalUrl": "git+ssh://code.engineering.redhat.com/keycloak-nodejs-connect.git",
+          "externalUrl": null,
+          "preBuildSyncEnabled": false
+        },
+        "scmRevision": "master",
+        "creationTime": null,
+        "lastModificationTime": null,
+        "projectId": 131,
+        "environmentId": 11,
+        "project": {
+          "id": 131,
+          "name": "keycloak-connect",
+          "description": null,
+          "issueTrackerUrl": null,
+          "projectUrl": null,
+          "configurationIds": [
+            1841,
+            2562,
+            1076,
+            1034,
+            1421,
+            287
+          ],
+          "licenseId": null
+        },
+        "environment": {
+          "id": 11,
+          "name": "OpenJDK 1.8.0; Mvn 3.5.4; Golang; Nodejs 6; npm 3",
+          "description": "OpenJDK 1.8.0; Mvn 3.5.4; Golang; Nodejs 6; npm 3",
+          "systemImageRepositoryUrl": "docker-registry-default.cloud.registry.upshift.redhat.com",
+          "systemImageId": "newcastle/builder-rhel-7-j8-mvn3.5.4-golang-nodejs6-npm3:latest",
+          "attributes": {
+            "JDK": "1.8.0",
+            "MAVEN": "3.5.4",
+            "OS": "Linux",
+            "NPM": "3"
+          },
+          "systemImageType": "DOCKER_IMAGE",
+          "deprecated": false,
+          "imageRepositoryUrl": "docker-registry-default.cloud.registry.upshift.redhat.com"
+        },
+        "genericParameters": {
+          "CUSTOM_PME_PARAMETERS": "--file=product/pom.xml -DdependencySource=BOMREST -DdependencyManagement=org.jboss.eap:jboss-eap-parent:7.3.0.CD18-redhat-00002 -DdependencyRelocations.org.wildfly:@org.jboss.eap:=7.3.0.CD18-redhat-00002 -DdependencyExclusion.org.jboss:jboss-parent@*=19.0.0.redhat-2 -DjsonUpdate=../package.json:$.devDependencies.keycloak-admin-client:^0.12.0"
+        }
+      },
+      "executionRootName": "org.keycloak:keycloak-connect",
+      "executionRootVersion": "8.0.0.dev-temporary-redhat-00109",
+      "dependentBuildRecordIds": [],
+      "dependencyBuildRecordIds": []
+    }
+  ]
+}
