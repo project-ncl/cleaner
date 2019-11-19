@@ -1,0 +1,71 @@
+{
+  "items" : [ {
+    "type" : "group",
+    "key" : "generic-http:group:g-glassfish-java-net-build-23013",
+    "description" : "HTTProx proxy based on: http://glassfish.java.net/public/CDDL+GPL_1_1.html",
+    "metadata" : {
+      "origin" : "httprox",
+      "trackingId" : "build-23013"
+    },
+    "disabled" : false,
+    "constituents" : [ "generic-http:remote:r-glassfish-java-net-build-23013", "generic-http:hosted:h-glassfish-java-net-build-23013" ],
+    "packageType" : "generic-http",
+    "name" : "g-glassfish-java-net-build-23013",
+    "type" : "group",
+    "disable_timeout" : 0,
+    "path_style" : "hashed",
+    "authoritative_index" : false,
+    "prepend_constituent" : false
+  }, {
+    "type" : "group",
+    "key" : "generic-http:group:g-www-apache-org-build-23013",
+    "description" : "HTTProx proxy based on: http://www.apache.org/licenses/LICENSE-2.0.txt",
+    "metadata" : {
+      "origin" : "httprox",
+      "trackingId" : "build-23013"
+    },
+    "disabled" : false,
+    "constituents" : [ "generic-http:remote:r-www-apache-org-build-23013", "generic-http:hosted:h-www-apache-org-build-23013" ],
+    "packageType" : "generic-http",
+    "name" : "g-www-apache-org-build-23013",
+    "type" : "group",
+    "disable_timeout" : 0,
+    "path_style" : "hashed",
+    "authoritative_index" : false,
+    "prepend_constituent" : false
+  }, {
+    "type" : "group",
+    "key" : "generic-http:group:g-nodejs-org-build-23013",
+    "description" : "HTTProx proxy based on: http://nodejs.org/dist/v10.15.3/node-v10.15.3-linux-x64.tar.gz",
+    "metadata" : {
+      "origin" : "httprox",
+      "trackingId" : "build-23013"
+    },
+    "disabled" : false,
+    "constituents" : [ "generic-http:remote:r-nodejs-org-build-23013", "generic-http:hosted:h-nodejs-org-build-23013" ],
+    "packageType" : "generic-http",
+    "name" : "g-nodejs-org-build-23013",
+    "type" : "group",
+    "disable_timeout" : 0,
+    "path_style" : "hashed",
+    "authoritative_index" : false,
+    "prepend_constituent" : false
+  }, {
+    "type" : "group",
+    "key" : "generic-http:group:g-mwnodereg-hosts-mwqe-eng-bos-redhat-com-build_org-keycloak-keycloak-connect-4-x_20181109.2045",
+    "description" : "HTTProx proxy based on: http://mwnodereg.hosts.mwqe.eng.bos.redhat.com:49168/phantomjs-prebuilt",
+    "metadata" : {
+      "origin" : "httprox",
+      "trackingId" : "build_org-keycloak-keycloak-connect-4-x_20181109.2045"
+    },
+    "disabled" : false,
+    "constituents" : [ "generic-http:remote:r-mwnodereg-hosts-mwqe-eng-bos-redhat-com-build_org-keycloak-keycloak-connect-4-x_20181109.2045", "generic-http:hosted:h-mwnodereg-hosts-mwqe-eng-bos-redhat-com-build_org-keycloak-keycloak-connect-4-x_20181109.2045" ],
+    "packageType" : "generic-http",
+    "name" : "g-mwnodereg-hosts-mwqe-eng-bos-redhat-com-build_org-keycloak-keycloak-connect-4-x_20181109.2045",
+    "type" : "group",
+    "disable_timeout" : 0,
+    "path_style" : "hashed",
+    "authoritative_index" : false,
+    "prepend_constituent" : false
+  } ]
+}

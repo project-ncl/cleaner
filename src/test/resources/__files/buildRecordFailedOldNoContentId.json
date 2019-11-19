@@ -1,0 +1,92 @@
+{
+	"content": {
+		"id": 36000,
+		"submitTime": 1573171867485,
+		"startTime": null,
+		"endTime": 1573174647816,
+		"status": "DONE_WITH_ERRORS",
+		"buildConfigurationId": 2544,
+		"buildConfigurationName": "camel-kafka-connector-0.0.1-8.0.0",
+		"buildConfigurationRev": 18742,
+		"projectId": 787,
+		"projectName": "jboss-fuse/camel-kafka-connector",
+		"userId": 127,
+		"username": "service-account-fuse-ci",
+		"scmRepoURL": null,
+		"scmRevision": null,
+		"scmTag": null,
+		"buildEnvironmentId": null,
+		"attributes": {
+			
+		},
+		"liveLogsUri": null,
+		"buildConfigSetRecordId": 2842,
+		"buildContentId": null,
+		"temporaryBuild": true,
+		"productMilestoneId": null,
+		"user": {
+			"id": 127,
+			"email": "service-account-fuse-ci@placeholder.org",
+			"firstName": null,
+			"lastName": null,
+			"username": "service-account-fuse-ci"
+		},
+		"buildConfigurationAudited": {
+			"id": 2544,
+			"rev": 18742,
+			"idRev": {
+				"id": 2544,
+				"rev": 18742
+			},
+			"name": "camel-kafka-connector-0.0.1-8.0.0",
+			"description": null,
+			"buildScript": "mvn -B clean deploy -DskipTests",
+			"repositoryConfiguration": {
+				"id": 796,
+				"internalUrl": "git+ssh://code.engineering.redhat.com/jboss-fuse/camel-kafka-connector.git",
+				"externalUrl": null,
+				"preBuildSyncEnabled": false
+			},
+			"scmRevision": "camel-kafka-connector-0.0.1.fuse-800001",
+			"creationTime": null,
+			"lastModificationTime": null,
+			"projectId": 787,
+			"environmentId": 8,
+			"project": {
+				"id": 787,
+				"name": "jboss-fuse/camel-kafka-connector",
+				"description": null,
+				"issueTrackerUrl": null,
+				"projectUrl": null,
+				"configurationIds": [
+					2544
+				],
+				"licenseId": null
+			},
+			"environment": {
+				"id": 8,
+				"name": "OpenJDK 1.8.0; Mvn 3.5.2",
+				"description": "OpenJDK 1.8.0; Mvn 3.5.2",
+				"systemImageRepositoryUrl": "docker-registry-default.cloud.registry.upshift.redhat.com",
+				"systemImageId": "newcastle/builder-rhel-7-j8-mvn3.5.2:latest",
+				"attributes": {
+					"JDK": "1.8.0",
+					"MAVEN": "3.5.2",
+					"OS": "Linux"
+				},
+				"systemImageType": "DOCKER_IMAGE",
+				"deprecated": false,
+				"imageRepositoryUrl": "docker-registry-default.cloud.registry.upshift.redhat.com"
+			},
+			"genericParameters": {
+				"CUSTOM_PME_PARAMETERS": "-DscanActiveProfiles=true"
+			}
+		},
+		"executionRootName": null,
+		"executionRootVersion": null,
+		"dependentBuildRecordIds": [],
+		"dependencyBuildRecordIds": [
+			35998
+		]
+	}
+}
