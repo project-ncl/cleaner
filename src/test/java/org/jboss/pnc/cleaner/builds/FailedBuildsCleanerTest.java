@@ -50,15 +50,15 @@ class FailedBuildsCleanerTest {
 
     private static final String INDY_MAVEN_GROUPS_NO_BUILD_GROUP_FILE = "indyMavenGroupsNoBuildGroup.json";
 
-    private static final String ORCH_BUILD_RECORD = "/build-records";
+    private static final String ORCH_BUILDS = "/builds";
 
     private static final String BUILD_RECORD_FAILED_OLD_NO_CONTENTID_FILE = "buildRecordFailedOldNoContentId.json";
+
+    private static final String BUILD_RECORDS_BUILDING_FILE = "buildRecordsBuilding.json";
 
     private static final String BUILD_RECORDS_FAILED_FILE = "buildRecordsFailed.json";
 
     private static final String BUILD_RECORDS_NOT_FAILED_FILE = "buildRecordsNotFailed.json";
-
-    private static final String BUILD_RECORDS_TOO_YOUNG_FILE = "buildRecordsTooYoung.json";
 
 
     private WireMockServer orchWireMockServer = new WireMockServer(options().port(8082));
@@ -133,7 +133,7 @@ class FailedBuildsCleanerTest {
 
     @Test
     public void shouldCleanOk() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILD_RECORD + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .withBodyFile(BUILD_RECORDS_FAILED_FILE)));
@@ -151,10 +151,10 @@ class FailedBuildsCleanerTest {
 
     @Test
     public void shouldCleanNoContentId() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILD_RECORD + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
                 .withStatus(204)));
 
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILD_RECORD + "/36000")).willReturn(aResponse()
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "/36000")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .withBodyFile(BUILD_RECORD_FAILED_OLD_NO_CONTENTID_FILE)));
@@ -172,10 +172,10 @@ class FailedBuildsCleanerTest {
 
     @Test
     public void shouldCleanNotFound() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILD_RECORD + "?.*q=buildContentId%3D%3Dbuild-36002")).willReturn(aResponse()
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36002")).willReturn(aResponse()
                 .withStatus(204)));
 
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILD_RECORD + "/36002")).willReturn(aResponse()
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "/36002")).willReturn(aResponse()
                 .withStatus(404)));
 
         // limit is set to be after the build record end time
@@ -190,8 +190,26 @@ class FailedBuildsCleanerTest {
     }
 
     @Test
+    public void shouldCleanBuilding() throws CleanerException {
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36735")).willReturn(aResponse()
+                .withStatus(200)
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                .withBodyFile(BUILD_RECORDS_BUILDING_FILE)));
+
+        // limit is set to be 6.6 days before the build start time
+        Instant limit = Instant.ofEpochMilli(1573756869934L);
+        // auth token is not important for the test
+        Indy indyClient = failedBuildsCleaner.initIndy("");
+        FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
+
+        boolean clean = failedBuildsCleaner.shouldClean("build-36735", session);
+
+        assertFalse(clean);
+    }
+
+    @Test
     public void shouldCleanNotFailed() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILD_RECORD + "?.*q=buildContentId%3D%3Dbuild-36001")).willReturn(aResponse()
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36001")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .withBodyFile(BUILD_RECORDS_NOT_FAILED_FILE)));
@@ -209,7 +227,7 @@ class FailedBuildsCleanerTest {
 
     @Test
     public void shouldCleanTooYoung() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILD_RECORD + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .withBodyFile(BUILD_RECORDS_FAILED_FILE)));
@@ -296,7 +314,7 @@ class FailedBuildsCleanerTest {
 
     @Test
     public void cleanBuildIfNeededOk() {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILD_RECORD + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
                 .withStatus(200)
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .withBodyFile(BUILD_RECORDS_FAILED_FILE)));
