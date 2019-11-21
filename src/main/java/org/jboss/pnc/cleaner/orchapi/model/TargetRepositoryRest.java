@@ -17,18 +17,17 @@
  */
 package org.jboss.pnc.cleaner.orchapi.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-
-import org.jboss.pnc.model.TargetRepository.Type;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.HashSet;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+
+import org.jboss.pnc.model.TargetRepository.Type;
+
 import java.util.Set;
 
 /**
@@ -60,7 +59,7 @@ public class TargetRepositoryRest {
     private String repositoryPath;
 
     @Getter
-    private Set<Integer> artifactIds = new HashSet<>();
+    private Set<Integer> artifactIds;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static final class TargetRepositoryRestBuilder {

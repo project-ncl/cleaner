@@ -1,0 +1,106 @@
+{
+  "pageIndex": 0,
+  "pageSize": 50,
+  "totalPages": 1,
+  "content": [
+    {
+      "id": 36735,
+      "submitTime": 1574332388324,
+      "startTime": 1574332869934,
+      "endTime": null,
+      "status": "BUILDING",
+      "buildConfigurationId": 2052,
+      "buildConfigurationName": "activemq-artemis-nightly",
+      "buildConfigurationRev": null,
+      "projectId": 195,
+      "projectName": "activemq-artemis",
+      "userId": 183,
+      "username": "service-account-cpaas-ci",
+      "scmRepoURL": "http://code.engineering.redhat.com/gerrit/messaging/activemq-artemis.git",
+      "scmRevision": "8cac5d8b9574f3d1cd3ea952d93541f7747391c1",
+      "scmTag": "2.11.0.temporary-redhat-00062",
+      "buildEnvironmentId": null,
+      "attributes": {},
+      "liveLogsUri": "ws://ba-newcastle-builders.cloud.paas.psi.redhat.com/pnc-ba-1cdcee/socket/text/ro",
+      "buildConfigSetRecordId": null,
+      "buildContentId": "build-36735",
+      "temporaryBuild": true,
+      "productMilestoneId": null,
+      "user": {
+        "id": 183,
+        "email": "service-account-cpaas-ci@placeholder.org",
+        "firstName": null,
+        "lastName": null,
+        "username": "service-account-cpaas-ci"
+      },
+      "buildConfigurationAudited": {
+        "id": 2052,
+        "rev": 16295,
+        "idRev": {
+          "id": 2052,
+          "rev": 16295
+        },
+        "name": "activemq-artemis-nightly",
+        "description": null,
+        "buildScript": "mvn clean deploy dependency:tree -Prelease,extra-tests -Dmaven.timeout=60000 -DskipTests=true -DskipLicenseCheck=true  -DnpmRegistryURL=http://mwnodereg.hosts.mwqe.eng.bos.redhat.com:49194 -Dfrontend-maven-plugin-version=1.3 -DnpmDownloadRoot=http://rcm-guest.app.eng.bos.redhat.com/rcm-guest/staging/rh-sso/node/npm/ -DnodeDownloadRoot=http://rcm-guest.app.eng.bos.redhat.com/rcm-guest/staging/rh-sso/node/ -DnpmVersion=2.15.11 -DnodeVersion=v6.10.3 -Dfrontend-maven-plugin-version=1.3 -DskipWebsiteDocGeneration",
+        "repositoryConfiguration": {
+          "id": 219,
+          "internalUrl": "git+ssh://code.engineering.redhat.com/messaging/activemq-artemis.git",
+          "externalUrl": "ssh://git@github.com/rh-messaging/activemq-artemis.git",
+          "preBuildSyncEnabled": true
+        },
+        "scmRevision": "master-pnc",
+        "creationTime": null,
+        "lastModificationTime": null,
+        "projectId": 195,
+        "environmentId": 10,
+        "project": {
+          "id": 195,
+          "name": "activemq-artemis",
+          "description": null,
+          "issueTrackerUrl": null,
+          "projectUrl": null,
+          "configurationIds": [
+            2000,
+            1264,
+            1921,
+            2052,
+            2037,
+            565,
+            552,
+            570,
+            1931,
+            878,
+            783
+          ],
+          "licenseId": null
+        },
+        "environment": {
+          "id": 10,
+          "name": "OpenJDK 1.8.0; Mvn 3.5.4; Golang; Nodejs 8; npm 5",
+          "description": "OpenJDK 1.8.0; Mvn 3.5.4; Golang; Nodejs 8; npm 5",
+          "systemImageRepositoryUrl": "docker-registry-default.cloud.registry.upshift.redhat.com",
+          "systemImageId": "newcastle/builder-rhel-7-j8-mvn3.5.4-golang-nodejs8-npm5:latest",
+          "attributes": {
+            "JDK": "1.8.0",
+            "MAVEN": "3.5.4",
+            "OS": "Linux",
+            "NPM": "5"
+          },
+          "systemImageType": "DOCKER_IMAGE",
+          "deprecated": false,
+          "imageRepositoryUrl": "docker-registry-default.cloud.registry.upshift.redhat.com"
+        },
+        "genericParameters": {
+          "CUSTOM_PME_PARAMETERS": "-DrepoReportingRemoval=true -DdependencyExclusion.org.jasypt:*@*=1.9.3.redhat_3"
+        }
+      },
+      "executionRootName": null,
+      "executionRootVersion": null,
+      "dependentBuildRecordIds": [
+        36736
+      ],
+      "dependencyBuildRecordIds": []
+    }
+  ]
+}
