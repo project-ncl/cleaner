@@ -20,7 +20,7 @@ import org.commonjava.util.jhttpc.model.SiteConfigBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.cleaner.auth.KeycloakServiceClient;
-import org.jboss.pnc.cleaner.orchapi.BuildRecordEndpoint;
+import org.jboss.pnc.cleaner.orchapi.BuildEndpoint;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordPage;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordSingleton;
@@ -54,7 +54,7 @@ public class FailedBuildsCleaner {
 
     @Inject
     @RestClient
-    BuildRecordEndpoint buildRecordService;
+    BuildEndpoint buildService;
 
     @Inject
     KeycloakServiceClient serviceClient;
@@ -228,7 +228,7 @@ public class FailedBuildsCleaner {
                     + "temporary builds cleaner before failed builds cleaner got to it. Cleaning...",
                     groupName);
             clean = true;
-        } else if (br.getEndTimeInstant().isBefore(session.getTo()) && failedStatuses.contains(br.getStatus())) {
+        } else if (failedStatuses.contains(br.getStatus()) && br.getEndTimeInstant().isBefore(session.getTo())) {
             logger.debug("Build record for group {} is older than the limit. Cleaning...", groupName);
             clean = true;
         }
@@ -265,7 +265,7 @@ public class FailedBuildsCleaner {
      */
     private BuildRecordRest getBuildRecord(String buildContentId) throws CleanerException {
         logger.debug("Looking for build record with query \"buildContentId==" + buildContentId + "\"");
-        BuildRecordPage page = buildRecordService.getAll(0, 2, null, "buildContentId==" + buildContentId);
+        BuildRecordPage page = buildService.getAll(0, 2, null, "buildContentId==" + buildContentId, null, null);
         if (page != null && page.getContent() != null && page.getContent().size() > 1) {
             logger.error("Multiple build records found for buildContentId = {}", buildContentId);
         } else if (page == null || page.getContent() == null || page.getContent().size() == 0) {
@@ -276,7 +276,7 @@ public class FailedBuildsCleaner {
                 logger.debug("Attempting to find build record by id {}", id);
                 BuildRecordSingleton singleton = null;
                 try {
-                    singleton = buildRecordService.getSpecific(id);
+                    singleton = buildService.getSpecific(id);
                 } catch (WebApplicationException ex) {
                     int status = ex.getResponse().getStatus();
                     if (status == Response.Status.NOT_FOUND.getStatusCode()) {
