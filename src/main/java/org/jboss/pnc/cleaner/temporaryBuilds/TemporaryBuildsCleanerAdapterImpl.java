@@ -1,24 +1,23 @@
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import lombok.extern.slf4j.Slf4j;
+
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.cleaner.orchapi.BuildConfigSetRecordEndpoint;
-import org.jboss.pnc.cleaner.orchapi.model.BuildConfigurationSetRecordPage;
 import org.jboss.pnc.cleaner.orchapi.BuildRecordEndpoint;
-import org.jboss.pnc.cleaner.orchapi.model.BuildRecordPage;
 import org.jboss.pnc.cleaner.orchapi.model.BuildConfigSetRecordRest;
+import org.jboss.pnc.cleaner.orchapi.model.BuildConfigurationSetRecordPage;
+import org.jboss.pnc.cleaner.orchapi.model.BuildRecordPage;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
 import org.jboss.pnc.cleaner.orchapi.validation.exceptions.RepositoryViolationException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
+
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.concurrent.ExecutionException;
 
 /**
  * Implementation of an adapter providing high-level operations on Orchestrator REST API
