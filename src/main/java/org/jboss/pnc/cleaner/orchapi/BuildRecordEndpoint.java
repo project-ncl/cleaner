@@ -95,7 +95,8 @@ public interface BuildRecordEndpoint {
     @DELETE
     @Path("/{id}")
     @ClientHeaderParam(name = "Authorization", value = "{getAccessToken}")
-    void delete(@PathParam("id") Integer id) throws RepositoryViolationException;
+    Response delete(@PathParam("id") Integer id,
+                    @QueryParam("callback") String callbackUrl);
 
     @GET
     @Path("/{id}/log")

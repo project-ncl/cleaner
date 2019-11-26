@@ -17,17 +17,14 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
-import com.github.tomakehurst.wiremock.matching.RegexPattern;
-import com.github.tomakehurst.wiremock.matching.StringValuePattern;
-import com.github.tomakehurst.wiremock.recording.SnapshotRecordResult;
-import com.github.tomakehurst.wiremock.standalone.MappingsLoader;
-import com.github.tomakehurst.wiremock.stubbing.StubMapping;
-import com.github.tomakehurst.wiremock.stubbing.StubMappings;
 import io.quarkus.test.junit.QuarkusTest;
+import org.jboss.pnc.cleaner.orchapi.model.DeleteOperationResult;
+import org.jboss.pnc.common.util.HttpUtils;
 import org.jboss.pnc.common.util.TimeUtils;
+import org.jboss.pnc.spi.coordinator.Result;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,16 +35,15 @@ import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
-import java.util.List;
-
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
-import static com.github.tomakehurst.wiremock.client.WireMock.any;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
 import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static java.time.Duration.ofSeconds;
+import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 /**
  * @author Jakub Bartecek
@@ -72,7 +68,7 @@ public class TemporaryBuildsCleanerImplTest {
     private static WireMockServer keycloakServer = new WireMockServer(options()
             .port(8084)
             .withRootDirectory("src/test/resources/wiremock/keycloak"));
-    
+
     private WireMockServer wireMockServer = new WireMockServer(options()
             .port(8082)
             .withRootDirectory("src/test/resources/wiremock/general"));
@@ -110,14 +106,41 @@ public class TemporaryBuildsCleanerImplTest {
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .withBodyFile(SINGLE_TEMPORARY_BUILD_FILE)));
 
-        wireMockServer.stubFor(delete(BUILDS_ENDPOINT + buildId).willReturn(aResponse().withStatus(200)));
+        wireMockServer.stubFor(delete(urlMatching(BUILDS_ENDPOINT + buildId + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fbuild-record-delete%2F100"))
+                .willReturn(aResponse().withStatus(200)));
+
+        startCallbackThread();
 
         // when
-        temporaryBuildsCleaner.deleteExpiredBuildRecords(TimeUtils.getDateXDaysAgo(14));
+        assertTimeoutPreemptively(ofSeconds(15), () ->
+            temporaryBuildsCleaner.deleteExpiredBuildRecords(TimeUtils.getDateXDaysAgo(14)));
 
         // then
-        wireMockServer.verify(deleteRequestedFor(urlEqualTo(BUILDS_ENDPOINT + buildId)));
         wireMockServer.verify(1, deleteRequestedFor(urlMatching(BUILDS_ENDPOINT + ".*")));
+    }
+
+    private void startCallbackThread() {
+        Thread callbackThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(3000);
+                    performCallback("http://0.0.0.0:8081/callbacks/build-record-delete/100");
+                } catch (Exception e) {
+                    System.err.println("Callback operation failed! " + e);
+                }
+            }
+        });
+        callbackThread.start();
+    }
+
+    private void performCallback(String callbackUrl) throws JsonProcessingException {
+        DeleteOperationResult deleteOperationResult = new DeleteOperationResult();
+        deleteOperationResult.setId("100");
+        deleteOperationResult.setStatus(Result.Status.SUCCESS);
+        deleteOperationResult.setMessage("Build 100 was deleted successfully!");
+
+        HttpUtils.performHttpPostRequest(callbackUrl, deleteOperationResult);
     }
 
     @Test
@@ -129,7 +152,9 @@ public class TemporaryBuildsCleanerImplTest {
                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                 .withBodyFile(SINGLE_TEMPORARY_BUILD_FILE)));
 
-        wireMockServer.stubFor(delete(BUILDS_ENDPOINT + buildId).willReturn(aResponse().withStatus(200)));
+        wireMockServer.stubFor(delete(urlMatching(BUILDS_ENDPOINT + buildId + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fbuild-record-delete%2F100"))
+                .willReturn(aResponse().withStatus(200)));
+        startCallbackThread();
 
         // when
         temporaryBuildsCleaner.deleteExpiredBuildRecords(TimeUtils.getDateXDaysAgo(14));

@@ -40,12 +40,12 @@ public interface TemporaryBuildsCleanerAdapter {
     Collection<BuildRecordRest> findTemporaryBuildsOlderThan(Date expirationDate);
 
     /**
-     * Deletes a temporary build
+     * Deletes a temporary build and waits for the operation completion. The method is blocking.
      *
      * @param id ID of a temporary build, which is meant to be deleted
      * @throws RepositoryViolationException Thrown if deletion fails with an error
      */
-    void deleteTemporaryBuild(Integer id) throws RepositoryViolationException;
+    void deleteTemporaryBuild(Integer id) throws OrchInteractionException;
 
     /**
      * Finds all temporary BuildConfigSetRecords, which are older than a timestamp set by the expirationDate parameter
