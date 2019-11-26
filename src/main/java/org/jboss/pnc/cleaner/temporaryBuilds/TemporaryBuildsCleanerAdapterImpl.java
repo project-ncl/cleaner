@@ -1,7 +1,7 @@
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import lombok.extern.slf4j.Slf4j;
-
+import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.cleaner.orchapi.BuildConfigSetRecordEndpoint;
 import org.jboss.pnc.cleaner.orchapi.BuildRecordEndpoint;
@@ -9,8 +9,10 @@ import org.jboss.pnc.cleaner.orchapi.model.BuildConfigSetRecordRest;
 import org.jboss.pnc.cleaner.orchapi.model.BuildConfigurationSetRecordPage;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordPage;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
+import org.jboss.pnc.cleaner.orchapi.model.DeleteOperationResult;
 import org.jboss.pnc.cleaner.orchapi.validation.exceptions.RepositoryViolationException;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
@@ -28,6 +30,11 @@ import java.util.HashSet;
 @Slf4j
 public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleanerAdapter {
 
+    private String BASE_DELETE_BUILD_CALLBACK_URL;
+
+    @Inject
+    Config config;
+
     @Inject
     @RestClient
     BuildRecordEndpoint buildRecordService;
@@ -35,6 +42,17 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     @Inject
     @RestClient
     BuildConfigSetRecordEndpoint buildConfigSetRecordEndpoint;
+
+    @Inject
+    DeleteCallbackManager deleteCallbackManager;
+
+    @PostConstruct
+    private void init() {
+        BASE_DELETE_BUILD_CALLBACK_URL = String.format("%s:%s%s",
+                config.getValue("quarkus.http.host", String.class),
+                config.getValue("quarkus.http.port", String.class),
+                "/callbacks/build-record-delete/");
+    }
 
     @Override
     public Collection<BuildRecordRest> findTemporaryBuildsOlderThan(Date expirationDate) {
@@ -75,8 +93,40 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     }
 
     @Override
-    public void deleteTemporaryBuild(Integer id) throws RepositoryViolationException {
-        buildRecordService.delete(id); // TODO wait for async operation completion and report results
+    public void deleteTemporaryBuild(Integer id) throws OrchInteractionException {
+        deleteCallbackManager.initializeHandler(id);
+        Response deleteResponse = buildRecordService.delete(id, BASE_DELETE_BUILD_CALLBACK_URL + id);
+
+        switch (deleteResponse.getStatus()) {
+            case 200:
+                // Deletion was initiated. Wait for callback, which confirms end of the operation.
+                try {
+                    DeleteOperationResult result = deleteCallbackManager.await(id);
+                    if (result
+                            .getStatus()
+                            .isSuccess()) {
+                        return;
+                    } else {
+                        throw new OrchInteractionException(String.format("Deletion of a build %s failed! " +
+                                "Orchestrator" + " reported a failure: [status={}, message={}].", result.getStatus(),
+                                result.getMessage()));
+                    }
+                } catch (InterruptedException e) {
+                    deleteCallbackManager.cancel(id);
+                    throw new OrchInteractionException(String.format("Deletion of a build %s failed! Wait operation " +
+                            "failed with an exception.", id), e);
+                }
+
+            case 404:
+                deleteCallbackManager.cancel(id);
+                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The build was not "
+                        + "found.", id));
+
+            default:
+                deleteCallbackManager.cancel(id);
+                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The operation " +
+                        "failed" + " with status code %s.", id, deleteResponse.getStatus()));
+        }
     }
 
     @Override
@@ -91,8 +141,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
             Response response;
             try {
-                response = buildConfigSetRecordEndpoint.getAllTemporaryOlderThanTimestamp(currentPage, pageSize, null, null,
-                        expirationDate.getTime());
+                response = buildConfigSetRecordEndpoint.getAllTemporaryOlderThanTimestamp(currentPage, pageSize,
+                        null, null, expirationDate.getTime());
             } catch (Exception e) {
                 log.warn("Querying of temporary builds from Orchestrator failed with exception", e);
                 return buildConfigSetRecords;
@@ -100,7 +150,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
             switch (response.getStatus()) {
                 case 200:
-                    BuildConfigurationSetRecordPage buildConfigurationSetRecordPage = response.readEntity(BuildConfigurationSetRecordPage.class);
+                    BuildConfigurationSetRecordPage buildConfigurationSetRecordPage = response.readEntity
+                            (BuildConfigurationSetRecordPage.class);
                     buildConfigSetRecords.addAll(buildConfigurationSetRecordPage.getContent());
 
                     currentPage++;
@@ -109,8 +160,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                 case 204:
                     return buildConfigSetRecords;
                 default:
-                    log.warn("Querying of temporary build groups from Orchestrator failed with [status: {}, message: {}]",
-                            response.getStatus(), response.readEntity(String.class));
+                    log.warn("Querying of temporary build groups from Orchestrator failed with [status: {}, message: " +
+                            "" + "{}]", response.getStatus(), response.readEntity(String.class));
                     return buildConfigSetRecords;
             }
 
