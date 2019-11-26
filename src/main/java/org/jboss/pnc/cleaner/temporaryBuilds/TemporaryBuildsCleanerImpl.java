@@ -82,8 +82,8 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
                 log.info("Deleting temporary build {}", buildRecord);
                 temporaryBuildsCleanerAdapter.deleteTemporaryBuild(buildRecord.getId());
                 log.info("Temporary build {} was deleted successfully", buildRecord);
-            } catch (RepositoryViolationException ex) {
-                log.warn("Deletion of temporary build {} failed!", buildRecord);
+            } catch (OrchInteractionException ex) {
+                log.warn("Deletion of temporary build {} failed! Cause: {}", buildRecord, ex);
             }
         }
     }
