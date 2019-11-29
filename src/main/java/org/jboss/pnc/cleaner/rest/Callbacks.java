@@ -18,6 +18,8 @@
 package org.jboss.pnc.cleaner.rest;
 
 import org.jboss.pnc.cleaner.orchapi.model.DeleteOperationResult;
+import org.jboss.pnc.cleaner.temporaryBuilds.BuildDeleteCallbackManager;
+import org.jboss.pnc.cleaner.temporaryBuilds.BuildGroupDeleteCallbackManager;
 import org.jboss.pnc.cleaner.temporaryBuilds.DeleteCallbackManager;
 
 import javax.inject.Inject;
@@ -35,14 +37,28 @@ import javax.ws.rs.core.Response;
 public class Callbacks {
 
     @Inject
-    DeleteCallbackManager deleteCallbackManager;
+    BuildDeleteCallbackManager buildDeleteCallbackManager;
+
+    @Inject
+    BuildGroupDeleteCallbackManager buildGroupDeleteCallbackManager;
 
     @Path("/build-record-delete/{buildId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response buildRecordDeleteCallback(@PathParam("buildId") String buildId,
                                               DeleteOperationResult deleteOperation) {
-        deleteCallbackManager.callback(Integer.parseInt(buildId), deleteOperation);
+        buildDeleteCallbackManager.callback(Integer.parseInt(buildId), deleteOperation);
+        return Response
+                .ok()
+                .build();
+    }
+
+    @Path("/build-group-record-delete/{buildId}")
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response buildGroupRecordDeleteCallback(@PathParam("buildId") String buildId,
+                                              DeleteOperationResult deleteOperation) {
+        buildGroupDeleteCallbackManager.callback(Integer.parseInt(buildId), deleteOperation);
         return Response
                 .ok()
                 .build();
