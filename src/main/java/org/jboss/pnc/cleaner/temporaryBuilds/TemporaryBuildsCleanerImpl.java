@@ -67,7 +67,7 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
                 log.info("Deleting temporary BuildConfigSetRecord {}", buildSetRecord);
                 temporaryBuildsCleanerAdapter.deleteTemporaryBuildConfigSetRecord(buildSetRecord.getId());
                 log.info("Temporary BuildConfigSetRecord {} was deleted successfully", buildSetRecord);
-            } catch (RepositoryViolationException ex) {
+            } catch (OrchInteractionException ex) {
                 log.warn("Deletion of temporary BuildConfigSetRecord {} failed!", buildSetRecord);
             }
         }

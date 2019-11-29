@@ -36,7 +36,6 @@ import java.util.concurrent.TimeUnit;
  *
  * @author Jakub Bartecek
  */
-@ApplicationScoped
 @Slf4j
 public class DeleteCallbackManager {
 

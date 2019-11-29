@@ -50,7 +50,8 @@ public interface BuildConfigSetRecordEndpoint {
     @DELETE
     @Path("/{id}")
     @ClientHeaderParam(name = "Authorization", value = "{getAccessToken}")
-    Response delete(@PathParam("id") Integer id) throws RepositoryViolationException;
+    Response delete(@PathParam("id") Integer id,
+                    @QueryParam("callback") String callbackUrl);
 
     @GET
     @Path("/temporary-older-than-timestamp")
