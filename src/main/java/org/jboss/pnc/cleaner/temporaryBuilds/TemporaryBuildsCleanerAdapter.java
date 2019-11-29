@@ -61,5 +61,5 @@ public interface TemporaryBuildsCleanerAdapter {
      * @param id ID of a temporary BuildConfigSetRecord, which is meant to be deleted
      * @throws RepositoryViolationException Thrown if deletion fails with an error
      */
-    void deleteTemporaryBuildConfigSetRecord(Integer id) throws RepositoryViolationException;
+    void deleteTemporaryBuildConfigSetRecord(Integer id) throws OrchInteractionException;
 }
