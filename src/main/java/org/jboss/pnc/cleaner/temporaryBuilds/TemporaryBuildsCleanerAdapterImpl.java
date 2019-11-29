@@ -1,3 +1,20 @@
+/**
+ * JBoss, Home of Professional Open Source.
+ * Copyright 2014-2019 Red Hat, Inc., and individual contributors
+ * as indicated by the @author tags.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +27,6 @@ import org.jboss.pnc.cleaner.orchapi.model.BuildConfigurationSetRecordPage;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordPage;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
 import org.jboss.pnc.cleaner.orchapi.model.DeleteOperationResult;
-import org.jboss.pnc.cleaner.orchapi.validation.exceptions.RepositoryViolationException;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -32,6 +48,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
     private String BASE_DELETE_BUILD_CALLBACK_URL;
 
+    private String BASE_DELETE_BUILD_GROUP_CALLBACK_URL;
+
     @Inject
     Config config;
 
@@ -44,14 +62,19 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     BuildConfigSetRecordEndpoint buildConfigSetRecordEndpoint;
 
     @Inject
-    DeleteCallbackManager deleteCallbackManager;
+    BuildDeleteCallbackManager buildDeleteCallbackManager;
+
+    @Inject
+    BuildGroupDeleteCallbackManager buildGroupDeleteCallbackManager;
 
     @PostConstruct
     private void init() {
-        BASE_DELETE_BUILD_CALLBACK_URL = String.format("%s:%s%s",
+        final String host = String.format("%s:%s",
                 config.getValue("quarkus.http.host", String.class),
-                config.getValue("quarkus.http.port", String.class),
-                "/callbacks/build-record-delete/");
+                config.getValue("quarkus.http.port", String.class));
+
+        BASE_DELETE_BUILD_CALLBACK_URL = host + "/callbacks/build-record-delete/";
+        BASE_DELETE_BUILD_GROUP_CALLBACK_URL = host + "/callbacks/build-group-record-delete/";
     }
 
     @Override
@@ -94,14 +117,14 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
     @Override
     public void deleteTemporaryBuild(Integer id) throws OrchInteractionException {
-        deleteCallbackManager.initializeHandler(id);
+        buildDeleteCallbackManager.initializeHandler(id);
         Response deleteResponse = buildRecordService.delete(id, BASE_DELETE_BUILD_CALLBACK_URL + id);
 
         switch (deleteResponse.getStatus()) {
             case 200:
                 // Deletion was initiated. Wait for callback, which confirms end of the operation.
                 try {
-                    DeleteOperationResult result = deleteCallbackManager.await(id);
+                    DeleteOperationResult result = buildDeleteCallbackManager.await(id);
                     if (result
                             .getStatus()
                             .isSuccess()) {
@@ -112,18 +135,18 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                                 result.getMessage()));
                     }
                 } catch (InterruptedException e) {
-                    deleteCallbackManager.cancel(id);
+                    buildDeleteCallbackManager.cancel(id);
                     throw new OrchInteractionException(String.format("Deletion of a build %s failed! Wait operation " +
                             "failed with an exception.", id), e);
                 }
 
             case 404:
-                deleteCallbackManager.cancel(id);
+                buildDeleteCallbackManager.cancel(id);
                 throw new OrchInteractionException(String.format("Deletion of a build %s failed! The build was not "
                         + "found.", id));
 
             default:
-                deleteCallbackManager.cancel(id);
+                buildDeleteCallbackManager.cancel(id);
                 throw new OrchInteractionException(String.format("Deletion of a build %s failed! The operation " +
                         "failed" + " with status code %s.", id, deleteResponse.getStatus()));
         }
@@ -160,8 +183,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                 case 204:
                     return buildConfigSetRecords;
                 default:
-                    log.warn("Querying of temporary build groups from Orchestrator failed with [status: {}, message: " +
-                            "" + "{}]", response.getStatus(), response.readEntity(String.class));
+                    log.warn("Querying of temporary build groups from Orchestrator failed with [status: {}, message: {}]",
+                            response.getStatus(), response.readEntity(String.class));
                     return buildConfigSetRecords;
             }
 
@@ -172,7 +195,39 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     }
 
     @Override
-    public void deleteTemporaryBuildConfigSetRecord(Integer id) throws RepositoryViolationException {
-        buildConfigSetRecordEndpoint.delete(id); // TODO wait for async operation completion and report results
+    public void deleteTemporaryBuildConfigSetRecord(Integer id) throws OrchInteractionException {
+        buildGroupDeleteCallbackManager.initializeHandler(id);
+        Response deleteResponse = buildConfigSetRecordEndpoint.delete(id, BASE_DELETE_BUILD_GROUP_CALLBACK_URL + id);
+
+        switch (deleteResponse.getStatus()) {
+            case 200:
+                // Deletion was initiated. Wait for callback, which confirms end of the operation.
+                try {
+                    DeleteOperationResult result = buildGroupDeleteCallbackManager.await(id);
+                    if (result
+                            .getStatus()
+                            .isSuccess()) {
+                        return;
+                    } else {
+                        throw new OrchInteractionException(String.format("Deletion of a build %s failed! " +
+                                        "Orchestrator" + " reported a failure: [status={}, message={}].", result.getStatus(),
+                                result.getMessage()));
+                    }
+                } catch (InterruptedException e) {
+                    buildGroupDeleteCallbackManager.cancel(id);
+                    throw new OrchInteractionException(String.format("Deletion of a build %s failed! Wait operation " +
+                            "failed with an exception.", id), e);
+                }
+
+            case 404:
+                buildGroupDeleteCallbackManager.cancel(id);
+                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The build was not "
+                        + "found.", id));
+
+            default:
+                buildGroupDeleteCallbackManager.cancel(id);
+                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The operation " +
+                        "failed" + " with status code %s.", id, deleteResponse.getStatus()));
+        }
     }
 }
