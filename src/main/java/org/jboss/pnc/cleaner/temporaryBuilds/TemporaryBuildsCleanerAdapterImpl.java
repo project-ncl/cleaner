@@ -70,7 +70,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     @PostConstruct
     private void init() {
         final String host = String.format("%s:%s",
-                config.getValue("quarkus.http.host", String.class),
+                config.getValue("applicationUri", String.class),
                 config.getValue("quarkus.http.port", String.class));
 
         BASE_DELETE_BUILD_CALLBACK_URL = host + "/callbacks/build-record-delete/";
