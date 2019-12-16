@@ -125,14 +125,13 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                 // Deletion was initiated. Wait for callback, which confirms end of the operation.
                 try {
                     DeleteOperationResult result = buildDeleteCallbackManager.await(id);
-                    if (result
-                            .getStatus()
-                            .isSuccess()) {
+                    if (result != null && result.getStatus() != null && result.getStatus().isSuccess()) {
                         return;
                     } else {
                         throw new OrchInteractionException(String.format("Deletion of a build %s failed! " +
-                                "Orchestrator" + " reported a failure: [status={}, message={}].", result.getStatus(),
-                                result.getMessage()));
+                                "Orchestrator" + " reported a failure: [status={}, message={}].",
+                                result == null ? null : result.getStatus(),
+                                result == null ? null : result.getMessage()));
                     }
                 } catch (InterruptedException e) {
                     buildDeleteCallbackManager.cancel(id);
@@ -204,14 +203,13 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                 // Deletion was initiated. Wait for callback, which confirms end of the operation.
                 try {
                     DeleteOperationResult result = buildGroupDeleteCallbackManager.await(id);
-                    if (result
-                            .getStatus()
-                            .isSuccess()) {
+                    if (result != null && result.getStatus() != null && result.getStatus().isSuccess()) {
                         return;
                     } else {
                         throw new OrchInteractionException(String.format("Deletion of a build %s failed! " +
-                                        "Orchestrator" + " reported a failure: [status={}, message={}].", result.getStatus(),
-                                result.getMessage()));
+                                        "Orchestrator" + " reported a failure: [status={}, message={}].",
+                                result == null ? null : result.getStatus(),
+                                result == null ? null : result.getMessage()));
                     }
                 } catch (InterruptedException e) {
                     buildGroupDeleteCallbackManager.cancel(id);
