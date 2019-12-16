@@ -197,6 +197,17 @@
     <!-- Test dependencies END !-->
   </dependencies>
 
+  <repositories>
+    <repository>
+      <id>jboss-snapshots</id>
+      <name>jboss-snapshots</name>
+      <url>https://repository.jboss.org</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
   <build>
     <plugins>
       <plugin>
