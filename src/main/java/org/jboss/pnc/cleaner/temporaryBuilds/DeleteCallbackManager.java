@@ -84,7 +84,7 @@ public class DeleteCallbackManager {
      * Blocking wait operation for completion of delete operation. It waits for a configurable maximum time.
      *
      * @param buildId Build ID
-     * @return Result of the operation
+     * @return Result of the operation or null if the callback was not triggered
      * @throws InterruptedException Thrown if an error occurs while waiting for callback
      */
     public DeleteOperationResult await(Integer buildId) throws InterruptedException {
