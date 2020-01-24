@@ -20,7 +20,6 @@ package org.jboss.pnc.cleaner.rest;
 import org.jboss.pnc.cleaner.orchapi.model.DeleteOperationResult;
 import org.jboss.pnc.cleaner.temporaryBuilds.BuildDeleteCallbackManager;
 import org.jboss.pnc.cleaner.temporaryBuilds.BuildGroupDeleteCallbackManager;
-import org.jboss.pnc.cleaner.temporaryBuilds.DeleteCallbackManager;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;

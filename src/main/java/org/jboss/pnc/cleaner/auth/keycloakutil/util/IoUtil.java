@@ -33,7 +33,6 @@ import java.nio.file.attribute.AclEntryType;
 import java.nio.file.attribute.AclFileAttributeView;
 import java.nio.file.attribute.PosixFilePermission;
 import java.nio.file.attribute.UserPrincipal;
-import java.util.Formatter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -182,24 +181,12 @@ public class IoUtil {
         System.err.println(msg);
     }
 
-    public static void printfOut(String format, String ... params) {
-        System.out.println(new Formatter().format("WARN: " + format, params));
-    }
-
     public static void warnOut(String msg) {
         System.out.println("WARN: " + msg);
     }
 
     public static void warnErr(String msg) {
         System.err.println("WARN: " + msg);
-    }
-
-    public static void warnfOut(String format, String ... params) {
-        System.out.println(new Formatter().format("WARN: " + format, params));
-    }
-
-    public static void warnfErr(String format, String ... params) {
-        System.err.println(new Formatter().format("WARN: " + format, params));
     }
 
     public static void logOut(String msg) {

@@ -27,7 +27,6 @@ import org.jboss.pnc.cleaner.orchapi.model.BuildRecordPage;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordSingleton;
 import org.jboss.pnc.cleaner.orchapi.model.BuildStatus;
-import org.jboss.pnc.cleaner.orchapi.validation.exceptions.RepositoryViolationException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
