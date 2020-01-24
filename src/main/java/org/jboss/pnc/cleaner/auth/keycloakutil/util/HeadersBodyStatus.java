@@ -42,6 +42,7 @@ public class HeadersBodyStatus extends HeadersBody {
         return getStatus().substring(9);
     }
 
+    @SuppressWarnings("unchecked")
     public void checkSuccess() {
         int code = getStatusCode();
         if (code < 200 || code >= 300) {
