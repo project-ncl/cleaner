@@ -20,7 +20,6 @@ package org.jboss.pnc.cleaner.orchapi;
 import org.eclipse.microprofile.rest.client.annotation.ClientHeaderParam;
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.pnc.cleaner.auth.DefaultKeycloakServiceClient;
-import org.jboss.pnc.cleaner.orchapi.validation.exceptions.RepositoryViolationException;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
