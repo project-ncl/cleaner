@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.commonjava.indy.pkg.maven.model.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 
@@ -74,6 +75,7 @@ public class FailedBuildsCleaner {
 
     static {
         failedStatuses = new ArrayList<>(2);
+        failedStatuses.add(BuildCoordinationStatus.CANCELLED); // added for old data, now cancellation cleans up the Indy data
         failedStatuses.add(BuildCoordinationStatus.DONE_WITH_ERRORS);
         failedStatuses.add(BuildCoordinationStatus.SYSTEM_ERROR);
     }
@@ -160,8 +162,8 @@ public class FailedBuildsCleaner {
         } catch (IndyClientException e) {
             throw new RuntimeException("Error getting Maven group list from Indy: " + e.toString(), e);
         }
-        List<String> result = new ArrayList<>();
-        groups.stream().map(g -> g.getName()).filter(n -> pattern.matcher(n).matches()).forEach(n -> result.add(n));;
+        List<String> result = groups.stream().map(g -> g.getName()).filter(n -> pattern.matcher(n).matches())
+                .collect(Collectors.toList());
         return result;
     }
 
