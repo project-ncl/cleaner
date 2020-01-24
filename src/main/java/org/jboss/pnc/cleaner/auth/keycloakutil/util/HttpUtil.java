@@ -202,6 +202,7 @@ public class HttpUtil {
         return doRequest(authorization, request);
     }
 
+    @SuppressWarnings("unchecked")
     private static InputStream doRequest(String authorization, HttpRequestBase request) throws IOException {
         addAuth(request, authorization);
 
@@ -309,7 +310,7 @@ public class HttpUtil {
             throw new RuntimeException("Truststore file not found: " + file.getAbsolutePath());
         }
         SSLContext theContext = SSLContexts.custom()
-                .useProtocol("TLS")
+                .setProtocol("TLS")
                 .loadTrustMaterial(file, password == null ? null : password.toCharArray())
                 .build();
         sslsf = new SSLConnectionSocketFactory(theContext);
