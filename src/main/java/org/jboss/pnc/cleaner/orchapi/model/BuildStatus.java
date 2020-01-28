@@ -27,7 +27,7 @@ public enum BuildStatus {
     /**
      * Build completed successfully
      */
-    SUCCESS (true),
+    SUCCESS(true),
 
     /**
      * Build failed
@@ -37,12 +37,12 @@ public enum BuildStatus {
     /**
      * A build has been requested (possibly via dependencies) but no actual build happened as it was not required (no updates).
      */
-    NO_REBUILD_REQUIRED (true),
+    NO_REBUILD_REQUIRED(true),
 
     /**
      * Build completed with test failures
      */
-    UNSTABLE (true),
+    UNSTABLE(true),
 
     /**
      * Build currently running
@@ -67,11 +67,10 @@ public enum BuildStatus {
     /**
      * It is not known what the build status is at this time
      */
-    UNKNOWN, 
+    UNKNOWN,
 
     /**
-     * There have not been any builds of this configuration, essentially the same meaning
-     * as a null status
+     * There have not been any builds of this configuration, essentially the same meaning as a null status
      */
     NONE;
 

@@ -82,11 +82,7 @@ public class Page<T> {
 
     @Override
     public String toString() {
-        return "Page{" +
-                "pageIndex=" + pageIndex +
-                ", pageSize=" + pageSize +
-                ", totalPages=" + totalPages +
-                ", content=" + content +
-                '}';
+        return "Page{" + "pageIndex=" + pageIndex + ", pageSize=" + pageSize + ", totalPages=" + totalPages + ", content="
+                + content + '}';
     }
 }

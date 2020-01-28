@@ -28,9 +28,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Manages delete operation callbacks and provides a blocking was of waiting fot the operation completion.
- * First the wait operation must be initiated using a method #initializeHandler and then at any time
- * a blocking method #await can be called.
+ * Manages delete operation callbacks and provides a blocking was of waiting fot the operation completion. First the wait
+ * operation must be initiated using a method #initializeHandler and then at any time a blocking method #await can be called.
  *
  * @author Jakub Bartecek
  */
@@ -39,7 +38,8 @@ public class DeleteCallbackManager {
 
     private Map<Integer, CallbackData> buildsMap = new ConcurrentHashMap<>();
 
-    @ConfigProperty(name = "simpleCallbackHandler.max-delete-wait-time", defaultValue = "600")
+    @ConfigProperty(name = "simpleCallbackHandler.max-delete-wait-time",
+                    defaultValue = "600")
     long MAX_WAIT_TIME;
 
     /**
@@ -61,20 +61,17 @@ public class DeleteCallbackManager {
     /**
      * Registers a response to a delete operation completion
      *
-     * @param buildId  ID of a build, which deletion completed
+     * @param buildId ID of a build, which deletion completed
      * @param result Result of the operation
      */
-    public void callback(Integer buildId,
-                         DeleteOperationResult result) {
+    public void callback(Integer buildId, DeleteOperationResult result) {
         CallbackData callbackData = buildsMap.get(buildId);
         if (callbackData != null) {
             callbackData.setCallbackResponse(result);
-            callbackData
-                    .getCountDownLatch()
-                    .countDown();
+            callbackData.getCountDownLatch().countDown();
         } else {
-            log.warn("Delete operation callback called for a delete operation, which was not initialized. BuildId: " +
-                    "{}", buildId);
+            log.warn("Delete operation callback called for a delete operation, which was not initialized. BuildId: " + "{}",
+                     buildId);
         }
     }
 
@@ -88,13 +85,11 @@ public class DeleteCallbackManager {
     public DeleteOperationResult await(Integer buildId) throws InterruptedException {
         CallbackData callbackData = buildsMap.get(buildId);
         if (callbackData == null) {
-            throw new IllegalArgumentException("Await operation triggered for a build, which was not initiated using " +
-                    "method initializeHandler. This method must be called first!");
+            throw new IllegalArgumentException("Await operation triggered for a build, which was not initiated using "
+                    + "method initializeHandler. This method must be called first!");
         }
 
-        callbackData
-                .getCountDownLatch()
-                .await(MAX_WAIT_TIME, TimeUnit.SECONDS);
+        callbackData.getCountDownLatch().await(MAX_WAIT_TIME, TimeUnit.SECONDS);
         buildsMap.remove(buildId);
         return callbackData.getCallbackResponse();
     }

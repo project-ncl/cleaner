@@ -43,20 +43,20 @@ import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.SORTING_QUERY_PARAM
 public interface BuildConfigSetRecordEndpoint {
 
     default String[] getAccessToken() {
-        return new String[]{"Bearer " + DefaultKeycloakServiceClient.getAuthTokenStatic()};
+        return new String[] { "Bearer " + DefaultKeycloakServiceClient.getAuthTokenStatic() };
     }
 
     @DELETE
     @Path("/{id}")
-    @ClientHeaderParam(name = "Authorization", value = "{getAccessToken}")
-    Response delete(@PathParam("id") Integer id,
-                    @QueryParam("callback") String callbackUrl);
+    @ClientHeaderParam(name = "Authorization",
+                       value = "{getAccessToken}")
+    Response delete(@PathParam("id") Integer id, @QueryParam("callback") String callbackUrl);
 
     @GET
     @Path("/temporary-older-than-timestamp")
     Response getAllTemporaryOlderThanTimestamp(@QueryParam(PAGE_INDEX_QUERY_PARAM) int pageIndex,
-                                                                      @QueryParam(PAGE_SIZE_QUERY_PARAM) int pageSize,
-                                                                      @QueryParam(SORTING_QUERY_PARAM) String sort,
-                                                                      @QueryParam(QUERY_QUERY_PARAM) String q,
-                                                                      @QueryParam("timestamp") long timestamp);
+                                               @QueryParam(PAGE_SIZE_QUERY_PARAM) int pageSize,
+                                               @QueryParam(SORTING_QUERY_PARAM) String sort,
+                                               @QueryParam(QUERY_QUERY_PARAM) String q,
+                                               @QueryParam("timestamp") long timestamp);
 }

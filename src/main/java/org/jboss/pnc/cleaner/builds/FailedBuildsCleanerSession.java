@@ -21,7 +21,6 @@ public class FailedBuildsCleanerSession {
 
     private Instant to;
 
-
     public FailedBuildsCleanerSession(Indy indyClient, Instant to) {
         try {
             this.stores = indyClient.stores();

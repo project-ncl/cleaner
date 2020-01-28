@@ -40,7 +40,7 @@ import java.util.Set;
 public class TargetRepositoryRest {
 
     @Getter
-    @Setter(onMethod=@__({@Deprecated}))
+    @Setter(onMethod = @__({ @Deprecated }))
     private Integer id;
 
     /**

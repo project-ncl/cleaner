@@ -57,35 +57,31 @@ import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.SORTING_QUERY_PARAM
 public interface BuildRecordEndpoint {
 
     default String[] getAccessToken() {
-        return new String[]{"Bearer " + DefaultKeycloakServiceClient.getAuthTokenStatic()};
+        return new String[] { "Bearer " + DefaultKeycloakServiceClient.getAuthTokenStatic() };
     }
 
     @GET
-    BuildRecordPage getAll(
-            @QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
-            @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
-            @QueryParam(SORTING_QUERY_PARAM) String sort,
-            @QueryParam(QUERY_QUERY_PARAM) String q);
+    BuildRecordPage getAll(@QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
+                           @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
+                           @QueryParam(SORTING_QUERY_PARAM) String sort,
+                           @QueryParam(QUERY_QUERY_PARAM) String q);
 
     @GET
     @Path("/with-status-and-log")
-    List<BuildRecordRest> getAllByStatusAndLogContaining(
-            @QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
-            @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
-            @QueryParam(SORTING_QUERY_PARAM) String sort,
-            @QueryParam(QUERY_QUERY_PARAM) String q,
-            @QueryParam("status") BuildStatus status,
-            @QueryParam("search") String search);
+    List<BuildRecordRest> getAllByStatusAndLogContaining(@QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
+                                                         @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
+                                                         @QueryParam(SORTING_QUERY_PARAM) String sort,
+                                                         @QueryParam(QUERY_QUERY_PARAM) String q,
+                                                         @QueryParam("status") BuildStatus status,
+                                                         @QueryParam("search") String search);
 
     @GET
     @Path("/temporary-older-than-timestamp")
-    Response getAllTemporaryOlderThanTimestamp(
-            @QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
-            @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
-            @QueryParam(SORTING_QUERY_PARAM) String sort,
-            @QueryParam(QUERY_QUERY_PARAM) String q,
-            @QueryParam("timestamp") long timestamp);
-
+    Response getAllTemporaryOlderThanTimestamp(@QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
+                                               @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
+                                               @QueryParam(SORTING_QUERY_PARAM) String sort,
+                                               @QueryParam(QUERY_QUERY_PARAM) String q,
+                                               @QueryParam("timestamp") long timestamp);
 
     @GET
     @Path("/{id}")
@@ -93,9 +89,9 @@ public interface BuildRecordEndpoint {
 
     @DELETE
     @Path("/{id}")
-    @ClientHeaderParam(name = "Authorization", value = "{getAccessToken}")
-    Response delete(@PathParam("id") Integer id,
-                    @QueryParam("callback") String callbackUrl);
+    @ClientHeaderParam(name = "Authorization",
+                       value = "{getAccessToken}")
+    Response delete(@PathParam("id") Integer id, @QueryParam("callback") String callbackUrl);
 
     @GET
     @Path("/{id}/log")
@@ -110,39 +106,38 @@ public interface BuildRecordEndpoint {
     @GET
     @Path("/{id}/built-artifacts")
     ArtifactPage getBuiltArtifacts(@PathParam("id") Integer id,
-            @QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
-            @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
-            @QueryParam(SORTING_QUERY_PARAM) String sort,
-            @QueryParam(QUERY_QUERY_PARAM) String q);
+                                   @QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
+                                   @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
+                                   @QueryParam(SORTING_QUERY_PARAM) String sort,
+                                   @QueryParam(QUERY_QUERY_PARAM) String q);
 
     @PUT
     @Path("/{id}/built-artifacts")
-    void setArtifacts(@PathParam("id") Integer id,
-            List<Integer> artifactIds);
+    void setArtifacts(@PathParam("id") Integer id, List<Integer> artifactIds);
 
     @GET
     @Path("/{id}/dependency-artifacts")
     ArtifactPage getDependencyArtifacts(@PathParam("id") Integer id,
-            @QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
-            @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
-            @QueryParam(SORTING_QUERY_PARAM) String sort,
-            @QueryParam(QUERY_QUERY_PARAM) String q);
+                                        @QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
+                                        @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
+                                        @QueryParam(SORTING_QUERY_PARAM) String sort,
+                                        @QueryParam(QUERY_QUERY_PARAM) String q);
 
     @GET
     @Path("/projects/{projectId}")
     BuildRecordPage getAllForProject(@QueryParam("pageIndex") @DefaultValue("0") int pageIndex,
-            @DefaultValue("50") @QueryParam("pageSize") int pageSize,
-            @QueryParam("sort") String sortingRsql,
-            @PathParam("projectId") Integer projectId,
-            @QueryParam("q") String rsql);
+                                     @DefaultValue("50") @QueryParam("pageSize") int pageSize,
+                                     @QueryParam("sort") String sortingRsql,
+                                     @PathParam("projectId") Integer projectId,
+                                     @QueryParam("q") String rsql);
 
     @GET
     @Path("/build-configuration-or-project-name/{name}")
     BuildRecordPage getAllForProject(@QueryParam("pageIndex") @DefaultValue("0") int pageIndex,
-            @DefaultValue("50") @QueryParam("pageSize") int pageSize,
-            @QueryParam("sort") String sortingRsql,
-            @PathParam("name") String name,
-            @QueryParam("q") String rsql);
+                                     @DefaultValue("50") @QueryParam("pageSize") int pageSize,
+                                     @QueryParam("sort") String sortingRsql,
+                                     @PathParam("name") String name,
+                                     @QueryParam("q") String rsql);
 
     @GET
     @Path("/{id}/build-configuration-audited")
@@ -150,14 +145,11 @@ public interface BuildRecordEndpoint {
 
     @POST
     @Path("/{id}/put-attribute")
-    void putAttribute(@PathParam("id") Integer id,
-                              @QueryParam("key") String key,
-                              @QueryParam("value") String value);
+    void putAttribute(@PathParam("id") Integer id, @QueryParam("key") String key, @QueryParam("value") String value);
 
     @DELETE
     @Path("/{id}/remove-attribute")
-    void removeAttribute(@PathParam("id") Integer id,
-                              @QueryParam("key") String key);
+    void removeAttribute(@PathParam("id") Integer id, @QueryParam("key") String key);
 
     @GET
     @Path("/{id}/get-attributes")
@@ -165,12 +157,11 @@ public interface BuildRecordEndpoint {
 
     @GET
     @Path("/get-by-attribute")
-    BuildRecordPage queryByAttribute(
-            @QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
-            @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
-            @QueryParam(SORTING_QUERY_PARAM) String sort,
-            @QueryParam(QUERY_QUERY_PARAM) String q,
-            @QueryParam("key") String key,
-            @QueryParam("value") String value);
+    BuildRecordPage queryByAttribute(@QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
+                                     @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
+                                     @QueryParam(SORTING_QUERY_PARAM) String sort,
+                                     @QueryParam(QUERY_QUERY_PARAM) String q,
+                                     @QueryParam("key") String key,
+                                     @QueryParam("value") String value);
 
 }

@@ -86,8 +86,11 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         do {
             Response response;
             try {
-                response = buildRecordService.getAllTemporaryOlderThanTimestamp(currentPage, pageSize, null, null,
-                        expirationDate.getTime());
+                response = buildRecordService.getAllTemporaryOlderThanTimestamp(currentPage,
+                                                                                pageSize,
+                                                                                null,
+                                                                                null,
+                                                                                expirationDate.getTime());
             } catch (Exception e) {
                 log.warn("Querying of temporary builds from Orchestrator failed with exception", e);
                 return buildRecordRests;
@@ -105,7 +108,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                     return buildRecordRests;
                 default:
                     log.warn("Querying of temporary builds from Orchestrator failed with [status: {}, message: {}]",
-                            response.getStatus(), response.readEntity(String.class));
+                             response.getStatus(),
+                             response.readEntity(String.class));
                     return buildRecordRests;
             }
         } while (condition);
@@ -126,26 +130,29 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                     if (result != null && result.getStatus() != null && result.getStatus().isSuccess()) {
                         return;
                     } else {
-                        throw new OrchInteractionException(String.format("Deletion of a build %s failed! " +
-                                "Orchestrator" + " reported a failure: [status={}, message={}].",
-                                result == null ? null : result.getStatus(),
-                                result == null ? null : result.getMessage()));
+                        throw new OrchInteractionException(String.format("Deletion of a build %s failed! " + "Orchestrator"
+                                + " reported a failure: [status={}, message={}].",
+                                                                         result == null ? null : result.getStatus(),
+                                                                         result == null ? null : result.getMessage()));
                     }
                 } catch (InterruptedException e) {
                     buildDeleteCallbackManager.cancel(id);
-                    throw new OrchInteractionException(String.format("Deletion of a build %s failed! Wait operation " +
-                            "failed with an exception.", id), e);
+                    throw new OrchInteractionException(
+                            String.format("Deletion of a build %s failed! Wait operation " + "failed with an exception.", id),
+                            e);
                 }
 
             case 404:
                 buildDeleteCallbackManager.cancel(id);
-                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The build was not "
-                        + "found.", id));
+                throw new OrchInteractionException(
+                        String.format("Deletion of a build %s failed! The build was not " + "found.", id));
 
             default:
                 buildDeleteCallbackManager.cancel(id);
-                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The operation " +
-                        "failed" + " with status code %s.", id, deleteResponse.getStatus()));
+                throw new OrchInteractionException(
+                        String.format("Deletion of a build %s failed! The operation " + "failed" + " with status code %s.",
+                                      id,
+                                      deleteResponse.getStatus()));
         }
     }
 
@@ -161,8 +168,11 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
             Response response;
             try {
-                response = buildConfigSetRecordEndpoint.getAllTemporaryOlderThanTimestamp(currentPage, pageSize,
-                        null, null, expirationDate.getTime());
+                response = buildConfigSetRecordEndpoint.getAllTemporaryOlderThanTimestamp(currentPage,
+                                                                                          pageSize,
+                                                                                          null,
+                                                                                          null,
+                                                                                          expirationDate.getTime());
             } catch (Exception e) {
                 log.warn("Querying of temporary builds from Orchestrator failed with exception", e);
                 return buildConfigSetRecords;
@@ -170,8 +180,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
             switch (response.getStatus()) {
                 case 200:
-                    BuildConfigurationSetRecordPage buildConfigurationSetRecordPage = response.readEntity
-                            (BuildConfigurationSetRecordPage.class);
+                    BuildConfigurationSetRecordPage buildConfigurationSetRecordPage = response.readEntity(BuildConfigurationSetRecordPage.class);
                     buildConfigSetRecords.addAll(buildConfigurationSetRecordPage.getContent());
 
                     currentPage++;
@@ -181,10 +190,10 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                     return buildConfigSetRecords;
                 default:
                     log.warn("Querying of temporary build groups from Orchestrator failed with [status: {}, message: {}]",
-                            response.getStatus(), response.readEntity(String.class));
+                             response.getStatus(),
+                             response.readEntity(String.class));
                     return buildConfigSetRecords;
             }
-
 
         } while (condition);
 
@@ -204,26 +213,29 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                     if (result != null && result.getStatus() != null && result.getStatus().isSuccess()) {
                         return;
                     } else {
-                        throw new OrchInteractionException(String.format("Deletion of a build %s failed! " +
-                                        "Orchestrator" + " reported a failure: [status={}, message={}].",
-                                result == null ? null : result.getStatus(),
-                                result == null ? null : result.getMessage()));
+                        throw new OrchInteractionException(String.format("Deletion of a build %s failed! " + "Orchestrator"
+                                + " reported a failure: [status={}, message={}].",
+                                                                         result == null ? null : result.getStatus(),
+                                                                         result == null ? null : result.getMessage()));
                     }
                 } catch (InterruptedException e) {
                     buildGroupDeleteCallbackManager.cancel(id);
-                    throw new OrchInteractionException(String.format("Deletion of a build %s failed! Wait operation " +
-                            "failed with an exception.", id), e);
+                    throw new OrchInteractionException(
+                            String.format("Deletion of a build %s failed! Wait operation " + "failed with an exception.", id),
+                            e);
                 }
 
             case 404:
                 buildGroupDeleteCallbackManager.cancel(id);
-                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The build was not "
-                        + "found.", id));
+                throw new OrchInteractionException(
+                        String.format("Deletion of a build %s failed! The build was not " + "found.", id));
 
             default:
                 buildGroupDeleteCallbackManager.cancel(id);
-                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The operation " +
-                        "failed" + " with status code %s.", id, deleteResponse.getStatus()));
+                throw new OrchInteractionException(
+                        String.format("Deletion of a build %s failed! The operation " + "failed" + " with status code %s.",
+                                      id,
+                                      deleteResponse.getStatus()));
         }
     }
 }
