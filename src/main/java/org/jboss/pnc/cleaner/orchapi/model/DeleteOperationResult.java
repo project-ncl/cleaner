@@ -20,7 +20,6 @@ package org.jboss.pnc.cleaner.orchapi.model;
 import lombok.Data;
 import org.jboss.pnc.spi.coordinator.Result;
 
-
 /**
  * @author Jakub Bartecek
  */

@@ -15,8 +15,7 @@ public class AppInfo {
 
         appProperties = new Properties();
 
-        InputStream inputStream = AppInfo.class
-			.getClassLoader().getResourceAsStream("git.properties");
+        InputStream inputStream = AppInfo.class.getClassLoader().getResourceAsStream("git.properties");
 
         try {
             appProperties.load(inputStream);

@@ -78,7 +78,6 @@ public class ArtifactRest {
     @Setter
     private String deployUrl;
 
-
     /**
      * Public url to the artifact using public network domain
      */
@@ -190,22 +189,11 @@ public class ArtifactRest {
 
     @Override
     public String toString() {
-        return "ArtifactRest{" +
-                "id=" + id +
-                ", identifier='" + identifier + '\'' +
-                ", artifactQuality=" + artifactQuality +
-                ", targetRepository=" + targetRepository.toString() +
-                ", md5='" + md5 + '\'' +
-                ", sha1='" + sha1 + '\'' +
-                ", sha256='" + sha256 + '\'' +
-                ", filename='" + filename + '\'' +
-                ", deployPath='" + deployPath + '\'' +
-                ", buildRecordIds=" + buildRecordIds +
-                ", dependantBuildRecordIds=" + dependantBuildRecordIds +
-                ", importDate=" + importDate +
-                ", originUrl='" + originUrl + '\'' +
-                ", deployUrl='" + deployUrl + '\'' +
-                ", publicUrl='" + publicUrl + '\'' +
-                '}';
+        return "ArtifactRest{" + "id=" + id + ", identifier='" + identifier + '\'' + ", artifactQuality=" + artifactQuality
+                + ", targetRepository=" + targetRepository.toString() + ", md5='" + md5 + '\'' + ", sha1='" + sha1 + '\''
+                + ", sha256='" + sha256 + '\'' + ", filename='" + filename + '\'' + ", deployPath='" + deployPath + '\''
+                + ", buildRecordIds=" + buildRecordIds + ", dependantBuildRecordIds=" + dependantBuildRecordIds
+                + ", importDate=" + importDate + ", originUrl='" + originUrl + '\'' + ", deployUrl='" + deployUrl + '\''
+                + ", publicUrl='" + publicUrl + '\'' + '}';
     }
 }

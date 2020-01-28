@@ -65,8 +65,7 @@ public class OrchInteractionException extends Exception {
         super(message);
     }
 
-    public OrchInteractionException(String message,
-                                    Throwable cause) {
+    public OrchInteractionException(String message, Throwable cause) {
         super(message, cause);
     }
 

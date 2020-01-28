@@ -59,26 +59,22 @@ public class DefaultKeycloakServiceClient implements KeycloakServiceClient {
     }
 
     /**
-     * A static method providing functionality to get authentication token for static methods
-     * using manual CDI lookup of the KeycloakServiceClient bean
+     * A static method providing functionality to get authentication token for static methods using manual CDI lookup of the
+     * KeycloakServiceClient bean
      *
      * @return A valid token
      */
     public static String getAuthTokenStatic() {
-        KeycloakServiceClient serviceClient = CDI
-                .current().select(KeycloakServiceClient.class).get();
+        KeycloakServiceClient serviceClient = CDI.current().select(KeycloakServiceClient.class).get();
         return serviceClient.getAuthToken();
     }
 
     @Override
     public String getAuthToken() {
         if (keycloakToken == null || refreshRequired()) {
-            logger.debug("Requesting new service account auth token using values:\n"
-                    + "authServerUrl {}\n"
-                    + "realm {}\n"
-                    + "resource {}\n"
-                    + "secret {}\n"
-                    + "sslRequired {}",
+            logger.debug(
+                    "Requesting new service account auth token using values:\n" + "authServerUrl {}\n" + "realm {}\n"
+                            + "resource {}\n" + "secret {}\n" + "sslRequired {}",
                     authServerUrl, realm, resource, secret.replaceAll(".", "*"), sslRequired);
             keycloakToken = KeycloakClient.getAuthTokensBySecret(authServerUrl, realm, resource, secret, sslRequired);
             expiresAt = Instant.now().plus(keycloakToken.getExpiresIn(), ChronoUnit.SECONDS);

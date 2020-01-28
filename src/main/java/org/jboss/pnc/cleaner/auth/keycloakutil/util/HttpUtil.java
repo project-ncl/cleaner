@@ -113,7 +113,6 @@ public class HttpUtil {
         }
     }
 
-
     public static HeadersBodyStatus doGet(String url, HeadersBody request) throws IOException {
         return doRequest("get", url, request);
     }
@@ -170,7 +169,7 @@ public class HttpUtil {
         } else {
             responseStream = new InputStream() {
                 @Override
-                public int read () throws IOException {
+                public int read() throws IOException {
                     return -1;
                 }
             };
@@ -187,12 +186,13 @@ public class HttpUtil {
     }
 
     private static void addHeaders(HttpRequestBase request, Headers headers) {
-        for (Header header: headers) {
+        for (Header header : headers) {
             request.setHeader(header.getName(), header.getValue());
         }
     }
 
-    private static InputStream doPostOrPut(String contentType, String acceptType, String content, String authorization, HttpEntityEnclosingRequestBase request) throws IOException {
+    private static InputStream doPostOrPut(String contentType, String acceptType, String content, String authorization,
+            HttpEntityEnclosingRequestBase request) throws IOException {
         request.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
         request.setHeader(HttpHeaders.ACCEPT, acceptType);
         if (content != null) {
@@ -232,7 +232,8 @@ public class HttpUtil {
             if (error != null) {
                 message = error.get("error_description") + " [" + error.get("error") + "]";
             }
-            throw new RuntimeException(message != null ? message : response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
+            throw new RuntimeException(message != null ? message
+                    : response.getStatusLine().getStatusCode() + " " + response.getStatusLine().getReasonPhrase());
         }
     }
 
@@ -292,9 +293,9 @@ public class HttpUtil {
     }
 
     /**
-     * Sets flag telling if SSL hostname validation should be done which also clears the cached httpClient. This method
-     * is not thread-safe and could cause race conditions if the class is used with different settings at the same
-     * time, but that is not expected.
+     * Sets flag telling if SSL hostname validation should be done which also clears the cached httpClient. This method is not
+     * thread-safe and could cause race conditions if the class is used with different settings at the same time, but that is
+     * not expected.
      *
      * @param sslRequired the desired value
      */
@@ -305,14 +306,13 @@ public class HttpUtil {
         }
     }
 
-    public static void setTruststore(File file, String password) throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, KeyManagementException {
+    public static void setTruststore(File file, String password)
+            throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, KeyManagementException {
         if (!file.isFile()) {
             throw new RuntimeException("Truststore file not found: " + file.getAbsolutePath());
         }
-        SSLContext theContext = SSLContexts.custom()
-                .setProtocol("TLS")
-                .loadTrustMaterial(file, password == null ? null : password.toCharArray())
-                .build();
+        SSLContext theContext = SSLContexts.custom().setProtocol("TLS")
+                .loadTrustMaterial(file, password == null ? null : password.toCharArray()).build();
         sslsf = new SSLConnectionSocketFactory(theContext);
     }
 
@@ -324,18 +324,18 @@ public class HttpUtil {
         return null;
     }
 
-    public static String addQueryParamsToUri(String uri, String ... queryParams) {
+    public static String addQueryParamsToUri(String uri, String... queryParams) {
         if (queryParams == null) {
             return uri;
         }
 
         if (queryParams.length % 2 != 0) {
-            throw new RuntimeException("Value missing for query parameter: " + queryParams[queryParams.length-1]);
+            throw new RuntimeException("Value missing for query parameter: " + queryParams[queryParams.length - 1]);
         }
 
         Map<String, String> params = new LinkedHashMap<>();
         for (int i = 0; i < queryParams.length; i += 2) {
-            params.put(queryParams[i], queryParams[i+1]);
+            params.put(queryParams[i], queryParams[i + 1]);
         }
         return addQueryParamsToUri(uri, params);
     }
@@ -347,7 +347,7 @@ public class HttpUtil {
         }
 
         StringBuilder query = new StringBuilder();
-        for (Map.Entry<String, String> params: queryParams.entrySet()) {
+        for (Map.Entry<String, String> params : queryParams.entrySet()) {
             try {
                 if (query.length() > 0) {
                     query.append("&");
@@ -366,7 +366,7 @@ public class HttpUtil {
             if ("realms".equals(uri) || uri.startsWith("realms/")) {
                 uri = normalize(adminRoot) + uri;
             } else if ("serverinfo".equals(uri)) {
-                    uri = normalize(adminRoot) + uri;
+                uri = normalize(adminRoot) + uri;
             } else {
                 uri = normalize(adminRoot) + "realms/" + realm + "/" + uri;
             }
@@ -466,12 +466,14 @@ public class HttpUtil {
         checkSuccess(resourceUrl, response);
     }
 
-    public static String getIdForType(String rootUrl, String realm, String auth, String resourceEndpoint, String attrName, String attrValue) {
+    public static String getIdForType(String rootUrl, String realm, String auth, String resourceEndpoint, String attrName,
+            String attrValue) {
 
         return getAttrForType(rootUrl, realm, auth, resourceEndpoint, attrName, attrValue, "id");
     }
 
-    public static String getAttrForType(String rootUrl, String realm, String auth, String resourceEndpoint, String attrName, String attrValue, String returnAttrName) {
+    public static String getAttrForType(String rootUrl, String realm, String auth, String resourceEndpoint, String attrName,
+            String attrValue, String returnAttrName) {
 
         String resourceUrl = composeResourceUrl(rootUrl, realm, resourceEndpoint);
         resourceUrl = HttpUtil.addQueryParamsToUri(resourceUrl, attrName, attrValue, "first", "0", "max", "2");
@@ -497,8 +499,7 @@ public class HttpUtil {
         return attr.asText();
     }
 
-
     public static String singularize(String value) {
-        return value.substring(0, value.length()-1);
+        return value.substring(0, value.length() - 1);
     }
 }

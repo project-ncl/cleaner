@@ -49,7 +49,7 @@ public class BuildConfigSetRecordRest {
     private Set<Integer> buildRecordIds;
 
     @Getter
-    @Setter(onMethod = @__({@Deprecated}))
+    @Setter(onMethod = @__({ @Deprecated }))
     private Boolean temporaryBuild;
 
     public BuildConfigSetRecordRest() {

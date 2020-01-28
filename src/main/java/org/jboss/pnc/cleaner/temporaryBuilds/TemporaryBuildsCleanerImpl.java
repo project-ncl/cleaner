@@ -47,8 +47,8 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
 
     @Override
     public void cleanupExpiredTemporaryBuilds() {
-        log.info("Regular cleanup of expired temporary builds started. Removing builds older than " +
-                TEMPORARY_BUILD_LIFESPAN + " days.");
+        log.info("Regular cleanup of expired temporary builds started. Removing builds older than " + TEMPORARY_BUILD_LIFESPAN
+                + " days.");
         Date expirationThreshold = TimeUtils.getDateXDaysAgo(TEMPORARY_BUILD_LIFESPAN);
 
         deleteExpiredBuildConfigSetRecords(expirationThreshold);
@@ -73,8 +73,8 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
     }
 
     void deleteExpiredBuildRecords(Date expirationThreshold) {
-        Collection<BuildRecordRest> expiredBuilds = temporaryBuildsCleanerAdapter.findTemporaryBuildsOlderThan
-                (expirationThreshold);
+        Collection<BuildRecordRest> expiredBuilds = temporaryBuildsCleanerAdapter
+                .findTemporaryBuildsOlderThan(expirationThreshold);
 
         for (BuildRecordRest buildRecord : expiredBuilds) {
             try {

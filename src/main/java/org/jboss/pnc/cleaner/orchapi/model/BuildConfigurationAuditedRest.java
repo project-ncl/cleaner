@@ -62,7 +62,7 @@ public class BuildConfigurationAuditedRest {
 
     @Getter
     @Setter
-    private Map<String, String> genericParameters ;
+    private Map<String, String> genericParameters;
 
     public BuildConfigurationAuditedRest() {
     }

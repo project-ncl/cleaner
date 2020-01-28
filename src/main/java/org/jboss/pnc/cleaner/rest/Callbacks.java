@@ -44,22 +44,17 @@ public class Callbacks {
     @Path("/build-record-delete/{buildId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    public Response buildRecordDeleteCallback(@PathParam("buildId") String buildId,
-                                              DeleteOperationResult deleteOperation) {
+    public Response buildRecordDeleteCallback(@PathParam("buildId") String buildId, DeleteOperationResult deleteOperation) {
         buildDeleteCallbackManager.callback(Integer.parseInt(buildId), deleteOperation);
-        return Response
-                .ok()
-                .build();
+        return Response.ok().build();
     }
 
     @Path("/build-group-record-delete/{buildId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response buildGroupRecordDeleteCallback(@PathParam("buildId") String buildId,
-                                              DeleteOperationResult deleteOperation) {
+            DeleteOperationResult deleteOperation) {
         buildGroupDeleteCallbackManager.callback(Integer.parseInt(buildId), deleteOperation);
-        return Response
-                .ok()
-                .build();
+        return Response.ok().build();
     }
 }

@@ -45,11 +45,9 @@ import static org.jboss.pnc.cleaner.orchapi.SwaggerConstants.SORTING_QUERY_PARAM
 public interface BuildEndpoint {
 
     @GET
-    public BuildRecordPage getAll(
-            @QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
+    public BuildRecordPage getAll(@QueryParam(PAGE_INDEX_QUERY_PARAM) @DefaultValue(PAGE_INDEX_DEFAULT_VALUE) int pageIndex,
             @QueryParam(PAGE_SIZE_QUERY_PARAM) @DefaultValue(PAGE_SIZE_DEFAULT_VALUE) int pageSize,
-            @QueryParam(SORTING_QUERY_PARAM) String sort,
-            @QueryParam(QUERY_QUERY_PARAM) String q,
+            @QueryParam(SORTING_QUERY_PARAM) String sort, @QueryParam(QUERY_QUERY_PARAM) String q,
             @QueryParam("orFindByBuildConfigurationName") String orFindByBuildConfigurationName,
             @QueryParam("andFindByBuildConfigurationName") String andFindByBuildConfigurationName);
 
@@ -57,12 +55,12 @@ public interface BuildEndpoint {
     @Path("/{id}")
     public BuildRecordSingleton getSpecific(@PathParam("id") Integer id);
 
-//    @GET
-//    @Path("/ssh-credentials/{id}")
-//    public SshCredentialsSingleton getSshCredentials(Integer id);
+    // @GET
+    // @Path("/ssh-credentials/{id}")
+    // public SshCredentialsSingleton getSshCredentials(Integer id);
 
-//    @POST
-//    @Path("/{id}/cancel")
-//    public void cancel(Integer buildTaskId);
+    // @POST
+    // @Path("/{id}/cancel")
+    // public void cancel(Integer buildTaskId);
 
 }

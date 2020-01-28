@@ -60,14 +60,12 @@ class FailedBuildsCleanerTest {
 
     private static final String BUILD_RECORDS_NOT_FAILED_FILE = "buildRecordsNotFailed.json";
 
-
     private WireMockServer orchWireMockServer = new WireMockServer(options().port(8082));
 
     private WireMockServer indyWireMockServer = new WireMockServer(options().port(8083));
 
     @Inject
     private FailedBuildsCleaner failedBuildsCleaner;
-
 
     @BeforeEach
     public void beforeEach() {
@@ -81,25 +79,20 @@ class FailedBuildsCleanerTest {
         orchWireMockServer.stop();
     }
 
-
     /**
-     * Tests parsing of build group names from the list of all maven groups that are usually in Indy.
-     * It contains 1 old format ("build_&lt;some string&gt;") build group and 2 new format
-     * ("build-&lt;number&gt;"). Then checks if the resulting list contains 3 entries and if the
-     * expected names are in there.
+     * Tests parsing of build group names from the list of all maven groups that are usually in Indy. It contains 1 old format
+     * ("build_&lt;some string&gt;") build group and 2 new format ("build-&lt;number&gt;"). Then checks if the resulting list
+     * contains 3 entries and if the expected names are in there.
      */
     @Test
     public void getGroupNamesOk() {
-        indyWireMockServer.stubFor(get(urlMatching(INDY_STORE_MAVEN_GROUP)).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(INDY_MAVEN_GROUPS_FILE)));
+        indyWireMockServer.stubFor(get(urlMatching(INDY_STORE_MAVEN_GROUP)).willReturn(aResponse().withStatus(200)
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).withBodyFile(INDY_MAVEN_GROUPS_FILE)));
 
         // limit nor auth token is not important for getting group names
         Instant limit = Instant.now();
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
-
 
         List<String> groupNames = failedBuildsCleaner.getGroupNames(session);
 
@@ -110,21 +103,19 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests parsing of build group names from the list containing only maven groups that are
-     * usually in Indy with no build groups. Then checks, if the resulting list is empty.
+     * Tests parsing of build group names from the list containing only maven groups that are usually in Indy with no build
+     * groups. Then checks, if the resulting list is empty.
      */
     @Test
     public void getGroupNamesNoBuildGroup() {
-        indyWireMockServer.stubFor(get(urlMatching(INDY_STORE_MAVEN_GROUP)).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(INDY_MAVEN_GROUPS_NO_BUILD_GROUP_FILE)));
+        indyWireMockServer.stubFor(get(urlMatching(INDY_STORE_MAVEN_GROUP))
+                .willReturn(aResponse().withStatus(200).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBodyFile(INDY_MAVEN_GROUPS_NO_BUILD_GROUP_FILE)));
 
         // limit nor auth token is not important for getting group names
         Instant limit = Instant.now();
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
-
 
         List<String> groupNames = failedBuildsCleaner.getGroupNames(session);
 
@@ -132,15 +123,14 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed
-     * build that ended before the limit timestamp and expects it should be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build that ended before the
+     * limit timestamp and expects it should be cleaned.
      */
     @Test
     public void shouldCleanOk() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(BUILD_RECORDS_FAILED_FILE)));
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000"))
+                .willReturn(aResponse().withStatus(200).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBodyFile(BUILD_RECORDS_FAILED_FILE)));
 
         // limit is set to be after the build record end time
         Instant limit = Instant.ofEpochMilli(1573174847816L);
@@ -154,19 +144,18 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed
-     * build that ended before the limit timestamp but it is missing a build content ID, so it
-     * should be found by parsed numeric ID and expects it should be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build that ended before the
+     * limit timestamp but it is missing a build content ID, so it should be found by parsed numeric ID and expects it should be
+     * cleaned.
      */
     @Test
     public void shouldCleanNoContentId() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
-                .withStatus(204)));
+        orchWireMockServer.stubFor(
+                get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse().withStatus(204)));
 
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "/36000")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(BUILD_RECORD_FAILED_NO_CONTENTID_FILE)));
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "/36000"))
+                .willReturn(aResponse().withStatus(200).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBodyFile(BUILD_RECORD_FAILED_NO_CONTENTID_FILE)));
 
         // limit is set to be after the build record end time
         Instant limit = Instant.ofEpochMilli(1573174847816L);
@@ -180,19 +169,18 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed
-     * build that ended after the limit timestamp but it is missing a build content ID, so it
-     * should be found by parsed numeric ID and expects it should NOT be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build that ended after the
+     * limit timestamp but it is missing a build content ID, so it should be found by parsed numeric ID and expects it should
+     * NOT be cleaned.
      */
     @Test
     public void shouldCleanNoContentIdTooYoung() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
-                .withStatus(204)));
+        orchWireMockServer.stubFor(
+                get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse().withStatus(204)));
 
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "/36000")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(BUILD_RECORD_FAILED_NO_CONTENTID_FILE)));
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "/36000"))
+                .willReturn(aResponse().withStatus(200).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBodyFile(BUILD_RECORD_FAILED_NO_CONTENTID_FILE)));
 
         // limit is set to be before the build record end time
         Instant limit = Instant.ofEpochMilli(1573174447816L);
@@ -206,16 +194,15 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a
-     * non-existing build and expects it should be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a non-existing build and expects it
+     * should be cleaned.
      */
     @Test
     public void shouldCleanNotFound() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36002")).willReturn(aResponse()
-                .withStatus(204)));
+        orchWireMockServer.stubFor(
+                get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36002")).willReturn(aResponse().withStatus(204)));
 
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "/36002")).willReturn(aResponse()
-                .withStatus(404)));
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "/36002")).willReturn(aResponse().withStatus(404)));
 
         // limit is set to be after the build record end time
         Instant limit = Instant.ofEpochMilli(1573174847816L);
@@ -229,15 +216,14 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a
-     * running build without an endTime value and expects it should NOT be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a running build without an endTime
+     * value and expects it should NOT be cleaned.
      */
     @Test
     public void shouldCleanBuilding() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36735")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(BUILD_RECORDS_BUILDING_FILE)));
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36735"))
+                .willReturn(aResponse().withStatus(200).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBodyFile(BUILD_RECORDS_BUILDING_FILE)));
 
         // limit is set to be 6.6 days before the build start time
         Instant limit = Instant.ofEpochMilli(1573756869934L);
@@ -251,15 +237,14 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a
-     * successful build which is old enough and expects it should NOT be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a successful build which is old
+     * enough and expects it should NOT be cleaned.
      */
     @Test
     public void shouldCleanNotFailed() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36001")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(BUILD_RECORDS_NOT_FAILED_FILE)));
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36001"))
+                .willReturn(aResponse().withStatus(200).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBodyFile(BUILD_RECORDS_NOT_FAILED_FILE)));
 
         // limit is set to be after the build record end time
         Instant limit = Instant.ofEpochMilli(1573175914256L);
@@ -273,15 +258,14 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a
-     * failed build which is too young to be cleaned and expects it should NOT be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build which is too young to
+     * be cleaned and expects it should NOT be cleaned.
      */
     @Test
     public void shouldCleanTooYoung() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(BUILD_RECORDS_FAILED_FILE)));
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000"))
+                .willReturn(aResponse().withStatus(200).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBodyFile(BUILD_RECORDS_FAILED_FILE)));
 
         // limit is set to be before the build record end time
         Instant limit = Instant.ofEpochMilli(1573174447816L);
@@ -295,16 +279,14 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests finding of build-related generic-http repositories. It reads a list of generic-http
-     * groups which contains 3 groups matching the requested build content id. It expects to get
-     * those 3 groups in the result along with the respective remote and hosted repositories.
+     * Tests finding of build-related generic-http repositories. It reads a list of generic-http groups which contains 3 groups
+     * matching the requested build content id. It expects to get those 3 groups in the result along with the respective remote
+     * and hosted repositories.
      */
     @Test
     public void findGenericReposOk() {
-        indyWireMockServer.stubFor(get(urlMatching(INDY_STORE_GENERIC_GROUP)).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(INDY_GENERIC_GROUPS_FILE)));
+        indyWireMockServer.stubFor(get(urlMatching(INDY_STORE_GENERIC_GROUP)).willReturn(aResponse().withStatus(200)
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).withBodyFile(INDY_GENERIC_GROUPS_FILE)));
 
         // limit nor auth token is not important for getting group names
         Instant limit = Instant.now();
@@ -326,22 +308,19 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests finding of build-related generic-http repositories. It reads a list of generic-http
-     * groups which contains 1 group matching the requested build content id in old format. It
-     * expects to get the group in the result along with its remote and hosted repository.
+     * Tests finding of build-related generic-http repositories. It reads a list of generic-http groups which contains 1 group
+     * matching the requested build content id in old format. It expects to get the group in the result along with its remote
+     * and hosted repository.
      */
     @Test
     public void findGenericReposOldContentId() {
-        indyWireMockServer.stubFor(get(urlMatching(INDY_STORE_GENERIC_GROUP)).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(INDY_GENERIC_GROUPS_FILE)));
+        indyWireMockServer.stubFor(get(urlMatching(INDY_STORE_GENERIC_GROUP)).willReturn(aResponse().withStatus(200)
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).withBodyFile(INDY_GENERIC_GROUPS_FILE)));
 
         // limit nor auth token is not important for getting group names
         Instant limit = Instant.now();
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
-
 
         List<StoreKey> groupNames = failedBuildsCleaner
                 .findGenericRepos("build_org-keycloak-keycloak-connect-4-x_20181109.2045", session);
@@ -356,22 +335,18 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests finding of build-related generic-http repositories. It reads a list of generic-http
-     * groups which does not contain any groups matching the requested build content id. It
-     * expects to get an empty list back.
+     * Tests finding of build-related generic-http repositories. It reads a list of generic-http groups which does not contain
+     * any groups matching the requested build content id. It expects to get an empty list back.
      */
     @Test
     public void findGenericReposNoGroups() {
-        indyWireMockServer.stubFor(get(urlMatching(INDY_STORE_GENERIC_GROUP)).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(INDY_GENERIC_GROUPS_FILE)));
+        indyWireMockServer.stubFor(get(urlMatching(INDY_STORE_GENERIC_GROUP)).willReturn(aResponse().withStatus(200)
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).withBodyFile(INDY_GENERIC_GROUPS_FILE)));
 
         // limit nor auth token is not important for getting group names
         Instant limit = Instant.now();
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
-
 
         List<StoreKey> groupNames = failedBuildsCleaner.findGenericRepos("build-23014", session);
 
@@ -379,31 +354,24 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the whole cleanup logic for 1 build. The build failed and is old enough. It does not
-     * have any generic repos and expects that delete for build group, hosted repo and tracking
-     * report were called.
+     * Tests the whole cleanup logic for 1 build. The build failed and is old enough. It does not have any generic repos and
+     * expects that delete for build group, hosted repo and tracking report were called.
      */
     @Test
     public void cleanBuildIfNeededOk() {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(BUILD_RECORDS_FAILED_FILE)));
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000"))
+                .willReturn(aResponse().withStatus(200).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                        .withBodyFile(BUILD_RECORDS_FAILED_FILE)));
 
-        indyWireMockServer.stubFor(get(INDY_STORE_GENERIC_GROUP).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(INDY_GENERIC_GROUPS_FILE)));
+        indyWireMockServer.stubFor(get(INDY_STORE_GENERIC_GROUP).willReturn(aResponse().withStatus(200)
+                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON).withBodyFile(INDY_GENERIC_GROUPS_FILE)));
 
-        indyWireMockServer.stubFor(head(urlMatching(INDY_STORE_MAVEN_GROUP + "/.*")).willReturn(aResponse()
-                .withStatus(200)));
-        indyWireMockServer.stubFor(head(urlMatching(INDY_STORE_MAVEN_HOSTED + "/.*")).willReturn(aResponse()
-                .withStatus(200)));
+        indyWireMockServer.stubFor(head(urlMatching(INDY_STORE_MAVEN_GROUP + "/.*")).willReturn(aResponse().withStatus(200)));
+        indyWireMockServer.stubFor(head(urlMatching(INDY_STORE_MAVEN_HOSTED + "/.*")).willReturn(aResponse().withStatus(200)));
 
-        indyWireMockServer.stubFor(delete(urlMatching(INDY_STORE_ENDPOINT + "/.*")).willReturn(aResponse()
-                .withStatus(204)));
-        indyWireMockServer.stubFor(delete(INDY_FOLO_ADMIN_ENDPOINT + "/build-36000/record").willReturn(aResponse()
-                .withStatus(204)));
+        indyWireMockServer.stubFor(delete(urlMatching(INDY_STORE_ENDPOINT + "/.*")).willReturn(aResponse().withStatus(204)));
+        indyWireMockServer
+                .stubFor(delete(INDY_FOLO_ADMIN_ENDPOINT + "/build-36000/record").willReturn(aResponse().withStatus(204)));
 
         // limit is set to be after the build record end time
         Instant limit = Instant.ofEpochMilli(1573174847816L);

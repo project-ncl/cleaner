@@ -58,7 +58,6 @@ public class BuildEnvironmentRest {
         this.systemImageType = systemImageType;
     }
 
-
     public String getName() {
         return name;
     }
