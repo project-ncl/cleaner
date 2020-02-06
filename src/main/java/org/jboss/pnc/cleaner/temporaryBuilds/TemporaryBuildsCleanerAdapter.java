@@ -17,9 +17,8 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
-import org.jboss.pnc.cleaner.orchapi.model.BuildConfigSetRecordRest;
-import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
-import org.jboss.pnc.cleaner.orchapi.validation.exceptions.RepositoryViolationException;
+import org.jboss.pnc.dto.Build;
+import org.jboss.pnc.dto.GroupBuild;
 
 import java.util.Collection;
 import java.util.Date;
@@ -37,15 +36,15 @@ public interface TemporaryBuildsCleanerAdapter {
      * @param expirationDate Timestamp defining expiration date of temporary builds
      * @return List of expired builds
      */
-    Collection<BuildRecordRest> findTemporaryBuildsOlderThan(Date expirationDate);
+    Collection<Build> findTemporaryBuildsOlderThan(Date expirationDate);
 
     /**
      * Deletes a temporary build and waits for the operation completion. The method is blocking.
      *
      * @param id ID of a temporary build, which is meant to be deleted
-     * @throws RepositoryViolationException Thrown if deletion fails with an error
+     * @throws OrchInteractionException Thrown if deletion fails with an error
      */
-    void deleteTemporaryBuild(Integer id) throws OrchInteractionException;
+    void deleteTemporaryBuild(String id) throws OrchInteractionException;
 
     /**
      * Finds all temporary BuildConfigSetRecords, which are older than a timestamp set by the expirationDate parameter
@@ -53,13 +52,13 @@ public interface TemporaryBuildsCleanerAdapter {
      * @param expirationDate Timestamp defining expiration date of BuildConfigSetRecords
      * @return List of expired BuildConfigSetRecords
      */
-    Collection<BuildConfigSetRecordRest> findTemporaryBuildConfigSetRecordsOlderThan(Date expirationDate);
+    Collection<GroupBuild> findTemporaryBuildConfigSetRecordsOlderThan(Date expirationDate);
 
     /**
      * Deletes a temporary BuildConfigSetRecord
      *
      * @param id ID of a temporary BuildConfigSetRecord, which is meant to be deleted
-     * @throws RepositoryViolationException Thrown if deletion fails with an error
+     * @throws OrchInteractionException Thrown if deletion fails with an error
      */
-    void deleteTemporaryBuildConfigSetRecord(Integer id) throws OrchInteractionException;
+    void deleteTemporaryBuildConfigSetRecord(String id) throws OrchInteractionException;
 }
