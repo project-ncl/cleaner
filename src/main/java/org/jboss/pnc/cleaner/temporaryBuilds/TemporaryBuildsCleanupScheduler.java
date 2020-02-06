@@ -18,7 +18,6 @@
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import io.quarkus.scheduler.Scheduled;
-import org.jboss.pnc.spi.exception.ValidationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +41,7 @@ public class TemporaryBuildsCleanupScheduler {
      * Schedules cleanup of old temporary builds
      */
     @Scheduled(cron = "{temporaryBuildsCleaner.cron}")
-    public void cleanupExpiredTemporaryBuilds() throws ValidationException {
+    public void cleanupExpiredTemporaryBuilds() {
         log.info("Regular deletion of temporary builds triggered by clock.");
         temporaryBuildsCleanupScheduleWorker.cleanupExpiredTemporaryBuilds();
         log.info("Regular deletion of temporary builds successfully finished.");
