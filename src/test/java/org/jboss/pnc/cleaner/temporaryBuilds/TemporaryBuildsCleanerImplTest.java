@@ -21,10 +21,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.matching.EqualToPattern;
 import io.quarkus.test.junit.QuarkusTest;
-import org.jboss.pnc.cleaner.orchapi.model.DeleteOperationResult;
 import org.jboss.pnc.common.util.HttpUtils;
 import org.jboss.pnc.common.util.TimeUtils;
-import org.jboss.pnc.spi.coordinator.Result;
+import org.jboss.pnc.dto.DeleteOperationResult;
+import org.jboss.pnc.enums.ResultStatus;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -136,7 +136,7 @@ public class TemporaryBuildsCleanerImplTest {
     private void performCallback(String callbackUrl) throws JsonProcessingException {
         DeleteOperationResult deleteOperationResult = new DeleteOperationResult();
         deleteOperationResult.setId("100");
-        deleteOperationResult.setStatus(Result.Status.SUCCESS);
+        deleteOperationResult.setStatus(ResultStatus.SUCCESS);
         deleteOperationResult.setMessage("Build 100 was deleted successfully!");
 
         HttpUtils.performHttpPostRequest(callbackUrl, deleteOperationResult);

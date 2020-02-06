@@ -18,9 +18,9 @@
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.pnc.cleaner.orchapi.model.BuildConfigSetRecordRest;
-import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
 import org.jboss.pnc.common.util.TimeUtils;
+import org.jboss.pnc.dto.Build;
+import org.jboss.pnc.dto.GroupBuild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,31 +58,31 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
     }
 
     void deleteExpiredBuildConfigSetRecords(Date expirationThreshold) {
-        Collection<BuildConfigSetRecordRest> expiredBCSRecords = temporaryBuildsCleanerAdapter
+        Collection<GroupBuild> expiredBCSRecords = temporaryBuildsCleanerAdapter
                 .findTemporaryBuildConfigSetRecordsOlderThan(expirationThreshold);
 
-        for (BuildConfigSetRecordRest buildSetRecord : expiredBCSRecords) {
+        for (GroupBuild groupBuild : expiredBCSRecords) {
             try {
-                log.info("Deleting temporary BuildConfigSetRecord {}", buildSetRecord);
-                temporaryBuildsCleanerAdapter.deleteTemporaryBuildConfigSetRecord(buildSetRecord.getId());
-                log.info("Temporary BuildConfigSetRecord {} was deleted successfully", buildSetRecord);
+                log.info("Deleting temporary BuildConfigSetRecord {}", groupBuild);
+                temporaryBuildsCleanerAdapter.deleteTemporaryBuildConfigSetRecord(groupBuild.getId());
+                log.info("Temporary BuildConfigSetRecord {} was deleted successfully", groupBuild);
             } catch (OrchInteractionException ex) {
-                log.warn("Deletion of temporary BuildConfigSetRecord {} failed!", buildSetRecord);
+                log.warn("Deletion of temporary BuildConfigSetRecord {} failed!", groupBuild);
             }
         }
     }
 
     void deleteExpiredBuildRecords(Date expirationThreshold) {
-        Collection<BuildRecordRest> expiredBuilds = temporaryBuildsCleanerAdapter.findTemporaryBuildsOlderThan
+        Collection<Build> expiredBuilds = temporaryBuildsCleanerAdapter.findTemporaryBuildsOlderThan
                 (expirationThreshold);
 
-        for (BuildRecordRest buildRecord : expiredBuilds) {
+        for (Build build : expiredBuilds) {
             try {
-                log.info("Deleting temporary build {}", buildRecord);
-                temporaryBuildsCleanerAdapter.deleteTemporaryBuild(buildRecord.getId());
-                log.info("Temporary build {} was deleted successfully", buildRecord);
+                log.info("Deleting temporary build {}", build);
+                temporaryBuildsCleanerAdapter.deleteTemporaryBuild(build.getId());
+                log.info("Temporary build {} was deleted successfully", build);
             } catch (OrchInteractionException ex) {
-                log.warn("Deletion of temporary build {} failed! Cause: {}", buildRecord, ex);
+                log.warn("Deletion of temporary build {} failed! Cause: {}", build, ex);
             }
         }
     }

@@ -20,7 +20,7 @@ package org.jboss.pnc.cleaner.temporaryBuilds;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.pnc.cleaner.orchapi.model.DeleteOperationResult;
+import org.jboss.pnc.dto.DeleteOperationResult;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,7 +37,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class DeleteCallbackManager {
 
-    private Map<Integer, CallbackData> buildsMap = new ConcurrentHashMap<>();
+    private Map<String, CallbackData> buildsMap = new ConcurrentHashMap<>();
 
     @ConfigProperty(name = "simpleCallbackHandler.max-delete-wait-time", defaultValue = "600")
     long MAX_WAIT_TIME;
@@ -48,7 +48,7 @@ public class DeleteCallbackManager {
      * @param buildId ID of a build to wait for
      * @return True if succeeds. False if this build is already registered.
      */
-    public boolean initializeHandler(Integer buildId) {
+    public boolean initializeHandler(String buildId) {
         if (buildsMap.containsKey(buildId)) {
             // Delete operation is already in progress and waiting for that build deletion
             return false;
@@ -64,7 +64,7 @@ public class DeleteCallbackManager {
      * @param buildId  ID of a build, which deletion completed
      * @param result Result of the operation
      */
-    public void callback(Integer buildId,
+    public void callback(String buildId,
                          DeleteOperationResult result) {
         CallbackData callbackData = buildsMap.get(buildId);
         if (callbackData != null) {
@@ -85,7 +85,7 @@ public class DeleteCallbackManager {
      * @return Result of the operation or null if the callback was not triggered
      * @throws InterruptedException Thrown if an error occurs while waiting for callback
      */
-    public DeleteOperationResult await(Integer buildId) throws InterruptedException {
+    public DeleteOperationResult await(String buildId) throws InterruptedException {
         CallbackData callbackData = buildsMap.get(buildId);
         if (callbackData == null) {
             throw new IllegalArgumentException("Await operation triggered for a build, which was not initiated using " +
@@ -99,7 +99,7 @@ public class DeleteCallbackManager {
         return callbackData.getCallbackResponse();
     }
 
-    public void cancel(Integer buildId) {
+    public void cancel(String buildId) {
         buildsMap.remove(buildId);
     }
 
