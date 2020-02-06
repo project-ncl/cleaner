@@ -15,17 +15,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.jboss.pnc.cleaner.temporaryBuilds;
+package org.jboss.pnc.cleaner.orchApi;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.ws.rs.Produces;
+
+import org.jboss.pnc.client.BuildClient;
+import org.jboss.pnc.client.GroupBuildClient;
+
 
 /**
- * Interface for schedulers to delete builds without a transaction context
+ * Producer for Orchestrator clients
  *
  * @author Jakub Bartecek
  */
-public interface TemporaryBuildsCleaner {
+@ApplicationScoped
+public class OrchClientProducer {
 
-    /**
-     * Cleanup old temporary builds
-     */
-    void cleanupExpiredTemporaryBuilds();
+    @Inject
+    OrchClientConfiguration orchClientConfiguration;
+
+    @Produces
+    public BuildClient getBuildClient() {
+        return new BuildClient(orchClientConfiguration.getConfiguration());
+    }
+
+    @Produces
+    public GroupBuildClient getBuildGroupClient() {
+        return new GroupBuildClient(orchClientConfiguration.getConfiguration());
+    }
 }

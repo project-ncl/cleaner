@@ -19,23 +19,23 @@ package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.pnc.cleaner.orchapi.BuildConfigSetRecordEndpoint;
-import org.jboss.pnc.cleaner.orchapi.BuildRecordEndpoint;
-import org.jboss.pnc.cleaner.orchapi.model.BuildConfigSetRecordRest;
-import org.jboss.pnc.cleaner.orchapi.model.BuildConfigurationSetRecordPage;
-import org.jboss.pnc.cleaner.orchapi.model.BuildRecordPage;
-import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
-import org.jboss.pnc.cleaner.orchapi.model.DeleteOperationResult;
+import org.jboss.pnc.client.BuildClient;
+import org.jboss.pnc.client.GroupBuildClient;
+import org.jboss.pnc.client.RemoteCollection;
+import org.jboss.pnc.client.RemoteResourceException;
+import org.jboss.pnc.dto.Build;
+import org.jboss.pnc.dto.DeleteOperationResult;
+import org.jboss.pnc.dto.GroupBuild;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.core.Response;
-
+import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Optional;
 
 /**
  * Implementation of an adapter providing high-level operations on Orchestrator REST API
@@ -54,12 +54,10 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     Config config;
 
     @Inject
-    @RestClient
-    BuildRecordEndpoint buildRecordService;
+    BuildClient buildClient;
 
     @Inject
-    @RestClient
-    BuildConfigSetRecordEndpoint buildConfigSetRecordEndpoint;
+    GroupBuildClient groupBuildClient;
 
     @Inject
     BuildDeleteCallbackManager buildDeleteCallbackManager;
@@ -76,154 +74,99 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     }
 
     @Override
-    public Collection<BuildRecordRest> findTemporaryBuildsOlderThan(Date expirationDate) {
-        final int pageSize = 50;
+    public Collection<Build> findTemporaryBuildsOlderThan(Date expirationDate) {
+        Collection<Build> buildRecordRests = new HashSet<>();
 
-        Collection<BuildRecordRest> buildRecordRests = new HashSet<>();
-        int currentPage = 0;
-        boolean condition;
+        try {
+            RemoteCollection<Build> remoteCollection = buildClient.getAll(null, null, null, Optional.of("endTime=" +
+                    formatTimestampForRsql(expirationDate)));
+            remoteCollection.forEach(build -> buildRecordRests.add(build));
 
-        do {
-            Response response;
-            try {
-                response = buildRecordService.getAllTemporaryOlderThanTimestamp(currentPage, pageSize, null, null,
-                        expirationDate.getTime());
-            } catch (Exception e) {
-                log.warn("Querying of temporary builds from Orchestrator failed with exception", e);
-                return buildRecordRests;
-            }
-
-            switch (response.getStatus()) {
-                case 200:
-                    BuildRecordPage buildRecordPage = response.readEntity(BuildRecordPage.class);
-                    buildRecordRests.addAll(buildRecordPage.getContent());
-
-                    currentPage++;
-                    condition = currentPage < buildRecordPage.getTotalPages();
-                    break;
-                case 204:
-                    return buildRecordRests;
-                default:
-                    log.warn("Querying of temporary builds from Orchestrator failed with [status: {}, message: {}]",
-                            response.getStatus(), response.readEntity(String.class));
-                    return buildRecordRests;
-            }
-        } while (condition);
+        } catch (RemoteResourceException e) {
+            log.warn("Querying of temporary builds from Orchestrator failed with [status: {}, errorResponse: {}]", e
+                    .getStatus(), e.getResponse());
+            return buildRecordRests;
+        }
 
         return buildRecordRests;
     }
 
     @Override
-    public void deleteTemporaryBuild(Integer id) throws OrchInteractionException {
+    public void deleteTemporaryBuild(String id) throws OrchInteractionException {
         buildDeleteCallbackManager.initializeHandler(id);
-        Response deleteResponse = buildRecordService.delete(id, BASE_DELETE_BUILD_CALLBACK_URL + id);
+        try {
+            buildClient.delete(id, BASE_DELETE_BUILD_CALLBACK_URL + id);
+            DeleteOperationResult result = buildDeleteCallbackManager.await(id);
 
-        switch (deleteResponse.getStatus()) {
-            case 200:
-                // Deletion was initiated. Wait for callback, which confirms end of the operation.
-                try {
-                    DeleteOperationResult result = buildDeleteCallbackManager.await(id);
-                    if (result != null && result.getStatus() != null && result.getStatus().isSuccess()) {
-                        return;
-                    } else {
-                        throw new OrchInteractionException(String.format("Deletion of a build %s failed! " +
-                                "Orchestrator" + " reported a failure: [status={}, message={}].",
-                                result == null ? null : result.getStatus(),
-                                result == null ? null : result.getMessage()));
-                    }
-                } catch (InterruptedException e) {
-                    buildDeleteCallbackManager.cancel(id);
-                    throw new OrchInteractionException(String.format("Deletion of a build %s failed! Wait operation " +
-                            "failed with an exception.", id), e);
-                }
+            if (result != null && result.getStatus() != null && result
+                    .getStatus()
+                    .isSuccess()) {
+                return;
+            } else {
+                throw new OrchInteractionException(String.format("Deletion of a build %s failed! " + "Orchestrator" +
+                        " reported a failure: [status={}, message={}].", result == null ? null : result.getStatus(),
+                        result == null ? null : result.getMessage()));
+            }
 
-            case 404:
-                buildDeleteCallbackManager.cancel(id);
-                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The build was not "
-                        + "found.", id));
-
-            default:
-                buildDeleteCallbackManager.cancel(id);
-                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The operation " +
-                        "failed" + " with status code %s.", id, deleteResponse.getStatus()));
+        } catch (RemoteResourceException e) {
+            buildDeleteCallbackManager.cancel(id);
+            throw new OrchInteractionException(String.format("Deletion of a build %s failed! The operation " +
+                    "failed with errorMessage=%s.", id, e));
+        } catch (InterruptedException e) {
+            buildDeleteCallbackManager.cancel(id);
+            throw new OrchInteractionException(String.format("Deletion of a build %s failed! Wait operation " +
+                    "failed with an exception.", id), e);
         }
+
     }
 
     @Override
-    public Collection<BuildConfigSetRecordRest> findTemporaryBuildConfigSetRecordsOlderThan(Date expirationDate) {
-        final int pageSize = 50;
+    public Collection<GroupBuild> findTemporaryBuildConfigSetRecordsOlderThan(Date expirationDate) {
+        Collection<GroupBuild> groupBuilds = new HashSet<>();
+        try {
+            RemoteCollection<GroupBuild> remoteCollection = groupBuildClient.getAll(null, Optional.of("endTime=" +
+                    formatTimestampForRsql(expirationDate)));
+            remoteCollection.forEach(build -> groupBuilds.add(build));
 
-        Collection<BuildConfigSetRecordRest> buildConfigSetRecords = new HashSet<>();
-        int currentPage = 0;
-        boolean condition;
+        } catch (RemoteResourceException e) {
+            log.warn("Querying of temporary group builds from Orchestrator failed with [status: {}, errorResponse: "
+                    + "{}]", e.getStatus(), e.getResponse());
+            return groupBuilds;
+        }
 
-        do {
-
-            Response response;
-            try {
-                response = buildConfigSetRecordEndpoint.getAllTemporaryOlderThanTimestamp(currentPage, pageSize,
-                        null, null, expirationDate.getTime());
-            } catch (Exception e) {
-                log.warn("Querying of temporary builds from Orchestrator failed with exception", e);
-                return buildConfigSetRecords;
-            }
-
-            switch (response.getStatus()) {
-                case 200:
-                    BuildConfigurationSetRecordPage buildConfigurationSetRecordPage = response.readEntity
-                            (BuildConfigurationSetRecordPage.class);
-                    buildConfigSetRecords.addAll(buildConfigurationSetRecordPage.getContent());
-
-                    currentPage++;
-                    condition = currentPage < buildConfigurationSetRecordPage.getTotalPages();
-                    break;
-                case 204:
-                    return buildConfigSetRecords;
-                default:
-                    log.warn("Querying of temporary build groups from Orchestrator failed with [status: {}, message: {}]",
-                            response.getStatus(), response.readEntity(String.class));
-                    return buildConfigSetRecords;
-            }
-
-
-        } while (condition);
-
-        return buildConfigSetRecords;
+        return groupBuilds;
     }
 
     @Override
-    public void deleteTemporaryBuildConfigSetRecord(Integer id) throws OrchInteractionException {
+    public void deleteTemporaryBuildConfigSetRecord(String id) throws OrchInteractionException {
         buildGroupDeleteCallbackManager.initializeHandler(id);
-        Response deleteResponse = buildConfigSetRecordEndpoint.delete(id, BASE_DELETE_BUILD_GROUP_CALLBACK_URL + id);
 
-        switch (deleteResponse.getStatus()) {
-            case 200:
-                // Deletion was initiated. Wait for callback, which confirms end of the operation.
-                try {
-                    DeleteOperationResult result = buildGroupDeleteCallbackManager.await(id);
-                    if (result != null && result.getStatus() != null && result.getStatus().isSuccess()) {
-                        return;
-                    } else {
-                        throw new OrchInteractionException(String.format("Deletion of a build %s failed! " +
-                                        "Orchestrator" + " reported a failure: [status={}, message={}].",
-                                result == null ? null : result.getStatus(),
-                                result == null ? null : result.getMessage()));
-                    }
-                } catch (InterruptedException e) {
-                    buildGroupDeleteCallbackManager.cancel(id);
-                    throw new OrchInteractionException(String.format("Deletion of a build %s failed! Wait operation " +
-                            "failed with an exception.", id), e);
-                }
+        try {
+            groupBuildClient.delete(id, BASE_DELETE_BUILD_GROUP_CALLBACK_URL + id);
+            DeleteOperationResult result = buildGroupDeleteCallbackManager.await(id);
 
-            case 404:
-                buildGroupDeleteCallbackManager.cancel(id);
-                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The build was not "
-                        + "found.", id));
+            if (result != null && result.getStatus() != null && result
+                    .getStatus()
+                    .isSuccess()) {
+                return;
+            } else {
+                throw new OrchInteractionException(String.format("Deletion of a group build %s failed! " +
+                        "Orchestrator" + " reported a failure: [status={}, message={}].", result == null ? null :
+                        result.getStatus(), result == null ? null : result.getMessage()));
+            }
 
-            default:
-                buildGroupDeleteCallbackManager.cancel(id);
-                throw new OrchInteractionException(String.format("Deletion of a build %s failed! The operation " +
-                        "failed" + " with status code %s.", id, deleteResponse.getStatus()));
+        } catch (RemoteResourceException e) {
+            buildDeleteCallbackManager.cancel(id);
+            throw new OrchInteractionException(String.format("Deletion of a group build %s failed! The operation " +
+                    "failed with errorMessage=%s.", id, e));
+        } catch (InterruptedException e) {
+            buildDeleteCallbackManager.cancel(id);
+            throw new OrchInteractionException(String.format("Deletion of a group build %s failed! Wait operation " +
+                    "failed with an exception.", id), e);
         }
+    }
+
+    private String formatTimestampForRsql(Date expirationDate) {
+        return DateTimeFormatter.ISO_DATE_TIME.format(Instant.ofEpochMilli(expirationDate.getTime()));
     }
 }

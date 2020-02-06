@@ -14,7 +14,7 @@
 
     <indy.version>1.9.2</indy.version>
     <keycloak.version>4.5.0.Final</keycloak.version>
-    <pnc.version>1.8.0-SNAPSHOT</pnc.version>
+    <pnc.version>2.0.0-SNAPSHOT</pnc.version>
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
     <quarkus.version>1.2.0.Final</quarkus.version>
     <resteasy.version>3.6.1.Final</resteasy.version>
@@ -32,14 +32,10 @@
 
       <dependency>
         <groupId>org.jboss.pnc</groupId>
-        <artifactId>rest-model</artifactId>
+        <artifactId>rest-client</artifactId>
         <version>${pnc.version}</version>
       </dependency>
-      <dependency>
-        <groupId>org.jboss.pnc</groupId>
-        <artifactId>spi</artifactId>
-        <version>${pnc.version}</version>
-      </dependency>
+
       <dependency>
         <groupId>org.commonjava.indy</groupId>
         <artifactId>indy-client-core-java</artifactId>
@@ -105,13 +101,7 @@
     <!-- PNC dependencies !-->
     <dependency>
       <groupId>org.jboss.pnc</groupId>
-      <artifactId>spi</artifactId>
-      <exclusions>
-        <exclusion>
-          <groupId>org.jboss.spec.javax.el</groupId>
-          <artifactId>jboss-el-api_3.0_spec</artifactId>
-        </exclusion>
-      </exclusions>
+      <artifactId>rest-client</artifactId>
     </dependency>
     <!-- PNC dependencies END !-->
 
