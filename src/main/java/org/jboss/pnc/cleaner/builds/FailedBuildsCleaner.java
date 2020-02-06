@@ -18,20 +18,17 @@ import org.commonjava.indy.model.core.io.IndyObjectMapper;
 import org.commonjava.util.jhttpc.model.SiteConfig;
 import org.commonjava.util.jhttpc.model.SiteConfigBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.cleaner.auth.KeycloakServiceClient;
-import org.jboss.pnc.cleaner.orchapi.BuildEndpoint;
-import org.jboss.pnc.cleaner.orchapi.model.BuildRecordPage;
-import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
-import org.jboss.pnc.cleaner.orchapi.model.BuildRecordSingleton;
-import org.jboss.pnc.spi.BuildCoordinationStatus;
+import org.jboss.pnc.client.BuildClient;
+import org.jboss.pnc.client.RemoteCollection;
+import org.jboss.pnc.client.RemoteResourceException;
+import org.jboss.pnc.dto.Build;
+import org.jboss.pnc.enums.BuildCoordinationStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 
 import java.text.MessageFormat;
 import java.time.Instant;
@@ -40,6 +37,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -54,11 +52,10 @@ public class FailedBuildsCleaner {
     private final Pattern buildNumPattern = Pattern.compile("build-(\\d+)");
 
     @Inject
-    @RestClient
-    BuildEndpoint buildService;
+    KeycloakServiceClient serviceClient;
 
     @Inject
-    KeycloakServiceClient serviceClient;
+    BuildClient buildClient;
 
     /** Retention time in hours. */
     @ConfigProperty(name = "failedbuildscleaner.retention")
@@ -144,7 +141,7 @@ public class FailedBuildsCleaner {
     /**
      * Loads Maven build group names from Indy.
      *
-     * @param indy initialized Indy client, cannot be <code>null</code>
+     * @param session initialized Indy client, cannot be <code>null</code>
      * @return the loaded list of group names, can be empty, never <code>null</code>
      */
     List<String> getGroupNames(FailedBuildsCleanerSession session) {
@@ -223,14 +220,14 @@ public class FailedBuildsCleaner {
      * @throws CleanerException in case of an error when loading the build record
      */
     boolean shouldClean(String groupName, FailedBuildsCleanerSession session) throws CleanerException {
-        BuildRecordRest br = getBuildRecord(groupName);
+        Build build = getBuildRecord(groupName);
         boolean clean = false;
-        if (br == null) {
+        if (build == null) {
             logger.warn("Build record for group {} not found. Assuming it was removed by "
                     + "temporary builds cleaner before failed builds cleaner got to it. Cleaning...",
                     groupName);
             clean = true;
-        } else if (failedStatuses.contains(br.getStatus()) && br.getEndTimeInstant().isBefore(session.getTo())) {
+        } else if (failedStatuses.contains(build.getStatus()) && build.getEndTime().isBefore(session.getTo())) {
             logger.debug("Build record for group {} is older than the limit. Cleaning...", groupName);
             clean = true;
         }
@@ -265,41 +262,43 @@ public class FailedBuildsCleaner {
      * @param buildContentId id of the wanted build
      * @return found build record or null
      */
-    private BuildRecordRest getBuildRecord(String buildContentId) throws CleanerException {
+    private Build getBuildRecord(String buildContentId) throws CleanerException {
         logger.debug("Looking for build record with query \"buildContentId==" + buildContentId + "\"");
-        BuildRecordPage page = buildService.getAll(0, 2, null, "buildContentId==" + buildContentId, null, null);
-        if (page != null && page.getContent() != null && page.getContent().size() > 1) {
-            logger.error("Multiple build records found for buildContentId = {}", buildContentId);
-        } else if (page == null || page.getContent() == null || page.getContent().size() == 0) {
-            logger.warn("Build record NOT found for buildContentId = {}", buildContentId);
-            Matcher matcher = buildNumPattern.matcher(buildContentId);
-            if (matcher.matches()) {
-                Integer id = Integer.valueOf(matcher.group(1));
-                logger.debug("Attempting to find build record by id {}", id);
-                BuildRecordSingleton singleton = null;
-                try {
-                    singleton = buildService.getSpecific(id);
-                } catch (WebApplicationException ex) {
-                    int status = ex.getResponse().getStatus();
-                    if (status == Response.Status.NOT_FOUND.getStatusCode()) {
+
+        Matcher matcher = buildNumPattern.matcher(buildContentId);
+        String id = matcher.group(1);
+
+        try {
+            RemoteCollection<Build> builds = buildClient.getAll(null, null, null, Optional.of("buildContentId==" + buildContentId));
+
+            if (builds.size() > 1) {
+                logger.error("Multiple build records found for buildContentId = {}", buildContentId);
+                return null;
+
+            } else if (builds.size() == 0) {
+                logger.warn("Build record NOT found for buildContentId = {}", buildContentId);
+
+                if (matcher.matches()) {
+                    logger.debug("Attempting to find build record by id {}", id);
+                    Build build = buildClient.getSpecific(id);
+
+                    if (build == null) {
                         logger.warn("Build record NOT found even by ID = {}", id);
                         return null;
                     } else {
-                        throw new CleanerException("Error when getting build record ID = %d, status %d.", ex, id, status);
+                        return build;
                     }
-                }
-                if (singleton == null) {
-                    logger.error("Wrong response - OK with no content for build record ID = {}", id);
-                    return null;
                 } else {
-                    return singleton.getContent();
+                    logger.error("Unable ot parse buildContentId=%s", buildContentId);
+                    return null;
                 }
+            } else {
+                logger.debug("Build with buildContentId = {} found.");
+                return builds.iterator().next();
             }
-        } else {
-            logger.debug("Build with buildContentId = {} found.");
-            return page.getContent().iterator().next();
+        } catch (RemoteResourceException e) {
+            throw new CleanerException("Error when getting build record [id=%s, buildContentId=%s, status=%d].", e, id, buildContentId, e.getStatus());
         }
-        return null;
     }
 
     /**
@@ -324,5 +323,4 @@ public class FailedBuildsCleaner {
             stores.delete(storeKey, "Scheduled cleanup of failed builds.");
         }
     }
-
 }
