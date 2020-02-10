@@ -265,9 +265,6 @@ public class FailedBuildsCleaner {
     private Build getBuildRecord(String buildContentId) throws CleanerException {
         logger.debug("Looking for build record with query \"buildContentId==" + buildContentId + "\"");
 
-        Matcher matcher = buildNumPattern.matcher(buildContentId);
-        String id = matcher.group(1);
-
         try {
             RemoteCollection<Build> builds = buildClient.getAll(null, null, null, Optional.of("buildContentId==" + buildContentId));
 
@@ -278,7 +275,9 @@ public class FailedBuildsCleaner {
             } else if (builds.size() == 0) {
                 logger.warn("Build record NOT found for buildContentId = {}", buildContentId);
 
+                Matcher matcher = buildNumPattern.matcher(buildContentId);
                 if (matcher.matches()) {
+                    String id = matcher.group(1);
                     logger.debug("Attempting to find build record by id {}", id);
                     Build build = buildClient.getSpecific(id);
 
@@ -297,7 +296,7 @@ public class FailedBuildsCleaner {
                 return builds.iterator().next();
             }
         } catch (RemoteResourceException e) {
-            throw new CleanerException("Error when getting build record [id=%s, buildContentId=%s, status=%d].", e, id, buildContentId, e.getStatus());
+            throw new CleanerException("Error when getting build record [buildContentId=%s, status=%d].", e, buildContentId, e.getStatus());
         }
     }
 
