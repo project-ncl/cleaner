@@ -41,7 +41,7 @@ public class Callbacks {
     @Inject
     BuildGroupDeleteCallbackManager buildGroupDeleteCallbackManager;
 
-    @Path("/build-record-delete/{buildId}")
+    @Path("/delete/builds/{buildId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response buildRecordDeleteCallback(@PathParam("buildId") String buildId,
@@ -52,7 +52,7 @@ public class Callbacks {
                 .build();
     }
 
-    @Path("/build-group-record-delete/{buildId}")
+    @Path("/delete/group-builds/{buildId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     public Response buildGroupRecordDeleteCallback(@PathParam("buildId") String buildId,

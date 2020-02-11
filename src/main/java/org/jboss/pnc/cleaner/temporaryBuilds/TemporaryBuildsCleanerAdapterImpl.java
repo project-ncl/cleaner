@@ -31,10 +31,12 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Optional;
 
 /**
@@ -66,29 +68,29 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     BuildGroupDeleteCallbackManager buildGroupDeleteCallbackManager;
 
     @PostConstruct
-    private void init() {
+    void init() {
         final String host = config.getValue("applicationUri", String.class);
 
-        BASE_DELETE_BUILD_CALLBACK_URL = host + "/callbacks/build-record-delete/";
-        BASE_DELETE_BUILD_GROUP_CALLBACK_URL = host + "/callbacks/build-group-record-delete/";
+        BASE_DELETE_BUILD_CALLBACK_URL = host + "/callbacks/delete/builds/";
+        BASE_DELETE_BUILD_GROUP_CALLBACK_URL = host + "/callbacks/delete/group-builds/";
     }
 
     @Override
     public Collection<Build> findTemporaryBuildsOlderThan(Date expirationDate) {
-        Collection<Build> buildRecordRests = new HashSet<>();
+        Collection<Build> buildsRest = new HashSet<>();
 
         try {
-            RemoteCollection<Build> remoteCollection = buildClient.getAll(null, null, null, Optional.of("endTime=" +
+            RemoteCollection<Build> remoteCollection = buildClient.getAll(null, null, Optional.empty(), Optional.of("endTime=" +
                     formatTimestampForRsql(expirationDate)));
-            remoteCollection.forEach(build -> buildRecordRests.add(build));
+            remoteCollection.forEach(build -> buildsRest.add(build));
 
         } catch (RemoteResourceException e) {
             log.warn("Querying of temporary builds from Orchestrator failed with [status: {}, errorResponse: {}]", e
                     .getStatus(), e.getResponse());
-            return buildRecordRests;
+            return buildsRest;
         }
 
-        return buildRecordRests;
+        return buildsRest;
     }
 
     @Override
@@ -111,7 +113,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         } catch (RemoteResourceException e) {
             buildDeleteCallbackManager.cancel(id);
             throw new OrchInteractionException(String.format("Deletion of a build %s failed! The operation " +
-                    "failed with errorMessage=%s.", id, e));
+                    "failed with errorStatus=%s.", id, e.getStatus()), e);
         } catch (InterruptedException e) {
             buildDeleteCallbackManager.cancel(id);
             throw new OrchInteractionException(String.format("Deletion of a build %s failed! Wait operation " +
@@ -124,7 +126,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     public Collection<GroupBuild> findTemporaryBuildConfigSetRecordsOlderThan(Date expirationDate) {
         Collection<GroupBuild> groupBuilds = new HashSet<>();
         try {
-            RemoteCollection<GroupBuild> remoteCollection = groupBuildClient.getAll(null, Optional.of("endTime=" +
+            RemoteCollection<GroupBuild> remoteCollection = groupBuildClient.getAll(Optional.empty(), Optional.of("endTime=" +
                     formatTimestampForRsql(expirationDate)));
             remoteCollection.forEach(build -> groupBuilds.add(build));
 
@@ -158,7 +160,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         } catch (RemoteResourceException e) {
             buildDeleteCallbackManager.cancel(id);
             throw new OrchInteractionException(String.format("Deletion of a group build %s failed! The operation " +
-                    "failed with errorMessage=%s.", id, e));
+                    "failed with errorMessage=%s.", id, e.getStatus()), e);
         } catch (InterruptedException e) {
             buildDeleteCallbackManager.cancel(id);
             throw new OrchInteractionException(String.format("Deletion of a group build %s failed! Wait operation " +
@@ -167,6 +169,9 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     }
 
     private String formatTimestampForRsql(Date expirationDate) {
-        return DateTimeFormatter.ISO_DATE_TIME.format(Instant.ofEpochMilli(expirationDate.getTime()));
+        return DateTimeFormatter.ISO_DATE_TIME
+                .withLocale(Locale.ROOT)
+                .withZone(ZoneId.of("UTC"))
+                .format(Instant.ofEpochMilli(expirationDate.getTime()));
     }
 }
