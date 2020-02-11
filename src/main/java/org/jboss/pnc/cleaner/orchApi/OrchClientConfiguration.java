@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.util.HashMap;
 
 /**
  * Configuration for the Orchestrator client configurable using properties
