@@ -6,9 +6,9 @@
   "content": [
     {
       "id": "684",
-      "submitTime": "2020-02-10T12:58:45.008Z",
-      "startTime": "2020-02-10T12:58:45.054Z",
-      "endTime": "2020-02-10T12:59:00.678Z",
+      "submitTime": "2019-02-10T12:58:45.008Z",
+      "startTime": "2019-02-10T12:58:45.054Z",
+      "endTime": "2019-02-10T12:59:00.678Z",
       "progress": "FINISHED",
       "status": "SYSTEM_ERROR",
       "buildContentId": null,
