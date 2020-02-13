@@ -123,7 +123,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     }
 
     @Override
-    public Collection<GroupBuild> findTemporaryBuildConfigSetRecordsOlderThan(Date expirationDate) {
+    public Collection<GroupBuild> findTemporaryGroupBuildsOlderThan(Date expirationDate) {
         Collection<GroupBuild> groupBuilds = new HashSet<>();
         try {
             RemoteCollection<GroupBuild> remoteCollection = groupBuildClient.getAll(Optional.empty(), Optional.of("endTime=" +
@@ -133,14 +133,13 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         } catch (RemoteResourceException e) {
             log.warn("Querying of temporary group builds from Orchestrator failed with [status: {}, errorResponse: "
                     + "{}]", e.getStatus(), e.getResponse());
-            return groupBuilds;
         }
 
         return groupBuilds;
     }
 
     @Override
-    public void deleteTemporaryBuildConfigSetRecord(String id) throws OrchInteractionException {
+    public void deleteTemporaryGroupBuild(String id) throws OrchInteractionException {
         buildGroupDeleteCallbackManager.initializeHandler(id);
 
         try {
