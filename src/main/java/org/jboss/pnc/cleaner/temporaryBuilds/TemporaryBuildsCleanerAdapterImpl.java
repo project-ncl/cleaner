@@ -80,8 +80,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         Collection<Build> buildsRest = new HashSet<>();
 
         try {
-            RemoteCollection<Build> remoteCollection = buildClient.getAll(null, null, Optional.empty(), Optional.of("endTime=" +
-                    formatTimestampForRsql(expirationDate)));
+            RemoteCollection<Build> remoteCollection = buildClient.getAll(null, null, Optional.empty(),
+                    Optional.of("temporaryBuild==TRUE;endTime<" + formatTimestampForRsql(expirationDate)));
             remoteCollection.forEach(build -> buildsRest.add(build));
 
         } catch (RemoteResourceException e) {
@@ -126,8 +126,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     public Collection<GroupBuild> findTemporaryGroupBuildsOlderThan(Date expirationDate) {
         Collection<GroupBuild> groupBuilds = new HashSet<>();
         try {
-            RemoteCollection<GroupBuild> remoteCollection = groupBuildClient.getAll(Optional.empty(), Optional.of("endTime=" +
-                    formatTimestampForRsql(expirationDate)));
+            RemoteCollection<GroupBuild> remoteCollection = groupBuildClient.getAll(Optional.empty(),
+                    Optional.of("temporaryBuild==TRUE;endTime<" + formatTimestampForRsql(expirationDate)));
             remoteCollection.forEach(build -> groupBuilds.add(build));
 
         } catch (RemoteResourceException e) {
