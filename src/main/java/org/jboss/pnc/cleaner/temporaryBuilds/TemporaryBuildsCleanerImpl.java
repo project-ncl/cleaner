@@ -59,12 +59,12 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
 
     void deleteExpiredBuildConfigSetRecords(Date expirationThreshold) {
         Collection<GroupBuild> expiredBCSRecords = temporaryBuildsCleanerAdapter
-                .findTemporaryBuildConfigSetRecordsOlderThan(expirationThreshold);
+                .findTemporaryGroupBuildsOlderThan(expirationThreshold);
 
         for (GroupBuild groupBuild : expiredBCSRecords) {
             try {
                 log.info("Deleting temporary BuildConfigSetRecord {}", groupBuild);
-                temporaryBuildsCleanerAdapter.deleteTemporaryBuildConfigSetRecord(groupBuild.getId());
+                temporaryBuildsCleanerAdapter.deleteTemporaryGroupBuild(groupBuild.getId());
                 log.info("Temporary BuildConfigSetRecord {} was deleted successfully", groupBuild);
             } catch (OrchInteractionException ex) {
                 log.warn("Deletion of temporary BuildConfigSetRecord {} failed!", groupBuild);
