@@ -2,22 +2,23 @@
   "pageIndex": 0,
   "pageSize": 50,
   "totalPages": 1,
+  "totalHits": 1,
   "content": [
     {
-      "id": 102,
-      "buildConfigurationSetId": 100,
-      "buildConfigurationSetName": "Example Build Group 1",
-      "startTime": 1573472832582,
-      "endTime": 1573472925193,
+      "id": "166",
+      "startTime": "2019-02-11T13:24:36.538Z",
+      "endTime": "2019-02-11T13:24:49.537Z",
       "status": "FAILED",
-      "userId": 115,
-      "username": "jbartece",
-      "productVersionId": 100,
-      "buildRecordIds": [
-        545,
-        543
-      ],
-      "temporaryBuild": true
+      "temporaryBuild": true,
+      "groupConfig": {
+        "id": "124",
+        "name": "hahaha"
+      },
+      "user": {
+        "id": "115",
+        "username": "jbartece"
+      },
+      "productVersion": null
     }
   ]
 }

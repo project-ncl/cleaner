@@ -52,7 +52,7 @@ public interface TemporaryBuildsCleanerAdapter {
      * @param expirationDate Timestamp defining expiration date of BuildConfigSetRecords
      * @return List of expired BuildConfigSetRecords
      */
-    Collection<GroupBuild> findTemporaryBuildConfigSetRecordsOlderThan(Date expirationDate);
+    Collection<GroupBuild> findTemporaryGroupBuildsOlderThan(Date expirationDate);
 
     /**
      * Deletes a temporary BuildConfigSetRecord
@@ -60,5 +60,5 @@ public interface TemporaryBuildsCleanerAdapter {
      * @param id ID of a temporary BuildConfigSetRecord, which is meant to be deleted
      * @throws OrchInteractionException Thrown if deletion fails with an error
      */
-    void deleteTemporaryBuildConfigSetRecord(String id) throws OrchInteractionException;
+    void deleteTemporaryGroupBuild(String id) throws OrchInteractionException;
 }
