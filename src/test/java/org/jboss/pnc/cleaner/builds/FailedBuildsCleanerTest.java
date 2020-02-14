@@ -1,5 +1,6 @@
 package org.jboss.pnc.cleaner.builds;
 
+import com.github.tomakehurst.wiremock.client.ResponseDefinitionBuilder;
 import io.quarkus.test.junit.QuarkusTest;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
@@ -7,7 +8,10 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import org.commonjava.indy.client.core.Indy;
 import org.commonjava.indy.model.core.StoreKey;
 import org.commonjava.indy.model.core.StoreType;
+import org.jboss.pnc.cleaner.common.TestConstants;
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,7 +54,7 @@ class FailedBuildsCleanerTest {
 
     private static final String INDY_MAVEN_GROUPS_NO_BUILD_GROUP_FILE = "indyMavenGroupsNoBuildGroup.json";
 
-    private static final String ORCH_BUILDS = "/builds";
+    private static final String ORCH_BUILDS = TestConstants.ROOT_PATH + "/builds";
 
     private static final String BUILD_RECORD_FAILED_NO_CONTENTID_FILE = "buildRecordFailedNoContentId.json";
 
@@ -60,15 +64,34 @@ class FailedBuildsCleanerTest {
 
     private static final String BUILD_RECORDS_NOT_FAILED_FILE = "buildRecordsNotFailed.json";
 
+    private static final String EMPTY_RESPONSE_FILE = "emptyResponse.json";
+
 
     private WireMockServer orchWireMockServer = new WireMockServer(options().port(8082));
 
     private WireMockServer indyWireMockServer = new WireMockServer(options().port(8083));
 
+    private static WireMockServer keycloakServer = new WireMockServer(options()
+            .port(8084)
+            .withRootDirectory("src/test/resources/wiremock/keycloak"));
+
     @Inject
     private FailedBuildsCleaner failedBuildsCleaner;
 
+    private ResponseDefinitionBuilder EMPTY_RESPONSE = aResponse()
+            .withStatus(200)
+            .withBodyFile(EMPTY_RESPONSE_FILE)
+            .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
+    @BeforeAll
+    public static void beforeAll() {
+        keycloakServer.start();
+    }
+
+    @AfterAll
+    public static void afterAll() {
+        keycloakServer.stop();
+    }
     @BeforeEach
     public void beforeEach() {
         indyWireMockServer.start();
@@ -143,7 +166,7 @@ class FailedBuildsCleanerTest {
                 .withBodyFile(BUILD_RECORDS_FAILED_FILE)));
 
         // limit is set to be after the build record end time
-        Instant limit = Instant.ofEpochMilli(1573174847816L);
+        Instant limit = Instant.ofEpochMilli(1581174847000L);
         // auth token is not important for the test
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
@@ -160,8 +183,7 @@ class FailedBuildsCleanerTest {
      */
     @Test
     public void shouldCleanNoContentId() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
-                .withStatus(204)));
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(EMPTY_RESPONSE));
 
         orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "/36000")).willReturn(aResponse()
                 .withStatus(200)
@@ -169,7 +191,7 @@ class FailedBuildsCleanerTest {
                 .withBodyFile(BUILD_RECORD_FAILED_NO_CONTENTID_FILE)));
 
         // limit is set to be after the build record end time
-        Instant limit = Instant.ofEpochMilli(1573174847816L);
+        Instant limit = Instant.ofEpochMilli(1581174847000L);
         // auth token is not important for the test
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
@@ -186,8 +208,7 @@ class FailedBuildsCleanerTest {
      */
     @Test
     public void shouldCleanNoContentIdTooYoung() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(aResponse()
-                .withStatus(204)));
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(EMPTY_RESPONSE));
 
         orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "/36000")).willReturn(aResponse()
                 .withStatus(200)
@@ -211,8 +232,7 @@ class FailedBuildsCleanerTest {
      */
     @Test
     public void shouldCleanNotFound() throws CleanerException {
-        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36002")).willReturn(aResponse()
-                .withStatus(204)));
+        orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36002")).willReturn(EMPTY_RESPONSE));
 
         orchWireMockServer.stubFor(get(urlMatching(ORCH_BUILDS + "/36002")).willReturn(aResponse()
                 .withStatus(404)));
@@ -406,7 +426,7 @@ class FailedBuildsCleanerTest {
                 .withStatus(204)));
 
         // limit is set to be after the build record end time
-        Instant limit = Instant.ofEpochMilli(1573174847816L);
+        Instant limit = Instant.ofEpochMilli(1581174847000L);
         // auth token is not important for getting group names
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);

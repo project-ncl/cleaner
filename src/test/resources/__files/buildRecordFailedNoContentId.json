@@ -1,92 +1,61 @@
 {
-	"content": {
-		"id": 36000,
-		"submitTime": 1573171867485,
-		"startTime": null,
-		"endTime": 1573174647816,
-		"status": "DONE_WITH_ERRORS",
-		"buildConfigurationId": 2544,
-		"buildConfigurationName": "camel-kafka-connector-0.0.1-8.0.0",
-		"buildConfigurationRev": 18742,
-		"projectId": 787,
-		"projectName": "jboss-fuse/camel-kafka-connector",
-		"userId": 127,
-		"username": "service-account-fuse-ci",
-		"scmRepoURL": null,
-		"scmRevision": null,
-		"scmTag": null,
-		"buildEnvironmentId": null,
+	"id": "36000",
+	"submitTime": "2019-11-11T17:59:28.780Z",
+	"startTime": "2019-11-11T17:59:28.947Z",
+	"endTime": "2019-11-11T18:07:54.439Z",
+	"progress": "FINISHED",
+	"status": "FAILED",
+	"buildContentId": null,
+	"temporaryBuild": false,
+	"scmUrl": "http://code.com/gerrit/project-ncl/dependency-analysis.git",
+	"scmRevision": "a90671ab7c3e93d423065cd5d7477a15ce0048b0",
+	"scmTag": "2.0.0.jboss-00001-a90671ab",
+	"project": {
+		"id": "103",
+		"name": "Dependency Analysis",
+		"description": "Dependency Analysis - Analise project dependencies.",
+		"issueTrackerUrl": null,
+		"projectUrl": "https://github.com/project-ncl/dependency-analysis"
+	},
+	"scmRepository": {
+		"id": "103",
+		"internalUrl": "git+ssh://code.com/project-ncl/dependency-analysis.git",
+		"externalUrl": null,
+		"preBuildSyncEnabled": true
+	},
+	"environment": {
+		"id": "20",
+		"name": "OpenJDK 1.8.0; Mvn 3.6.0",
+		"description": "OpenJDK 1.8.0; Mvn 3.6.0",
+		"systemImageRepositoryUrl": "default.docker-registry.com",
+		"systemImageId": "newcastle/builder-rhel-7-j8-mvn3.6.0:latest",
 		"attributes": {
-			
+			"JDK": "1.8.0",
+			"MAVEN": "3.6.0",
+			"OS": "Linux"
 		},
-		"liveLogsUri": null,
-		"buildConfigSetRecordId": 2842,
-		"buildContentId": null,
-		"temporaryBuild": true,
-		"productMilestoneId": null,
-		"user": {
-			"id": 127,
-			"email": "service-account-fuse-ci@placeholder.org",
-			"firstName": null,
-			"lastName": null,
-			"username": "service-account-fuse-ci"
-		},
-		"buildConfigurationAudited": {
-			"id": 2544,
-			"rev": 18742,
-			"idRev": {
-				"id": 2544,
-				"rev": 18742
-			},
-			"name": "camel-kafka-connector-0.0.1-8.0.0",
-			"description": null,
-			"buildScript": "mvn -B clean deploy -DskipTests",
-			"repositoryConfiguration": {
-				"id": 796,
-				"internalUrl": "git+ssh://code.com/jboss-fuse/camel-kafka-connector.git",
-				"externalUrl": null,
-				"preBuildSyncEnabled": false
-			},
-			"scmRevision": "camel-kafka-connector-0.0.1.fuse-800001",
-			"creationTime": null,
-			"lastModificationTime": null,
-			"projectId": 787,
-			"environmentId": 8,
-			"project": {
-				"id": 787,
-				"name": "jboss-fuse/camel-kafka-connector",
-				"description": null,
-				"issueTrackerUrl": null,
-				"projectUrl": null,
-				"configurationIds": [
-					2544
-				],
-				"licenseId": null
-			},
-			"environment": {
-				"id": 8,
-				"name": "OpenJDK 1.8.0; Mvn 3.5.2",
-				"description": "OpenJDK 1.8.0; Mvn 3.5.2",
-				"systemImageRepositoryUrl": "default.docker-registry.com",
-				"systemImageId": "newcastle/builder-rhel-7-j8-mvn3.5.2:latest",
-				"attributes": {
-					"JDK": "1.8.0",
-					"MAVEN": "3.5.2",
-					"OS": "Linux"
-				},
-				"systemImageType": "DOCKER_IMAGE",
-				"deprecated": false,
-				"imageRepositoryUrl": "default.docker-registry.com"
-			},
-			"genericParameters": {
-				"CUSTOM_PME_PARAMETERS": "-DscanActiveProfiles=true"
-			}
-		},
-		"executionRootName": null,
-		"executionRootVersion": null,
-		"dependentBuildRecordIds": [],
-		"dependencyBuildRecordIds": [
-			35998
-		]
-	}
+		"systemImageType": "DOCKER_IMAGE",
+		"deprecated": false
+	},
+	"attributes": {
+		"BREW_BUILD_VERSION": "2.0.0.jboss-00001",
+		"BREW_BUILD_NAME": "org.jboss.da:parent"
+	},
+	"user": {
+		"id": "103",
+		"username": "mlazar"
+	},
+	"buildConfigRevision": {
+		"id": "103",
+		"rev": 60,
+		"name": "dependency-analysis-master",
+		"description": "Test config for Dependency Analysis.",
+		"buildScript": "mvn deploy -DskipTests",
+		"scmRevision": "master",
+		"creationTime": "2019-02-15T02:07:35.242Z",
+		"modificationTime": "2019-07-03T13:25:35.244Z",
+		"buildType": "MVN"
+	},
+	"productMilestone": null,
+	"groupBuild": null
 }
