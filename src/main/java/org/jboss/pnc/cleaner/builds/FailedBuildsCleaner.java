@@ -77,8 +77,6 @@ public class FailedBuildsCleaner {
         failedStatuses.add(BuildStatus.CANCELLED); // added for old data, now cancellation cleans up the Indy data
         failedStatuses.add(BuildStatus.SYSTEM_ERROR);
         failedStatuses.add(BuildStatus.FAILED);
-        failedStatuses.add(BuildStatus.REJECTED_FAILED_DEPENDENCIES);
-        failedStatuses.add(BuildStatus.REJECTED);
     }
 
     @Scheduled(cron = "{failedbuildscleaner.cron}")
