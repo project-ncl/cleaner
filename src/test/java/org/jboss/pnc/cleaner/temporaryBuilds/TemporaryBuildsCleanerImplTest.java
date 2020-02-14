@@ -20,6 +20,7 @@ package org.jboss.pnc.cleaner.temporaryBuilds;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import io.quarkus.test.junit.QuarkusTest;
+import org.jboss.pnc.cleaner.common.TestConstants;
 import org.jboss.pnc.common.util.HttpUtils;
 import org.jboss.pnc.common.util.TimeUtils;
 import org.jboss.pnc.dto.DeleteOperationResult;
@@ -48,11 +49,10 @@ import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
  */
 @QuarkusTest
 public class TemporaryBuildsCleanerImplTest {
-    static final String ROOT_PATH = "/pnc-rest-new/rest-new";
 
-    static final String BUILDS_ENDPOINT = ROOT_PATH + "/builds";
+    static final String BUILDS_ENDPOINT = TestConstants.ROOT_PATH + "/builds";
 
-    static final String GROUP_BUILDS_ENDPOINT = ROOT_PATH + "/group-builds";
+    static final String GROUP_BUILDS_ENDPOINT = TestConstants.ROOT_PATH + "/group-builds";
 
     static final String EMPTY_RESPONSE_FILE = "emptyResponse.json";
 
@@ -74,8 +74,9 @@ public class TemporaryBuildsCleanerImplTest {
     TemporaryBuildsCleanerImpl temporaryBuildsCleaner;
 
     @BeforeAll
-    public static void beforeAll() {
+    public static void beforeAll() throws InterruptedException {
         keycloakServer.start();
+        Thread.sleep(1000);
     }
 
     @AfterAll

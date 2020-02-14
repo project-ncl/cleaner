@@ -22,8 +22,10 @@ import org.jboss.pnc.cleaner.auth.KeycloakServiceClient;
 import org.jboss.pnc.client.BuildClient;
 import org.jboss.pnc.client.RemoteCollection;
 import org.jboss.pnc.client.RemoteResourceException;
+import org.jboss.pnc.client.RemoteResourceNotFoundException;
 import org.jboss.pnc.dto.Build;
 import org.jboss.pnc.enums.BuildCoordinationStatus;
+import org.jboss.pnc.enums.BuildStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -68,13 +70,15 @@ public class FailedBuildsCleaner {
     @ConfigProperty(name = "failedbuildscleaner.indy.requesttimeout")
     int indyRequestTimeout;
 
-    private static List<BuildCoordinationStatus> failedStatuses;
+    private static List<BuildStatus> failedStatuses;
 
     static {
-        failedStatuses = new ArrayList<>(2);
-        failedStatuses.add(BuildCoordinationStatus.CANCELLED); // added for old data, now cancellation cleans up the Indy data
-        failedStatuses.add(BuildCoordinationStatus.DONE_WITH_ERRORS);
-        failedStatuses.add(BuildCoordinationStatus.SYSTEM_ERROR);
+        failedStatuses = new ArrayList<>(5);
+        failedStatuses.add(BuildStatus.CANCELLED); // added for old data, now cancellation cleans up the Indy data
+        failedStatuses.add(BuildStatus.SYSTEM_ERROR);
+        failedStatuses.add(BuildStatus.FAILED);
+        failedStatuses.add(BuildStatus.REJECTED_FAILED_DEPENDENCIES);
+        failedStatuses.add(BuildStatus.REJECTED);
     }
 
     @Scheduled(cron = "{failedbuildscleaner.cron}")
@@ -266,7 +270,7 @@ public class FailedBuildsCleaner {
         logger.debug("Looking for build record with query \"buildContentId==" + buildContentId + "\"");
 
         try {
-            RemoteCollection<Build> builds = buildClient.getAll(null, null, null, Optional.of("buildContentId==" + buildContentId));
+            RemoteCollection<Build> builds = buildClient.getAll(null, null, Optional.empty(), Optional.of("buildContentId==" + buildContentId));
 
             if (builds.size() > 1) {
                 logger.error("Multiple build records found for buildContentId = {}", buildContentId);
@@ -279,13 +283,11 @@ public class FailedBuildsCleaner {
                 if (matcher.matches()) {
                     String id = matcher.group(1);
                     logger.debug("Attempting to find build record by id {}", id);
-                    Build build = buildClient.getSpecific(id);
-
-                    if (build == null) {
+                    try {
+                        return buildClient.getSpecific(id);
+                    } catch (RemoteResourceNotFoundException e) {
                         logger.warn("Build record NOT found even by ID = {}", id);
                         return null;
-                    } else {
-                        return build;
                     }
                 } else {
                     logger.error("Unable ot parse buildContentId=%s", buildContentId);
