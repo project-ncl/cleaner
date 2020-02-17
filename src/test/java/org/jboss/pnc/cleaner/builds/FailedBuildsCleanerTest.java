@@ -66,14 +66,9 @@ class FailedBuildsCleanerTest {
 
     private static final String EMPTY_RESPONSE_FILE = "emptyResponse.json";
 
-
     private WireMockServer orchWireMockServer = new WireMockServer(options().port(8082));
 
     private WireMockServer indyWireMockServer = new WireMockServer(options().port(8083));
-
-    private static WireMockServer keycloakServer = new WireMockServer(options()
-            .port(8084)
-            .withRootDirectory("src/test/resources/wiremock/keycloak"));
 
     @Inject
     private FailedBuildsCleaner failedBuildsCleaner;
@@ -83,15 +78,6 @@ class FailedBuildsCleanerTest {
             .withBodyFile(EMPTY_RESPONSE_FILE)
             .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON);
 
-    @BeforeAll
-    public static void beforeAll() {
-        keycloakServer.start();
-    }
-
-    @AfterAll
-    public static void afterAll() {
-        keycloakServer.stop();
-    }
     @BeforeEach
     public void beforeEach() {
         indyWireMockServer.start();
