@@ -60,29 +60,12 @@ public class TemporaryBuildsCleanerImplTest {
 
     static final String SINGLE_TEMPORARY_BUILD_GROUP_FILE = "singleTemporaryBuildGroup.json";
 
-
-    private static WireMockServer keycloakServer = new WireMockServer(options()
-            .port(8084)
-            .withRootDirectory("src/test/resources/wiremock/keycloak"));
-
     private WireMockServer wireMockServer = new WireMockServer(options()
             .port(8082)
             .withRootDirectory("src/test/resources/wiremock/general"));
 
-
     @Inject
     TemporaryBuildsCleanerImpl temporaryBuildsCleaner;
-
-    @BeforeAll
-    public static void beforeAll() throws InterruptedException {
-        keycloakServer.start();
-        Thread.sleep(1000);
-    }
-
-    @AfterAll
-    public static void afterAll() {
-        keycloakServer.stop();
-    }
 
     @BeforeEach
     public void beforeEach() {
