@@ -63,11 +63,6 @@ public class TemporaryBuildsCleanerImplTest {
 
     static final String SINGLE_TEMPORARY_BUILD_GROUP_FILE = "singleTemporaryBuildGroup.json";
 
-
-    private static WireMockServer keycloakServer = new WireMockServer(options()
-            .port(8084)
-            .withRootDirectory("src/test/resources/wiremock/keycloak"));
-
     private WireMockServer wireMockServer = new WireMockServer(options()
             .port(8082)
             .withRootDirectory("src/test/resources/wiremock/general"));
@@ -75,16 +70,6 @@ public class TemporaryBuildsCleanerImplTest {
 
     @Inject
     TemporaryBuildsCleanerImpl temporaryBuildsCleaner;
-
-    @BeforeAll
-    public static void beforeAll() {
-        keycloakServer.start();
-    }
-
-    @AfterAll
-    public static void afterAll() {
-        keycloakServer.stop();
-    }
 
     @BeforeEach
     public void beforeEach() {
@@ -160,8 +145,7 @@ public class TemporaryBuildsCleanerImplTest {
 
         // then
         wireMockServer.verify(1, deleteRequestedFor(urlMatching(BUILDS_ENDPOINT + ".*")).withHeader("Authorization",
-                new EqualToPattern("Bearer " +
-                        "fyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJ5emxOa0tBUmZlMUVzcHZJbU9rdkVTeUttVGl6N05MTWp2Z3lSSGJEZHVBIn0.eyJqdGkiOiJjNDNhMGE5OS1lZmQ3LTQ4NDUtOTliNS0yN2VjNmJiN2IyZGQiLCJleHAiOjE1NzM5MDM4NjUsIm5iZiI6MCwiaWF0IjoxNTczNzMxMDY1LCJpc3MiOiJodHRwczovL3NlY3VyZS1zc28tbmV3Y2FzdGxlLWRldmVsLnBzaS5yZWRoYXQuY29tL2F1dGgvcmVhbG1zL3BuY3JlZGhhdCIsImF1ZCI6WyJwbmNpbmR5dWkiLCJwbmNpbmR5IiwiYWNjb3VudCJdLCJzdWIiOiIyODI0Yzk1ZS0zZjM2LTQyYjktYTljNy1hZjhkNWMyZjhjOTciLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJwbmMtb3JjaGVzdHJhdG9yIiwiYXV0aF90aW1lIjowLCJzZXNzaW9uX3N0YXRlIjoiYjc1NDcwZWMtY2E3Ny00MTYzLThiNTktMGFjZThmMGEwM2Y1IiwiYWNyIjoiMSIsInJlYWxtX2FjY2VzcyI6eyJyb2xlcyI6WyJzeXN0ZW0tdXNlciIsIm9mZmxpbmVfYWNjZXNzIiwicG93ZXItdXNlciIsInVtYV9hdXRob3JpemF0aW9uIiwidXNlciJdfSwicmVzb3VyY2VfYWNjZXNzIjp7InBuY2luZHl1aSI6eyJyb2xlcyI6WyJwbmNpbmR5YWRtaW4iLCJwbmNpbmR5dXNlciJdfSwicG5jaW5keSI6eyJyb2xlcyI6WyJwbmNpbmR5YWRtaW4iLCJwb3dlci11c2VyIiwicG5jaW5keXVzZXIiXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoiIiwiY2xpZW50SWQiOiJwbmMtb3JjaGVzdHJhdG9yIiwiY2xpZW50SG9zdCI6IjE3Mi41NC4xMC4xIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LXBuYy1vcmNoZXN0cmF0b3IiLCJjbGllbnRBZGRyZXNzIjoiMTcyLjU0LjEwLjEiLCJlbWFpbCI6InNlcnZpY2UtYWNjb3VudC1wbmMtb3JjaGVzdHJhdG9yQHBsYWNlaG9sZGVyLm9yZyJ9.b8GT6tWnlOuQpoamNnIOOvLwJgwMYrhx9p6ynDx5iOmn2FM02NXK5DGuxofFznGX3kfk1YUfD3T6Bvb234GVDwgCojk_h9_uiVjdZ-f0sBWOt9Zpa_m1p1TpC8pca4kz605oYhEZ8po9Zx6wxuvFegsK1XsnuMi2saDK0dMnWT9AdjkoFsASPdrR25LLmy53KC29hxMqrJgmQc4yYOE8f4r8eHS53u2-D5JaywyGrGiTpMH5NGbqPpKM7aPbnaPcFfmzcDTT4_U3V0vBKblZy9bn5iB-K1FOFIeegqTo4OnhDfJ5Ay_qogGUO3aBH5FmiB-RStC8vuvuzS5QsiFeKw")));
+                new EqualToPattern("Bearer Mocked-token")));
     }
 
     @Test
