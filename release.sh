@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -xe
 
 set -e
 
@@ -34,18 +34,15 @@ tag="$tagprefix$version"."$2"
 majmin=`echo $version | cut -f1,2 -d.`
 micro=`echo $version | cut -f3 -d.`
 nextversion="$majmin.$(( micro + 1 ))-SNAPSHOT"
-branch="version-$majmin.x"
+branch="v$majmin"
 
 
 #Remove snapshot from Orch dependency
 sed -i "s/<pnc.version>\([0-9].[0-9].[0-9]\)-SNAPSHOT<\/pnc.version>/<pnc.version>\1<\/pnc.version>/" pom.xml
 
-echo "Checking out to branch $branch"
-git checkout $branch
-
-echo "Making sure we are up-to-date with upstream ($upstream remote)"
+echo "Checking out to branch $upstream/$branch"
 git fetch $upstream
-git merge $upstream/$branch --ff-only
+git checkout $upstream/$branch
 
 echo "Testing build"
 mvn clean install $testparams
@@ -56,7 +53,7 @@ mvn versions:commit
 sed -i "s/<tag>HEAD<\/tag>/<tag>$tag<\/tag>/" pom.xml
 
 echo "Commiting changed pom files"
-git add pom.xml */pom.xml
+git add pom.xml
 git commit -m "Release version $version"
 
 echo "Deploing artifacts"
@@ -67,16 +64,16 @@ mvn clean deploy -DskipTests -Prelease $releaseparams
 echo "Tagging release"
 git tag $tag
 
-echo "Preparing for next development"
-mvn versions:set -DnewVersion=$nextversion
-mvn versions:commit
-sed -i "s/<tag>$tag<\/tag>/<tag>HEAD<\/tag>/" pom.xml
-git add pom.xml */pom.xml
-git commit -m "Preparing for next development"
+#echo "Preparing for next development"
+#mvn versions:set -DnewVersion=$nextversion
+#mvn versions:commit
+#sed -i "s/<tag>$tag<\/tag>/<tag>HEAD<\/tag>/" pom.xml
+#git add pom.xml
+#git commit -m "Preparing for next development"
 
 echo
 echo
 echo "Release prepared. Check everything!"
 echo "Then go to https://oss.sonatype.org/ and release the staging repository."
 echo "When everything is done, don't forget to push:"
-echo "  git push $upstream $branch && git push $upstream $tag"
+echo "  git push $upstream $tag"
