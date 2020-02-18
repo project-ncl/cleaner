@@ -6,6 +6,25 @@
   <artifactId>cleaner</artifactId>
   <version>0.1.0-SNAPSHOT</version>
 
+  <name>Cleaner for PNC</name>
+  <inceptionYear>2019</inceptionYear>
+  <url>http://github.com/project-ncl/cleaner</url>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <distribution>repo</distribution>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:http://github.com/project-ncl/cleaner.git</connection>
+    <developerConnection>scm:git:git@github.com:project-ncl/cleaner.git</developerConnection>
+    <url>http://github.com/project-ncl/cleaner</url>
+    <tag>HEAD</tag>
+  </scm>
+
   <properties>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
