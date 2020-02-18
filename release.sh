@@ -2,7 +2,7 @@
 
 set -e
 
-repository="project-ncl/causeway"
+repository="project-ncl/cleaner"
 tagprefix=""
 testparams=""
 releaseparams=""
@@ -10,8 +10,8 @@ releaseparams=""
 #######
 
 
-if [ $# -lt 1 ]; then
-	echo "You have to enter new version" >&2
+if [ $# -lt 2 ]; then
+	echo "You have to enter new version and RC version" >&2
 	exit 1
 fi
 
@@ -27,8 +27,9 @@ if [ $changes -gt 0 ]; then
     exit 1
 fi
 
+rc=$2
 upstream=`git remote -v | grep "$repository" | cut -f1 | head -n1`
-tag="$tagprefix$version"
+tag="$tagprefix$version"."$2"
 majmin=`echo $version | cut -f1,2 -d.`
 micro=`echo $version | cut -f3 -d.`
 nextversion="$majmin.$(( micro + 1 ))-SNAPSHOT"
