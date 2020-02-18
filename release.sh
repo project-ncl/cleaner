@@ -27,6 +27,7 @@ if [ $changes -gt 0 ]; then
     exit 1
 fi
 
+
 rc=$2
 upstream=`git remote -v | grep "$repository" | cut -f1 | head -n1`
 tag="$tagprefix$version"."$2"
@@ -34,6 +35,10 @@ majmin=`echo $version | cut -f1,2 -d.`
 micro=`echo $version | cut -f3 -d.`
 nextversion="$majmin.$(( micro + 1 ))-SNAPSHOT"
 branch="version-$majmin.x"
+
+
+#Remove snapshot from Orch dependency
+sed -i "s/<pnc.version>\([0-9].[0-9].[0-9]\)-SNAPSHOT<\/pnc.version>/<pnc.version>\1<\/pnc.version>/" pom.xml
 
 echo "Checking out to branch $branch"
 git checkout $branch
