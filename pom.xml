@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.pnc.cleaner</groupId>
   <artifactId>cleaner</artifactId>
-  <version>0.1.0-SNAPSHOT</version>
+  <version>1.8.0</version>
 
   <name>Cleaner for PNC</name>
   <inceptionYear>2019</inceptionYear>
@@ -22,7 +22,7 @@
     <connection>scm:git:http://github.com/project-ncl/cleaner.git</connection>
     <developerConnection>scm:git:git@github.com:project-ncl/cleaner.git</developerConnection>
     <url>http://github.com/project-ncl/cleaner</url>
-    <tag>HEAD</tag>
+    <tag>1.8.0.RC1</tag>
   </scm>
 
   <properties>
