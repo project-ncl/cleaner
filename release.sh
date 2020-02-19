@@ -59,7 +59,7 @@ git commit -m "Release version $version"
 echo "Deploing artifacts"
 GPG_TTY=$(tty)
 export GPG_TTY
-mvn clean deploy -DskipTests -Prelease $releaseparams
+mvn clean deploy -DskipTests -Prelease $releaseparams -Dgpg.executable=`which gpg2`
 
 echo "Tagging release"
 git tag $tag
