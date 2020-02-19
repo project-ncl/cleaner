@@ -75,7 +75,7 @@ public class BuildRecordRest {
     private String buildContentId;
 
     @Getter
-    @Setter(onMethod=@__({@Deprecated}))
+    @Setter
     private Boolean temporaryBuild;
 
     /**
