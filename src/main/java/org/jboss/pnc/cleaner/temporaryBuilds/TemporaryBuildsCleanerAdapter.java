@@ -19,7 +19,6 @@ package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import org.jboss.pnc.cleaner.orchapi.model.BuildConfigSetRecordRest;
 import org.jboss.pnc.cleaner.orchapi.model.BuildRecordRest;
-import org.jboss.pnc.cleaner.orchapi.validation.exceptions.RepositoryViolationException;
 
 import java.util.Collection;
 import java.util.Date;
@@ -43,7 +42,7 @@ public interface TemporaryBuildsCleanerAdapter {
      * Deletes a temporary build and waits for the operation completion. The method is blocking.
      *
      * @param id ID of a temporary build, which is meant to be deleted
-     * @throws RepositoryViolationException Thrown if deletion fails with an error
+     * @throws OrchInteractionException Thrown if deletion fails with an error
      */
     void deleteTemporaryBuild(Integer id) throws OrchInteractionException;
 
@@ -59,7 +58,7 @@ public interface TemporaryBuildsCleanerAdapter {
      * Deletes a temporary BuildConfigSetRecord
      *
      * @param id ID of a temporary BuildConfigSetRecord, which is meant to be deleted
-     * @throws RepositoryViolationException Thrown if deletion fails with an error
+     * @throws OrchInteractionException Thrown if deletion fails with an error
      */
     void deleteTemporaryBuildConfigSetRecord(Integer id) throws OrchInteractionException;
 }
