@@ -40,6 +40,7 @@ public class TemporaryBuildsCleanupScheduler {
 
     /**
      * Schedules cleanup of old temporary builds
+     * @throws ValidationException Thrown if the cleanup fails with error
      */
     @Scheduled(cron = "{temporaryBuildsCleaner.cron}")
     public void cleanupExpiredTemporaryBuilds() throws ValidationException {

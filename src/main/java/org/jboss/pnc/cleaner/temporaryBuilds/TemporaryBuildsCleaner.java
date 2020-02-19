@@ -28,6 +28,7 @@ public interface TemporaryBuildsCleaner {
 
     /**
      * Cleanup old temporary builds
+     * @throws ValidationException Thrown if the cleanup fails with error
      */
     void cleanupExpiredTemporaryBuilds() throws ValidationException;
 }
