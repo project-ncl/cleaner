@@ -30,8 +30,7 @@ class AppInfoTest {
     void testGetAppInfoString() {
 
         String appInfoString = AppInfo.getAppInfoString();
-        assertThat(appInfoString)
-                .contains(AppInfo.getBuildTime())
+        assertThat(appInfoString).contains(AppInfo.getBuildTime())
                 .contains(AppInfo.getRevision())
                 .contains(AppInfo.getVersion())
                 .doesNotContain("${");

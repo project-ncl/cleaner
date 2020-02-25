@@ -20,9 +20,9 @@ package org.jboss.pnc.cleaner.temporaryBuilds;
 import javax.enterprise.context.ApplicationScoped;
 
 /**
- * CDI bean, which manages delete operation callbacks for BUILDS and provides a blocking was of waiting fot the operation completion.
- * First the wait operation must be initiated using a method #initializeHandler and then at any time
- * a blocking method #await can be called.
+ * CDI bean, which manages delete operation callbacks for BUILDS and provides a blocking was of waiting fot the operation
+ * completion. First the wait operation must be initiated using a method #initializeHandler and then at any time a blocking
+ * method #await can be called.
  *
  * @author Jakub Bartecek
  */
