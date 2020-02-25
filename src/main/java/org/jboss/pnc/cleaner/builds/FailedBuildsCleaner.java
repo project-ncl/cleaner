@@ -167,8 +167,9 @@ public class FailedBuildsCleaner {
     }
 
     /**
-     * Checks if the given group name matches an old enough failed build and if so it cleans everything produced by the build. The
-     * cleaned data include tracking record, build group, build hosted repo and any generic http repos from Indy.
+     * Checks if the given group name matches an old enough failed build and if so it cleans everything produced by the
+     * build. The cleaned data include tracking record, build group, build hosted repo and any generic http repos from
+     * Indy.
      *
      * @param groupName the potentially cleaned group name
      * @param session cleaner session
@@ -210,9 +211,9 @@ public class FailedBuildsCleaner {
     }
 
     /**
-     * Checks if repo group with given name should be cleaned. It says so if the build record with matching buildContentId could not
-     * be found (probably dropped before by temporary builds cleaner) or if the loaded build record has one of the statuses listed
-     * in failedStatuses and
+     * Checks if repo group with given name should be cleaned. It says so if the build record with matching
+     * buildContentId could not be found (probably dropped before by temporary builds cleaner) or if the loaded build
+     * record has one of the statuses listed in failedStatuses and
      *
      * @param groupName
      * @param session
@@ -236,9 +237,9 @@ public class FailedBuildsCleaner {
     }
 
     /**
-     * Finds storeKeys of repos matching the pattern used to store repos for generic http downloads. It finds groups matching the
-     * pattern for given buildContentId and collects their keys along with keys of their constituents, which are always a source
-     * remote repo and hosted repo to backup the downloaded binaries.
+     * Finds storeKeys of repos matching the pattern used to store repos for generic http downloads. It finds groups
+     * matching the pattern for given buildContentId and collects their keys along with keys of their constituents,
+     * which are always a source remote repo and hosted repo to backup the downloaded binaries.
      *
      * @param buildContentId the build content ID
      * @return the list of matching store keys, might be empty, never null
@@ -256,8 +257,8 @@ public class FailedBuildsCleaner {
     }
 
     /**
-     * Loads build record from PNC identified by given buildContentId. In case multiple build records match the id it logs an error
-     * and returns null.
+     * Loads build record from PNC identified by given buildContentId. In case multiple build records match the id it
+     * logs an error and returns null.
      *
      * @param buildContentId id of the wanted build
      * @return found build record or null
