@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import org.jboss.pnc.client.BuildClient;
 import org.jboss.pnc.client.GroupBuildClient;
 
-
 /**
  * Producer for Orchestrator clients
  *

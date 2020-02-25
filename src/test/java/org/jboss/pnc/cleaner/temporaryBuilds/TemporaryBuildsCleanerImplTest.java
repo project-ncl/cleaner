@@ -60,9 +60,8 @@ public class TemporaryBuildsCleanerImplTest {
 
     static final String SINGLE_TEMPORARY_BUILD_GROUP_FILE = "singleTemporaryBuildGroup.json";
 
-    private WireMockServer wireMockServer = new WireMockServer(options()
-            .port(8082)
-            .withRootDirectory("src/test/resources/wiremock/general"));
+    private WireMockServer wireMockServer = new WireMockServer(
+            options().port(8082).withRootDirectory("src/test/resources/wiremock/general"));
 
     @Inject
     TemporaryBuildsCleanerImpl temporaryBuildsCleaner;
@@ -81,20 +80,22 @@ public class TemporaryBuildsCleanerImplTest {
     public void shouldDeleteATemporaryBuild() {
         // given
         final String buildId = "684";
-        wireMockServer.stubFor(get(urlMatching(BUILDS_ENDPOINT + "\\?.*")).willReturn(aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(SINGLE_TEMPORARY_BUILD_FILE)));
+        wireMockServer.stubFor(
+                get(urlMatching(BUILDS_ENDPOINT + "\\?.*")).willReturn(
+                        aResponse().withStatus(200)
+                                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                .withBodyFile(SINGLE_TEMPORARY_BUILD_FILE)));
 
-        String deleteRequestRegex = BUILDS_ENDPOINT + "/" + buildId + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fdelete%2Fbuilds%2F684";
-        wireMockServer.stubFor(delete(urlMatching(deleteRequestRegex))
-                .willReturn(aResponse().withStatus(200)));
+        String deleteRequestRegex = BUILDS_ENDPOINT + "/" + buildId
+                + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fdelete%2Fbuilds%2F684";
+        wireMockServer.stubFor(delete(urlMatching(deleteRequestRegex)).willReturn(aResponse().withStatus(200)));
 
         startCallbackThread("http://0.0.0.0:8081/callbacks/delete/builds/684");
 
         // when
-        assertTimeoutPreemptively(ofSeconds(15), () ->
-            temporaryBuildsCleaner.deleteExpiredBuildRecords(TimeUtils.getDateXDaysAgo(14)));
+        assertTimeoutPreemptively(
+                ofSeconds(15),
+                () -> temporaryBuildsCleaner.deleteExpiredBuildRecords(TimeUtils.getDateXDaysAgo(14)));
 
         // then
         wireMockServer.verify(1, deleteRequestedFor(urlMatching(deleteRequestRegex)));
@@ -127,10 +128,11 @@ public class TemporaryBuildsCleanerImplTest {
     @Test
     public void shouldSucceedIfNoBuildToBeDeleted() {
         // given
-        wireMockServer.stubFor(get(urlMatching(BUILDS_ENDPOINT + ".*")).willReturn(aResponse()
-                .withStatus(200)
-                .withBodyFile(EMPTY_RESPONSE_FILE)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+        wireMockServer.stubFor(
+                get(urlMatching(BUILDS_ENDPOINT + ".*")).willReturn(
+                        aResponse().withStatus(200)
+                                .withBodyFile(EMPTY_RESPONSE_FILE)
+                                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
 
         // when
         temporaryBuildsCleaner.deleteExpiredBuildRecords(TimeUtils.getDateXDaysAgo(14));
@@ -142,9 +144,9 @@ public class TemporaryBuildsCleanerImplTest {
     @Test
     public void shouldFailSafeBuildDeletionIfRemoteServerIsNotWorking() {
         // given
-        wireMockServer.stubFor(get(urlMatching(BUILDS_ENDPOINT + ".*")).willReturn(aResponse()
-                .withStatus(500)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+        wireMockServer.stubFor(
+                get(urlMatching(BUILDS_ENDPOINT + ".*")).willReturn(
+                        aResponse().withStatus(500).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
 
         // when
         temporaryBuildsCleaner.deleteExpiredBuildRecords(TimeUtils.getDateXDaysAgo(14));
@@ -156,34 +158,35 @@ public class TemporaryBuildsCleanerImplTest {
     public void shouldDeleteATemporaryBuildGroup() {
         // given
         final String buildId = "166";
-        wireMockServer.stubFor(get(urlMatching(GROUP_BUILDS_ENDPOINT + "\\?.*")).willReturn
-                (aResponse()
-                .withStatus(200)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                .withBodyFile(SINGLE_TEMPORARY_BUILD_GROUP_FILE)));
+        wireMockServer.stubFor(
+                get(urlMatching(GROUP_BUILDS_ENDPOINT + "\\?.*")).willReturn(
+                        aResponse().withStatus(200)
+                                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                .withBodyFile(SINGLE_TEMPORARY_BUILD_GROUP_FILE)));
 
-        String deleteRequestRegex = GROUP_BUILDS_ENDPOINT + "/" + buildId + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fdelete%2Fgroup-builds%2F166";
-        wireMockServer.stubFor(delete(urlMatching(deleteRequestRegex))
-                .willReturn(aResponse().withStatus(200)));
+        String deleteRequestRegex = GROUP_BUILDS_ENDPOINT + "/" + buildId
+                + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fdelete%2Fgroup-builds%2F166";
+        wireMockServer.stubFor(delete(urlMatching(deleteRequestRegex)).willReturn(aResponse().withStatus(200)));
 
         startCallbackThread("http://0.0.0.0:8081/callbacks/delete/group-builds/166");
 
         // when
-        assertTimeoutPreemptively(ofSeconds(15), () ->
-            temporaryBuildsCleaner.deleteExpiredBuildConfigSetRecords(TimeUtils.getDateXDaysAgo(14)));
+        assertTimeoutPreemptively(
+                ofSeconds(15),
+                () -> temporaryBuildsCleaner.deleteExpiredBuildConfigSetRecords(TimeUtils.getDateXDaysAgo(14)));
 
         // then
         wireMockServer.verify(1, deleteRequestedFor(urlMatching(deleteRequestRegex)));
     }
 
-
     @Test
     public void shouldSucceedIfNoBuildGroupToBeDeleted() {
         // given
-        wireMockServer.stubFor(get(urlMatching(GROUP_BUILDS_ENDPOINT + ".*")).willReturn(aResponse()
-                .withStatus(200)
-                .withBodyFile(EMPTY_RESPONSE_FILE)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+        wireMockServer.stubFor(
+                get(urlMatching(GROUP_BUILDS_ENDPOINT + ".*")).willReturn(
+                        aResponse().withStatus(200)
+                                .withBodyFile(EMPTY_RESPONSE_FILE)
+                                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
 
         // when
         temporaryBuildsCleaner.deleteExpiredBuildConfigSetRecords(TimeUtils.getDateXDaysAgo(14));
@@ -195,10 +198,9 @@ public class TemporaryBuildsCleanerImplTest {
     @Test
     public void shouldFailSafeBuildGroupDeletionIfRemoteServerIsNotWorking() {
         // given
-        wireMockServer.stubFor(get(urlMatching(GROUP_BUILDS_ENDPOINT + ".*")).willReturn
-                (aResponse()
-                .withStatus(500)
-                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
+        wireMockServer.stubFor(
+                get(urlMatching(GROUP_BUILDS_ENDPOINT + ".*")).willReturn(
+                        aResponse().withStatus(500).withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)));
 
         // when
         temporaryBuildsCleaner.deleteExpiredBuildConfigSetRecords(TimeUtils.getDateXDaysAgo(14));

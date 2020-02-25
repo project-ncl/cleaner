@@ -123,14 +123,12 @@ public class FailedBuildsCleaner {
             authenticator = new OAuth20BearerTokenAuthenticator(accessToken);
         }
         try {
-            SiteConfig siteConfig = new SiteConfigBuilder("indy", indyUrl)
-                    .withRequestTimeoutSeconds(indyRequestTimeout)
+            SiteConfig siteConfig = new SiteConfigBuilder("indy", indyUrl).withRequestTimeoutSeconds(indyRequestTimeout)
                     // this client is used in single thread, we don't need more than 1 connection at a time
                     .withMaxConnections(1)
                     .build();
 
-            IndyClientModule[] modules = new IndyClientModule[] {
-                    new IndyFoloAdminClientModule(),
+            IndyClientModule[] modules = new IndyClientModule[] { new IndyFoloAdminClientModule(),
                     new IndyFoloContentClientModule() };
 
             Map<String, String> mdcCopyMappings = new HashMap<>(); // TODO fill in these if needed
@@ -154,22 +152,23 @@ public class FailedBuildsCleaner {
         try {
             StoreListingDTO<Group> groupsListing = indyStores.listGroups(MAVEN_PKG_KEY);
             if (groupsListing == null) {
-                throw new RuntimeException("Error getting Maven group list from Indy. The result "
-                        + "was empty. Check Indy URL.");
+                throw new RuntimeException(
+                        "Error getting Maven group list from Indy. The result " + "was empty. Check Indy URL.");
             }
             groups = groupsListing.getItems();
         } catch (IndyClientException e) {
             throw new RuntimeException("Error getting Maven group list from Indy: " + e.toString(), e);
         }
-        List<String> result = groups.stream().map(g -> g.getName()).filter(n -> pattern.matcher(n).matches())
+        List<String> result = groups.stream()
+                .map(g -> g.getName())
+                .filter(n -> pattern.matcher(n).matches())
                 .collect(Collectors.toList());
         return result;
     }
 
     /**
-     * Checks if the given group name matches an old enough failed build and if so it cleans
-     * everything produced by the build. The cleaned data include tracking record, build group,
-     * build hosted repo and any generic http repos from Indy.
+     * Checks if the given group name matches an old enough failed build and if so it cleans everything produced by the build. The
+     * cleaned data include tracking record, build group, build hosted repo and any generic http repos from Indy.
      *
      * @param groupName the potentially cleaned group name
      * @param session cleaner session
@@ -183,7 +182,7 @@ public class FailedBuildsCleaner {
                 logger.info("Cleaning repositories for {}.", groupName);
                 IndyStoresClientModule stores = session.getStores();
                 try {
-                    //delete the content
+                    // delete the content
                     String pkgKey = MAVEN_PKG_KEY;
                     logger.debug("Cleaning Maven group and hosted repository {}.", groupName);
                     deleteGroupAndHostedRepo(pkgKey, groupName, stores);
@@ -200,21 +199,20 @@ public class FailedBuildsCleaner {
                     logger.debug("Cleaning tracking record {} (if present).", groupName);
                     foloAdmin.clearTrackingRecord(groupName);
                 } catch (IndyClientException e) {
-                    String description = MessageFormat.format("Failed to perform cleanups in Indy for %s",
-                            groupName);
+                    String description = MessageFormat.format("Failed to perform cleanups in Indy for %s", groupName);
                     logger.error(description, e);
                 }
             }
         } catch (CleanerException ex) {
-            logger.error("Error loading build record for group " + groupName + ". Skipping.", ex);;
+            logger.error("Error loading build record for group " + groupName + ". Skipping.", ex);
+            ;
         }
     }
 
     /**
-     * Checks if repo group with given name should be cleaned. It says so if the build record with
-     * matching buildContentId could not be found (probably dropped before by temporary builds
-     * cleaner) or if the loaded build record has one of the statuses listed in failedStatuses
-     * and
+     * Checks if repo group with given name should be cleaned. It says so if the build record with matching buildContentId could not
+     * be found (probably dropped before by temporary builds cleaner) or if the loaded build record has one of the statuses listed
+     * in failedStatuses and
      *
      * @param groupName
      * @param session
@@ -225,8 +223,9 @@ public class FailedBuildsCleaner {
         Build build = getBuildRecord(groupName);
         boolean clean = false;
         if (build == null) {
-            logger.warn("Build record for group {} not found. Assuming it was removed by "
-                    + "temporary builds cleaner before failed builds cleaner got to it. Cleaning...",
+            logger.warn(
+                    "Build record for group {} not found. Assuming it was removed by "
+                            + "temporary builds cleaner before failed builds cleaner got to it. Cleaning...",
                     groupName);
             clean = true;
         } else if (failedStatuses.contains(build.getStatus()) && build.getEndTime().isBefore(session.getTo())) {
@@ -237,10 +236,9 @@ public class FailedBuildsCleaner {
     }
 
     /**
-     * Finds storeKeys of repos matching the pattern used to store repos for generic http downloads.
-     * It finds groups matching the pattern for given buildContentId and collects their keys along
-     * with keys of their constituents, which are always a source remote repo and hosted repo to
-     * backup the downloaded binaries.
+     * Finds storeKeys of repos matching the pattern used to store repos for generic http downloads. It finds groups matching the
+     * pattern for given buildContentId and collects their keys along with keys of their constituents, which are always a source
+     * remote repo and hosted repo to backup the downloaded binaries.
      *
      * @param buildContentId the build content ID
      * @return the list of matching store keys, might be empty, never null
@@ -258,8 +256,8 @@ public class FailedBuildsCleaner {
     }
 
     /**
-     * Loads build record from PNC identified by given buildContentId. In case multiple build
-     * records match the id it logs an error and returns null.
+     * Loads build record from PNC identified by given buildContentId. In case multiple build records match the id it logs an error
+     * and returns null.
      *
      * @param buildContentId id of the wanted build
      * @return found build record or null
@@ -268,7 +266,8 @@ public class FailedBuildsCleaner {
         logger.debug("Looking for build record with query \"buildContentId==" + buildContentId + "\"");
 
         try {
-            RemoteCollection<Build> builds = buildClient.getAll(null, null, Optional.empty(), Optional.of("buildContentId==" + buildContentId));
+            RemoteCollection<Build> builds = buildClient
+                    .getAll(null, null, Optional.empty(), Optional.of("buildContentId==" + buildContentId));
 
             if (builds.size() > 1) {
                 logger.error("Multiple build records found for buildContentId = {}", buildContentId);
@@ -296,7 +295,11 @@ public class FailedBuildsCleaner {
                 return builds.iterator().next();
             }
         } catch (RemoteResourceException e) {
-            throw new CleanerException("Error when getting build record [buildContentId=%s, status=%d].", e, buildContentId, e.getStatus());
+            throw new CleanerException(
+                    "Error when getting build record [buildContentId=%s, status=%d].",
+                    e,
+                    buildContentId,
+                    e.getStatus());
         }
     }
 
