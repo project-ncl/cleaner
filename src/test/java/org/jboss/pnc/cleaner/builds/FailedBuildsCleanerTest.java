@@ -90,9 +90,9 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests parsing of build group names from the list of all maven groups that are usually in Indy. It contains 1 old format
-     * ("build_&lt;some string&gt;") build group and 2 new format ("build-&lt;number&gt;"). Then checks if the resulting list
-     * contains 3 entries and if the expected names are in there.
+     * Tests parsing of build group names from the list of all maven groups that are usually in Indy. It contains 1 old
+     * format ("build_&lt;some string&gt;") build group and 2 new format ("build-&lt;number&gt;"). Then checks if the
+     * resulting list contains 3 entries and if the expected names are in there.
      */
     @Test
     public void getGroupNamesOk() {
@@ -116,8 +116,8 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests parsing of build group names from the list containing only maven groups that are usually in Indy with no build groups.
-     * Then checks, if the resulting list is empty.
+     * Tests parsing of build group names from the list containing only maven groups that are usually in Indy with no
+     * build groups. Then checks, if the resulting list is empty.
      */
     @Test
     public void getGroupNamesNoBuildGroup() {
@@ -138,8 +138,8 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build that ended before the
-     * limit timestamp and expects it should be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build that ended
+     * before the limit timestamp and expects it should be cleaned.
      */
     @Test
     public void shouldCleanOk() throws CleanerException {
@@ -161,9 +161,9 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build that ended before the
-     * limit timestamp but it is missing a build content ID, so it should be found by parsed numeric ID and expects it should be
-     * cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build that ended
+     * before the limit timestamp but it is missing a build content ID, so it should be found by parsed numeric ID and
+     * expects it should be cleaned.
      */
     @Test
     public void shouldCleanNoContentId() throws CleanerException {
@@ -188,9 +188,9 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build that ended after the
-     * limit timestamp but it is missing a build content ID, so it should be found by parsed numeric ID and expects it should NOT be
-     * cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build that ended
+     * after the limit timestamp but it is missing a build content ID, so it should be found by parsed numeric ID and
+     * expects it should NOT be cleaned.
      */
     @Test
     public void shouldCleanNoContentIdTooYoung() throws CleanerException {
@@ -215,8 +215,8 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a non-existing build and expects it
-     * should be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a non-existing build and
+     * expects it should be cleaned.
      */
     @Test
     public void shouldCleanNotFound() throws CleanerException {
@@ -237,8 +237,8 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a running build without an endTime value
-     * and expects it should NOT be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a running build without an
+     * endTime value and expects it should NOT be cleaned.
      */
     @Test
     public void shouldCleanBuilding() throws CleanerException {
@@ -260,8 +260,8 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a successful build which is old enough
-     * and expects it should NOT be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a successful build which is
+     * old enough and expects it should NOT be cleaned.
      */
     @Test
     public void shouldCleanNotFailed() throws CleanerException {
@@ -283,8 +283,8 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build which is too young to be
-     * cleaned and expects it should NOT be cleaned.
+     * Tests the logic saying if a build's repos should be cleaned or not. This test checks a failed build which is too
+     * young to be cleaned and expects it should NOT be cleaned.
      */
     @Test
     public void shouldCleanTooYoung() throws CleanerException {
@@ -306,9 +306,9 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests finding of build-related generic-http repositories. It reads a list of generic-http groups which contains 3 groups
-     * matching the requested build content id. It expects to get those 3 groups in the result along with the respective remote and
-     * hosted repositories.
+     * Tests finding of build-related generic-http repositories. It reads a list of generic-http groups which contains 3
+     * groups matching the requested build content id. It expects to get those 3 groups in the result along with the
+     * respective remote and hosted repositories.
      */
     @Test
     public void findGenericReposOk() {
@@ -346,9 +346,9 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests finding of build-related generic-http repositories. It reads a list of generic-http groups which contains 1 group
-     * matching the requested build content id in old format. It expects to get the group in the result along with its remote and
-     * hosted repository.
+     * Tests finding of build-related generic-http repositories. It reads a list of generic-http groups which contains 1
+     * group matching the requested build content id in old format. It expects to get the group in the result along with
+     * its remote and hosted repository.
      */
     @Test
     public void findGenericReposOldContentId() {
@@ -388,8 +388,8 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests finding of build-related generic-http repositories. It reads a list of generic-http groups which does not contain any
-     * groups matching the requested build content id. It expects to get an empty list back.
+     * Tests finding of build-related generic-http repositories. It reads a list of generic-http groups which does not
+     * contain any groups matching the requested build content id. It expects to get an empty list back.
      */
     @Test
     public void findGenericReposNoGroups() {
@@ -410,8 +410,8 @@ class FailedBuildsCleanerTest {
     }
 
     /**
-     * Tests the whole cleanup logic for 1 build. The build failed and is old enough. It does not have any generic repos and expects
-     * that delete for build group, hosted repo and tracking report were called.
+     * Tests the whole cleanup logic for 1 build. The build failed and is old enough. It does not have any generic repos
+     * and expects that delete for build group, hosted repo and tracking report were called.
      */
     @Test
     public void cleanBuildIfNeededOk() {

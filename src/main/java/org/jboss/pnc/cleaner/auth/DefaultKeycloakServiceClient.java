@@ -59,8 +59,8 @@ public class DefaultKeycloakServiceClient implements KeycloakServiceClient {
     }
 
     /**
-     * A static method providing functionality to get authentication token for static methods using manual CDI lookup of the
-     * KeycloakServiceClient bean
+     * A static method providing functionality to get authentication token for static methods using manual CDI lookup of
+     * the KeycloakServiceClient bean
      *
      * @return A valid token
      */

@@ -311,9 +311,9 @@ public class HttpUtil {
     }
 
     /**
-     * Sets flag telling if SSL hostname validation should be done which also clears the cached httpClient. This method is not
-     * thread-safe and could cause race conditions if the class is used with different settings at the same time, but that is not
-     * expected.
+     * Sets flag telling if SSL hostname validation should be done which also clears the cached httpClient. This method
+     * is not thread-safe and could cause race conditions if the class is used with different settings at the same time,
+     * but that is not expected.
      *
      * @param sslRequired the desired value
      */
