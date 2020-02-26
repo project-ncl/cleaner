@@ -91,7 +91,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
             log.warn(
                     "Querying of temporary builds from Orchestrator failed with [status: {}, errorResponse: {}]",
                     e.getStatus(),
-                    e.getResponse());
+                    e.getResponse().orElse(null));
             return buildsRest;
         }
 
@@ -147,7 +147,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                     "Querying of temporary group builds from Orchestrator failed with [status: {}, errorResponse: "
                             + "{}]",
                     e.getStatus(),
-                    e.getResponse());
+                    e.getResponse().orElse(null));
         }
 
         return groupBuilds;
