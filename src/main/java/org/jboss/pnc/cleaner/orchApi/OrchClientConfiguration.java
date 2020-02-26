@@ -59,7 +59,7 @@ public class OrchClientConfiguration {
         configurationBuilder.host(host);
         configurationBuilder.port(port);
         configurationBuilder.pageSize(pageSize);
-        configurationBuilder.bearerToken(keycloakServiceClient.getAuthToken());
+        configurationBuilder.bearerTokenSupplier(() -> keycloakServiceClient.getAuthToken());
 
         return configurationBuilder.build();
     }
