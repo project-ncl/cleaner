@@ -19,7 +19,7 @@ public class AppInfo {
 
         try {
             appProperties.load(inputStream);
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             log.warn("AppInfo initialization failed. Read of git.properties file failed!", e);
         }
     }

@@ -43,8 +43,7 @@ public class BuildLogVerifier {
         logger.info("Verifying log checksums ...");
         Collection<Build> unverifiedBuilds = getUnverifiedBuilds().getAll();
         logger.info("Found {} unverified builds.", unverifiedBuilds.size());
-        unverifiedBuilds.stream()
-                .forEach(build -> verify(build.getId(), build.getBuildOutputChecksum()));
+        unverifiedBuilds.stream().forEach(build -> verify(build.getId(), build.getBuildOutputChecksum()));
         return unverifiedBuilds.size();
     }
 
@@ -56,7 +55,11 @@ public class BuildLogVerifier {
                 logger.info("Build output checksum OK. BuildId: {}, Checksum: {}.", buildId, checksum);
                 flagPncBuild(buildId, true);
             } else {
-                logger.warn("Build output checksum MISMATCH. BuildId: {}, Db checksum: {}, ElasticSearch checksum {}.", buildId, checksum, esChecksum);
+                logger.warn(
+                        "Build output checksum MISMATCH. BuildId: {}, Db checksum: {}, ElasticSearch checksum {}.",
+                        buildId,
+                        checksum,
+                        esChecksum);
                 flagPncBuild(buildId, false);
             }
         } catch (Exception e) {
@@ -70,13 +73,7 @@ public class BuildLogVerifier {
 
         MetaData metaData = null;
         try {
-            metaData = bifrost.getMetaData(
-                matchFilters,
-                prefixFilters,
-                null,
-                Direction.ASC,
-                null
-            );
+            metaData = bifrost.getMetaData(matchFilters, prefixFilters, null, Direction.ASC, null);
         } catch (IOException e) {
             logger.error("Unable to read checksum from Bifrost.");
         }
