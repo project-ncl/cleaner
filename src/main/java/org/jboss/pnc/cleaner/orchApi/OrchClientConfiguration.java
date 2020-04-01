@@ -25,7 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
-import java.util.HashMap;
 
 /**
  * Configuration for the Orchestrator client configurable using properties
@@ -38,16 +37,16 @@ public class OrchClientConfiguration {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @ConfigProperty(name = "orch.protocol")
-    String protocol;
+    protected String protocol;
 
     @ConfigProperty(name = "orch.host")
-    String host;
+    protected String host;
 
     @ConfigProperty(name = "orch.port")
-    Integer port;
+    protected Integer port;
 
     @ConfigProperty(name = "orch.pageSize", defaultValue = "50")
-    Integer pageSize;
+    protected Integer pageSize;
 
     @Inject
     KeycloakServiceClient keycloakServiceClient;
