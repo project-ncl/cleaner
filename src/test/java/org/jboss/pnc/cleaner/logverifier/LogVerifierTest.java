@@ -58,14 +58,14 @@ public class LogVerifierTest {
     @Order(-1) // Before all methods
     public void prepare() {
         log.info("Overriding configuration ...");
-        orchClientConfiguration.setPort(8081); //Quarkus test server port
+        orchClientConfiguration.setPort(8081); // Quarkus test server port
     }
 
     @Test
     @Order(Integer.MAX_VALUE) // After all methods
     public void cleanup() {
         log.info("Restoring configuration ...");
-        orchClientConfiguration.setPort(8082); //wiremock server used by other tests
+        orchClientConfiguration.setPort(8082); // wiremock server used by other tests
     }
 
     @Test
