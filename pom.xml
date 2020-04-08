@@ -57,7 +57,7 @@
     <keycloak.version>4.5.0.Final</keycloak.version>
     <pnc.version>2.0.0-SNAPSHOT</pnc.version>
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
-    <quarkus.version>1.3.1.Final</quarkus.version>
+    <quarkus.version>1.3.2.Final</quarkus.version>
     <resteasy.version>3.6.1.Final</resteasy.version>
   </properties>
 
