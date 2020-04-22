@@ -5,7 +5,7 @@ import org.jboss.pnc.dto.Artifact;
 import org.jboss.pnc.dto.Build;
 import org.jboss.pnc.dto.BuildConfigurationRevision;
 import org.jboss.pnc.dto.BuildPushResult;
-import org.jboss.pnc.dto.requests.BuildPushRequest;
+import org.jboss.pnc.dto.requests.BuildPushParameters;
 import org.jboss.pnc.dto.response.Graph;
 import org.jboss.pnc.dto.response.Page;
 import org.jboss.pnc.dto.response.SSHCredentials;
@@ -98,7 +98,7 @@ public class OrchBuildEndpoint implements BuildEndpoint {
     }
 
     @Override
-    public BuildPushResult push(String id, BuildPushRequest buildPushRequest) {
+    public BuildPushResult push(String id, BuildPushParameters buildPushParameters) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 
