@@ -1,10 +1,9 @@
 <?xml version="1.0"?>
-<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.pnc.cleaner</groupId>
   <artifactId>cleaner</artifactId>
-  <version>1.8.1-SNAPSHOT</version>
+  <version>1.8.1</version>
 
   <name>Cleaner for PNC</name>
   <description>This project is a service, which performs cleanup and maintenance tasks for PNC eco-system.</description>
@@ -23,7 +22,7 @@
     <connection>scm:git:http://github.com/project-ncl/cleaner.git</connection>
     <developerConnection>scm:git:git@github.com:project-ncl/cleaner.git</developerConnection>
     <url>http://github.com/project-ncl/cleaner</url>
-    <tag>HEAD</tag>
+    <tag>cleaner-1.8.1</tag>
   </scm>
 
   <developers>
