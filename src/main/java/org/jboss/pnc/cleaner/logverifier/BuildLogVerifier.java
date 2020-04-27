@@ -62,22 +62,16 @@ public class BuildLogVerifier {
                         esChecksum);
                 flagPncBuild(buildId, false);
             }
-        } catch (Exception e) {
-            logger.error("Cannot verify checksum.", e);
+        } catch (IOException e) {
+            logger.error("Cannot verify checksum for buildId: " + buildId + ".", e);
         }
     }
 
-    private String getESChecksum(String buildId) {
+    private String getESChecksum(String buildId) throws IOException {
         String matchFilters = "mdc.processContext.keyword:build-" + buildId;
         String prefixFilters = "loggerName.keyword:org.jboss.pnc._userlog_.build-log";
 
-        MetaData metaData = null;
-        try {
-            metaData = bifrost.getMetaData(matchFilters, prefixFilters, null, Direction.ASC, null);
-        } catch (IOException e) {
-            logger.error("Unable to read checksum from Bifrost.");
-        }
-
+        MetaData metaData = bifrost.getMetaData(matchFilters, prefixFilters, null, Direction.ASC, null);
         return metaData.getMd5Digest();
     }
 
