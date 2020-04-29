@@ -238,6 +238,14 @@
 
   <repositories>
     <repository>
+      <id>Nexus Staging</id>
+      <url>https://oss.sonatype.org/content/groups/staging</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+
+    <repository>
       <id>jboss-snapshots</id>
       <name>jboss-snapshots</name>
       <url>https://repository.jboss.org</url>
