@@ -15,9 +15,7 @@ public class AppInfo {
 
         appProperties = new Properties();
 
-        InputStream inputStream = AppInfo.class.getClassLoader().getResourceAsStream("git.properties");
-
-        try {
+        try (InputStream inputStream = AppInfo.class.getClassLoader().getResourceAsStream("git.properties")) {
             appProperties.load(inputStream);
         } catch (IOException | NullPointerException e) {
             log.warn("AppInfo initialization failed. Read of git.properties file failed!", e);
