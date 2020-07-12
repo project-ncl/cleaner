@@ -377,6 +377,13 @@
           </executions>
       </plugin>
       <plugin>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <configuration>
+              <!-- Add this to explicitly show the error -->
+              <forceJavacCompilerUse>true</forceJavacCompilerUse>
+          </configuration>
+      </plugin>
+      <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-release-plugin</artifactId>
           <configuration>

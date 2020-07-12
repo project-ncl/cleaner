@@ -24,7 +24,7 @@ import org.jboss.pnc.client.GroupBuildClient;
 import org.jboss.pnc.client.RemoteCollection;
 import org.jboss.pnc.client.RemoteResourceException;
 import org.jboss.pnc.dto.Build;
-import org.jboss.pnc.dto.DeleteOperationResult;
+import org.jboss.pnc.dto.response.DeleteOperationResult;
 import org.jboss.pnc.dto.GroupBuild;
 
 import javax.annotation.PostConstruct;

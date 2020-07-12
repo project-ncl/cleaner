@@ -20,7 +20,7 @@ package org.jboss.pnc.cleaner.temporaryBuilds;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.pnc.dto.DeleteOperationResult;
+import org.jboss.pnc.dto.response.DeleteOperationResult;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

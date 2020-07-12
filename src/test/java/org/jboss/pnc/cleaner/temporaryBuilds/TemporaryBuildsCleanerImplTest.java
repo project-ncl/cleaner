@@ -23,11 +23,9 @@ import io.quarkus.test.junit.QuarkusTest;
 import org.jboss.pnc.cleaner.common.TestConstants;
 import org.jboss.pnc.common.util.HttpUtils;
 import org.jboss.pnc.common.util.TimeUtils;
-import org.jboss.pnc.dto.DeleteOperationResult;
+import org.jboss.pnc.dto.response.DeleteOperationResult;
 import org.jboss.pnc.enums.ResultStatus;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
