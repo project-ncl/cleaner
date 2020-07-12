@@ -8,6 +8,7 @@ import org.jboss.pnc.dto.BuildPushResult;
 import org.jboss.pnc.dto.requests.BuildPushParameters;
 import org.jboss.pnc.dto.response.Graph;
 import org.jboss.pnc.dto.response.Page;
+import org.jboss.pnc.dto.response.RunningBuildCount;
 import org.jboss.pnc.dto.response.SSHCredentials;
 import org.jboss.pnc.enums.BuildStatus;
 import org.jboss.pnc.rest.api.endpoints.BuildEndpoint;
@@ -113,7 +114,7 @@ public class OrchBuildEndpoint implements BuildEndpoint {
     }
 
     @Override
-    public BuildConfigurationRevision getBuildConfigurationRevision(String id) {
+    public BuildConfigurationRevision getBuildConfigRevision(String id) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 
@@ -147,6 +148,11 @@ public class OrchBuildEndpoint implements BuildEndpoint {
             BuildStatus status,
             String search,
             @Valid PageParameters pageParameters) {
+        throw new UnsupportedOperationException("Not yet implemented in mock.");
+    }
+
+    @Override
+    public RunningBuildCount getCount() {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 }
