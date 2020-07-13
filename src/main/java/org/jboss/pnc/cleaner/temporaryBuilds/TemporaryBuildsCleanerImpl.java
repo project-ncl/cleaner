@@ -28,6 +28,8 @@ import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Deletes temporary builds via Orchestrator REST API
@@ -74,17 +76,23 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
     }
 
     void deleteExpiredBuildRecords(Date expirationThreshold) {
-        Collection<Build> expiredBuilds = temporaryBuildsCleanerAdapter
-                .findTemporaryBuildsOlderThan(expirationThreshold);
-
-        for (Build build : expiredBuilds) {
-            try {
-                log.info("Deleting temporary build {}", build);
-                temporaryBuildsCleanerAdapter.deleteTemporaryBuild(build.getId());
-                log.info("Temporary build {} was deleted successfully", build);
-            } catch (OrchInteractionException ex) {
-                log.warn("Deletion of temporary build {} failed! Cause: {}", build, ex);
+        Set<Build> failedBuilds = new HashSet<>();
+        Collection<Build> expiredBuilds = null;
+        do {
+            log.info("Doing an iteration of Temporary Builds deletion.");
+            expiredBuilds = temporaryBuildsCleanerAdapter.findTemporaryBuildsOlderThan(expirationThreshold);
+            expiredBuilds.removeAll(failedBuilds);
+            for (Build build : expiredBuilds) {
+                try {
+                    log.info("Deleting temporary build {}", build);
+                    temporaryBuildsCleanerAdapter.deleteTemporaryBuild(build.getId());
+                    log.info("Temporary build {} was deleted successfully", build);
+                } catch (OrchInteractionException ex) {
+                    log.warn("Deletion of temporary build {} failed! Cause: {}", build, ex);
+                    failedBuilds.add(build);
+                }
             }
-        }
+        } while (!expiredBuilds.isEmpty());
+
     }
 }

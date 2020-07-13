@@ -155,4 +155,9 @@ public class OrchBuildEndpoint implements BuildEndpoint {
     public RunningBuildCount getCount() {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
+
+    @Override
+    public Page<Build> getAllIndependentTempBuildsOlderThanTimestamp(@Valid PageParameters pageParams, long timestamp) {
+        throw new UnsupportedOperationException("Not yet implemented in mock.");
+    }
 }

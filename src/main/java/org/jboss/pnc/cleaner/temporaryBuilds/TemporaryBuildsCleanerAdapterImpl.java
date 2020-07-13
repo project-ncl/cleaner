@@ -80,13 +80,9 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         Collection<Build> buildsRest = new HashSet<>();
 
         try {
-            RemoteCollection<Build> remoteCollection = buildClient.getAll(
-                    null,
-                    null,
-                    Optional.empty(),
-                    Optional.of("temporaryBuild==TRUE;endTime<" + formatTimestampForRsql(expirationDate)));
-            remoteCollection.forEach(build -> buildsRest.add(build));
-
+            RemoteCollection<Build> remoteCollection = buildClient
+                    .getAllIndependentTempBuildsOlderThanTimestamp(expirationDate.getTime());
+            remoteCollection.forEach(buildsRest::add);
         } catch (RemoteResourceException e) {
             log.warn(
                     "Querying of temporary builds from Orchestrator failed with [status: {}, errorResponse: {}]",

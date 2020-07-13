@@ -19,6 +19,7 @@ package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.stubbing.Scenario;
 import io.quarkus.test.junit.QuarkusTest;
 import org.jboss.pnc.cleaner.common.TestConstants;
 import org.jboss.pnc.common.util.HttpUtils;
@@ -52,6 +53,8 @@ public class TemporaryBuildsCleanerImplTest {
 
     static final String GROUP_BUILDS_ENDPOINT = TestConstants.ROOT_PATH + "/group-builds";
 
+    static final String GET_TEMP_BUILDS_ENDPOINT = "/independent-temporary-older-than-timestamp";
+
     static final String EMPTY_RESPONSE_FILE = "emptyResponse.json";
 
     static final String SINGLE_TEMPORARY_BUILD_FILE = "singleTemporaryBuild.json";
@@ -79,10 +82,20 @@ public class TemporaryBuildsCleanerImplTest {
         // given
         final String buildId = "684";
         wireMockServer.stubFor(
-                get(urlMatching(BUILDS_ENDPOINT + "\\?.*")).willReturn(
-                        aResponse().withStatus(200)
-                                .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
-                                .withBodyFile(SINGLE_TEMPORARY_BUILD_FILE)));
+                get(urlMatching(BUILDS_ENDPOINT + GET_TEMP_BUILDS_ENDPOINT + "\\?.*")).inScenario("scenario")
+                        .whenScenarioStateIs(Scenario.STARTED)
+                        .willReturn(
+                                aResponse().withStatus(200)
+                                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                        .withBodyFile(SINGLE_TEMPORARY_BUILD_FILE))
+                        .willSetStateTo("Return nothing"));
+        wireMockServer.stubFor(
+                get(urlMatching(BUILDS_ENDPOINT + GET_TEMP_BUILDS_ENDPOINT + "\\?.*")).inScenario("scenario")
+                        .whenScenarioStateIs("Return nothing")
+                        .willReturn(
+                                aResponse().withStatus(200)
+                                        .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
+                                        .withBodyFile(EMPTY_RESPONSE_FILE)));
 
         String deleteRequestRegex = BUILDS_ENDPOINT + "/" + buildId
                 + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fdelete%2Fbuilds%2F684";
