@@ -21,5 +21,5 @@ package org.jboss.pnc.cleaner.common;
  * @author Jakub Bartecek
  */
 public class TestConstants {
-    public static final String ROOT_PATH = "/pnc-rest-new/rest-new";
+    public static final String ROOT_PATH = "/pnc-rest/v2";
 }

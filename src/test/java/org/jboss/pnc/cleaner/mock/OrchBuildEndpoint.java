@@ -28,7 +28,7 @@ import java.util.List;
  * @author <a href="mailto:matejonnet@gmail.opecom">Matej Lazar</a>
  */
 @Mock
-@Path("/pnc-rest-new/rest-new/builds")
+@Path("/pnc-rest/v2/builds")
 public class OrchBuildEndpoint implements BuildEndpoint {
 
     @Inject
