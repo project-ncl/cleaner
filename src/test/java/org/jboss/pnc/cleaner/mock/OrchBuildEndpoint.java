@@ -160,4 +160,9 @@ public class OrchBuildEndpoint implements BuildEndpoint {
     public Page<Build> getAllIndependentTempBuildsOlderThanTimestamp(@Valid PageParameters pageParams, long timestamp) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
+
+    @Override
+    public void createBuiltArtifactsQualityLevelRevisions(String id, String quality, String reason) {
+        throw new UnsupportedOperationException("Not yet implemented in mock.");
+    }
 }
