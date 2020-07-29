@@ -1,5 +1,6 @@
 package org.jboss.pnc.cleaner.logverifier;
 
+import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.api.bifrost.dto.MetaData;
 import org.jboss.pnc.api.bifrost.enums.Direction;
@@ -16,8 +17,11 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
@@ -34,7 +38,12 @@ public class BuildLogVerifier {
     @Inject
     BuildClient buildClient;
 
-    public static final String BUILD_OUTPUT_OK_KEY = "BUILD_OUTPUT_OK";;
+    @ConfigProperty(name = "buildLogVerifierScheduler.maxRetries")
+    private Integer maxRetries;
+
+    private final Map<String, AtomicInteger> buildESLogErrorCounter = new HashMap<>();
+
+    public static final String BUILD_OUTPUT_OK_KEY = "BUILD_OUTPUT_OK";
 
     public BuildLogVerifier() {
     }
@@ -43,7 +52,7 @@ public class BuildLogVerifier {
         logger.info("Verifying log checksums ...");
         Collection<Build> unverifiedBuilds = getUnverifiedBuilds().getAll();
         logger.info("Found {} unverified builds.", unverifiedBuilds.size());
-        unverifiedBuilds.stream().forEach(build -> verify(build.getId(), build.getBuildOutputChecksum()));
+        unverifiedBuilds.forEach(build -> verify(build.getId(), build.getBuildOutputChecksum()));
         return unverifiedBuilds.size();
     }
 
@@ -54,17 +63,37 @@ public class BuildLogVerifier {
             if (checksum.equals(esChecksum)) {
                 logger.info("Build output checksum OK. BuildId: {}, Checksum: {}.", buildId, checksum);
                 flagPncBuild(buildId, true);
+
+                removeRetryCounter(buildId);
             } else {
-                logger.warn(
-                        "Build output checksum MISMATCH. BuildId: {}, Db checksum: {}, ElasticSearch checksum {}.",
-                        buildId,
-                        checksum,
-                        esChecksum);
-                flagPncBuild(buildId, false);
+                logger.warn("Build output checksum MISMATCH. BuildId: {}, Db checksum: {}, ElasticSearch checksum {}.", buildId,
+                        checksum, esChecksum);
+
+                handleMismatchWithRetries(buildId);
             }
         } catch (IOException e) {
             logger.error("Cannot verify checksum for buildId: " + buildId + ".", e);
         }
+    }
+
+    private void removeRetryCounter(String buildId) {
+        buildESLogErrorCounter.remove(buildId);
+    }
+
+    private void handleMismatchWithRetries(String buildId) {
+        if (!buildESLogErrorCounter.containsKey(buildId)) {
+            buildESLogErrorCounter.put(buildId, new AtomicInteger(0));
+        }
+
+        AtomicInteger numOfRetries = buildESLogErrorCounter.get(buildId);
+        if (numOfRetries.get() > maxRetries) {
+            logger.warn("Marking build with id: {} as mismatch", buildId);
+            flagPncBuild(buildId, false);
+            return;
+        }
+
+        logger.warn("Increasing retry counter (counter: {}) for build with id: {}", numOfRetries, buildId);
+        buildESLogErrorCounter.get(buildId).incrementAndGet();
     }
 
     private String getESChecksum(String buildId) throws IOException {
