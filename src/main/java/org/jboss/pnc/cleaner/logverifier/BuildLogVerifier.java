@@ -66,8 +66,11 @@ public class BuildLogVerifier {
 
                 removeRetryCounter(buildId);
             } else {
-                logger.warn("Build output checksum MISMATCH. BuildId: {}, Db checksum: {}, ElasticSearch checksum {}.", buildId,
-                        checksum, esChecksum);
+                logger.warn(
+                        "Build output checksum MISMATCH. BuildId: {}, Db checksum: {}, ElasticSearch checksum {}.",
+                        buildId,
+                        checksum,
+                        esChecksum);
 
                 handleMismatchWithRetries(buildId);
             }
@@ -86,7 +89,7 @@ public class BuildLogVerifier {
         }
 
         AtomicInteger numOfRetries = buildESLogErrorCounter.get(buildId);
-        if (numOfRetries.get() > maxRetries) {
+        if (numOfRetries.get() >= maxRetries) {
             logger.warn("Marking build with id: {} as mismatch", buildId);
             flagPncBuild(buildId, false);
             return;

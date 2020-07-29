@@ -79,14 +79,20 @@ public class LogVerifierTest {
         bifrostProvider.addMetaData("build-1", new MetaData("match"));
         bifrostProvider.addMetaData("build-2", new MetaData("wrong"));
 
-        // when
+        // when #1
         buildLogVerifier.verifyUnflaggedBuilds();
 
-        // then
+        // then #1
         Build build1Updated = orchBuildProvider.getById("1");
         Assertions.assertEquals(Boolean.TRUE.toString(), build1Updated.getAttributes().get(BUILD_OUTPUT_OK_KEY));
-
         Build build2Updated = orchBuildProvider.getById("2");
+        Assertions.assertEquals(null, build2Updated.getAttributes().get(BUILD_OUTPUT_OK_KEY));
+
+        // when #2 (simulate retry for build 2)
+        buildLogVerifier.verifyUnflaggedBuilds();
+
+        // then #2
+        build2Updated = orchBuildProvider.getById("2");
         Assertions.assertEquals(Boolean.FALSE.toString(), build2Updated.getAttributes().get(BUILD_OUTPUT_OK_KEY));
     }
 }
