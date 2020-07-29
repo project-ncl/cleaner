@@ -92,6 +92,7 @@ public class BuildLogVerifier {
         if (numOfRetries.get() >= maxRetries) {
             logger.warn("Marking build with id: {} as mismatch", buildId);
             flagPncBuild(buildId, false);
+            removeRetryCounter(buildId);
             return;
         }
 
