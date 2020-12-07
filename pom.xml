@@ -54,7 +54,7 @@
 
     <indy.version>2.5.2</indy.version>
     <keycloak.version>11.0.3</keycloak.version>
-    <pnc.version>2.0.1</pnc.version>
+    <pnc.version>2.0.3</pnc.version>
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
     <quarkus.version>1.10.1.Final</quarkus.version>
     <resteasy.version>3.6.1.Final</resteasy.version>
