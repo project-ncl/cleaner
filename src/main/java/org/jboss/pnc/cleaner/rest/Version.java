@@ -13,6 +13,6 @@ public class Version {
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String getVersion() {
-        return AppInfo.getAppInfoString();
+        return AppInfo.getAppInfoString() + "-dustin";
     }
 }
