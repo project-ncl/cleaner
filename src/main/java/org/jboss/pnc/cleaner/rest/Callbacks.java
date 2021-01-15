@@ -17,6 +17,7 @@
  */
 package org.jboss.pnc.cleaner.rest;
 
+import io.micrometer.core.annotation.Timed;
 import org.jboss.pnc.cleaner.temporaryBuilds.BuildDeleteCallbackManager;
 import org.jboss.pnc.cleaner.temporaryBuilds.BuildGroupDeleteCallbackManager;
 import org.jboss.pnc.dto.response.DeleteOperationResult;
@@ -44,6 +45,7 @@ public class Callbacks {
     @Path("/delete/builds/{buildId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Timed
     public Response buildRecordDeleteCallback(
             @PathParam("buildId") String buildId,
             DeleteOperationResult deleteOperation) {
@@ -54,6 +56,7 @@ public class Callbacks {
     @Path("/delete/group-builds/{buildId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @Timed
     public Response buildGroupRecordDeleteCallback(
             @PathParam("buildId") String buildId,
             DeleteOperationResult deleteOperation) {

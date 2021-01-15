@@ -17,6 +17,8 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.Config;
 import org.jboss.pnc.client.BuildClient;
@@ -67,6 +69,16 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     @Inject
     BuildGroupDeleteCallbackManager buildGroupDeleteCallbackManager;
 
+    private final MeterRegistry registry;
+    private final Counter errCounter;
+    private final Counter warnCounter;
+
+    TemporaryBuildsCleanerAdapterImpl(MeterRegistry registry) {
+        this.registry = registry;
+        this.errCounter = registry.counter("error.count");
+        this.warnCounter = registry.counter("warning.count");
+    }
+
     @PostConstruct
     void init() {
         final String host = config.getValue("applicationUri", String.class);
@@ -84,6 +96,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                     .getAllIndependentTempBuildsOlderThanTimestamp(expirationDate.getTime());
             remoteCollection.forEach(buildsRest::add);
         } catch (RemoteResourceException e) {
+            warnCounter.increment();
             log.warn(
                     "Querying of temporary builds from Orchestrator failed with [status: {}, errorResponse: {}]",
                     e.getStatus(),
@@ -104,6 +117,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
             if (result != null && result.getStatus() != null && result.getStatus().isSuccess()) {
                 return;
             } else {
+                errCounter.increment();
                 throw new OrchInteractionException(
                         String.format(
                                 "Deletion of a build %s failed! " + "Orchestrator"
@@ -113,6 +127,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
             }
 
         } catch (RemoteResourceException e) {
+            errCounter.increment();
             buildDeleteCallbackManager.cancel(id);
             throw new OrchInteractionException(
                     String.format(
@@ -121,6 +136,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                             e.getStatus()),
                     e);
         } catch (InterruptedException e) {
+            errCounter.increment();
             buildDeleteCallbackManager.cancel(id);
             throw new OrchInteractionException(
                     String.format("Deletion of a build %s failed! Wait operation " + "failed with an exception.", id),
@@ -139,6 +155,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
             remoteCollection.forEach(build -> groupBuilds.add(build));
 
         } catch (RemoteResourceException e) {
+            warnCounter.increment();
             log.warn(
                     "Querying of temporary group builds from Orchestrator failed with [status: {}, errorResponse: "
                             + "{}]",
@@ -160,6 +177,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
             if (result != null && result.getStatus() != null && result.getStatus().isSuccess()) {
                 return;
             } else {
+                errCounter.increment();
                 throw new OrchInteractionException(
                         String.format(
                                 "Deletion of a group build %s failed! " + "Orchestrator"
@@ -169,6 +187,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
             }
 
         } catch (RemoteResourceException e) {
+            errCounter.increment();
             buildDeleteCallbackManager.cancel(id);
             throw new OrchInteractionException(
                     String.format(
@@ -177,6 +196,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
                             e.getStatus()),
                     e);
         } catch (InterruptedException e) {
+            errCounter.increment();
             buildDeleteCallbackManager.cancel(id);
             throw new OrchInteractionException(
                     String.format(

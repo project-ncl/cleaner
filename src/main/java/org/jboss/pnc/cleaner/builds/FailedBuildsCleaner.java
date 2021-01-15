@@ -1,5 +1,8 @@
 package org.jboss.pnc.cleaner.builds;
 
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import io.quarkus.scheduler.Scheduled;
 
 import org.commonjava.indy.client.core.Indy;
@@ -79,6 +82,16 @@ public class FailedBuildsCleaner {
         failedStatuses.add(BuildStatus.FAILED);
     }
 
+    private final MeterRegistry registry;
+    private final Counter errCounter;
+    private final Counter warnCounter;
+
+    FailedBuildsCleaner(MeterRegistry registry) {
+        this.registry = registry;
+        this.errCounter = registry.counter("error.count");
+        this.warnCounter = registry.counter("warning.count");
+    }
+
     @Scheduled(cron = "{failedbuildscleaner.cron}")
     void cleanRegularly() {
         logger.info("Starting regular failed builds cleanup job.");
@@ -92,6 +105,7 @@ public class FailedBuildsCleaner {
      *
      * @param limit point in time marking the line which builds should be deleted
      */
+    @Timed
     public void cleanOlder(Instant limit) {
         logger.info("Retrieving service account auth token.");
         String serviceAccountToken = serviceClient.getAuthToken();
@@ -116,6 +130,7 @@ public class FailedBuildsCleaner {
      * @param accessToken
      * @return
      */
+    @Timed
     Indy initIndy(String accessToken) {
         IndyClientAuthenticator authenticator = null;
         if (accessToken != null) {
@@ -135,6 +150,7 @@ public class FailedBuildsCleaner {
             Map<String, String> mdcCopyMappings = new HashMap<>(); // TODO fill in these if needed
             return new Indy(siteConfig, authenticator, new IndyObjectMapper(true), mdcCopyMappings, modules);
         } catch (IndyClientException e) {
+            errCounter.increment();
             throw new IllegalStateException("Failed to create Indy client: " + e.getMessage(), e);
         }
     }
@@ -145,6 +161,7 @@ public class FailedBuildsCleaner {
      * @param session initialized Indy client, cannot be <code>null</code>
      * @return the loaded list of group names, can be empty, never <code>null</code>
      */
+    @Timed
     List<String> getGroupNames(FailedBuildsCleanerSession session) {
         Pattern pattern = Pattern.compile("build(-\\d+|_.+_\\d{8}\\.\\d{4})");
         IndyStoresClientModule indyStores = session.getStores();
@@ -153,11 +170,13 @@ public class FailedBuildsCleaner {
         try {
             StoreListingDTO<Group> groupsListing = indyStores.listGroups(MAVEN_PKG_KEY);
             if (groupsListing == null) {
+                errCounter.increment();
                 throw new RuntimeException(
                         "Error getting Maven group list from Indy. The result " + "was empty. Check Indy URL.");
             }
             groups = groupsListing.getItems();
         } catch (IndyClientException e) {
+            errCounter.increment();
             throw new RuntimeException("Error getting Maven group list from Indy: " + e.toString(), e);
         }
         List<String> result = groups.stream()
@@ -175,6 +194,7 @@ public class FailedBuildsCleaner {
      * @param groupName the potentially cleaned group name
      * @param session cleaner session
      */
+    @Timed
     void cleanBuildIfNeeded(String groupName, FailedBuildsCleanerSession session) {
         logger.debug("Loading build record for group {}.", groupName);
         try {
@@ -201,11 +221,13 @@ public class FailedBuildsCleaner {
                     logger.debug("Cleaning tracking record {} (if present).", groupName);
                     foloAdmin.clearTrackingRecord(groupName);
                 } catch (IndyClientException e) {
+                    errCounter.increment();
                     String description = MessageFormat.format("Failed to perform cleanups in Indy for %s", groupName);
                     logger.error(description, e);
                 }
             }
         } catch (CleanerException ex) {
+            errCounter.increment();
             logger.error("Error loading build record for group " + groupName + ". Skipping.", ex);
             ;
         }
@@ -221,10 +243,12 @@ public class FailedBuildsCleaner {
      * @return
      * @throws CleanerException in case of an error when loading the build record
      */
+    @Timed
     boolean shouldClean(String groupName, FailedBuildsCleanerSession session) throws CleanerException {
         Build build = getBuildRecord(groupName);
         boolean clean = false;
         if (build == null) {
+            warnCounter.increment();
             logger.warn(
                     "Build record for group {} not found. Assuming it was removed by "
                             + "temporary builds cleaner before failed builds cleaner got to it. Cleaning...",
@@ -245,6 +269,7 @@ public class FailedBuildsCleaner {
      * @param buildContentId the build content ID
      * @return the list of matching store keys, might be empty, never null
      */
+    @Timed
     List<StoreKey> findGenericRepos(String buildContentId, FailedBuildsCleanerSession session) {
         List<StoreKey> result = new ArrayList<>();
         for (Group genericGroup : session.getGenericGroups()) {
@@ -264,6 +289,7 @@ public class FailedBuildsCleaner {
      * @param buildContentId id of the wanted build
      * @return found build record or null
      */
+    @Timed
     private Build getBuildRecord(String buildContentId) throws CleanerException {
         logger.debug("Looking for build record with query \"buildContentId==" + buildContentId + "\"");
 
@@ -272,10 +298,12 @@ public class FailedBuildsCleaner {
                     .getAll(null, null, Optional.empty(), Optional.of("buildContentId==" + buildContentId));
 
             if (builds.size() > 1) {
+                errCounter.increment();
                 logger.error("Multiple build records found for buildContentId = {}", buildContentId);
                 return null;
 
             } else if (builds.size() == 0) {
+                warnCounter.increment();
                 logger.warn("Build record NOT found for buildContentId = {}", buildContentId);
 
                 Matcher matcher = buildNumPattern.matcher(buildContentId);
@@ -285,10 +313,12 @@ public class FailedBuildsCleaner {
                     try {
                         return buildClient.getSpecific(id);
                     } catch (RemoteResourceNotFoundException e) {
+                        warnCounter.increment();
                         logger.warn("Build record NOT found even by ID = {}", id);
                         return null;
                     }
                 } else {
+                    errCounter.increment();
                     logger.error("Unable ot parse buildContentId=%s", buildContentId);
                     return null;
                 }
@@ -297,6 +327,7 @@ public class FailedBuildsCleaner {
                 return builds.iterator().next();
             }
         } catch (RemoteResourceException e) {
+            errCounter.increment();
             throw new CleanerException(
                     "Error when getting build record [buildContentId=%s, status=%d].",
                     e,
@@ -313,6 +344,7 @@ public class FailedBuildsCleaner {
      * @param stores Indy stores client module
      * @throws IndyClientException in case of an error happening in Indy
      */
+    @Timed
     private void deleteGroupAndHostedRepo(String pkgKey, String repoName, IndyStoresClientModule stores)
             throws IndyClientException {
         StoreKey groupKey = new StoreKey(pkgKey, StoreType.group, repoName);
