@@ -17,6 +17,7 @@
  */
 package org.jboss.pnc.cleaner.auth;
 
+import io.micrometer.core.annotation.Timed;
 import org.keycloak.representations.AccessTokenResponse;
 import org.keycloak.util.BasicAuthHelper;
 import org.keycloak.util.JsonSerialization;
@@ -45,6 +46,7 @@ class KeycloakClient {
         return getAuthTokensBySecret(server, realm, null, null, clientId, secret, sslRequired);
     }
 
+    @Timed
     static AccessTokenResponse getAuthTokensBySecret(
             String server,
             String realm,

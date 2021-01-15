@@ -1,5 +1,6 @@
 package org.jboss.pnc.cleaner.builds;
 
+import io.micrometer.core.annotation.Timed;
 import org.commonjava.indy.client.core.Indy;
 import org.commonjava.indy.client.core.IndyClientException;
 import org.commonjava.indy.client.core.module.IndyStoresClientModule;
@@ -31,6 +32,7 @@ public class FailedBuildsCleanerSession {
         this.to = to;
     }
 
+    @Timed
     public List<Group> getGenericGroups() {
         if (genericGroups == null) {
             try {

@@ -19,6 +19,7 @@ package org.jboss.pnc.cleaner.auth.keycloakutil.operations;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import io.micrometer.core.annotation.Timed;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -34,6 +35,7 @@ public class LocalSearch {
         this.items = items;
     }
 
+    @Timed
     public ObjectNode exactMatchOne(String value, String... attrs) {
 
         List<ObjectNode> matched = new LinkedList<>();

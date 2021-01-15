@@ -17,6 +17,8 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.pnc.common.util.TimeUtils;
 import org.jboss.pnc.dto.Build;
@@ -47,6 +49,14 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
     @Inject
     TemporaryBuildsCleanerAdapter temporaryBuildsCleanerAdapter;
 
+    private final MeterRegistry registry;
+    private final Counter warnCounter;
+
+    TemporaryBuildsCleanerImpl(MeterRegistry registry) {
+        this.registry = registry;
+        this.warnCounter = registry.counter("warning.count");
+    }
+
     @Override
     public void cleanupExpiredTemporaryBuilds() {
         log.info(
@@ -70,6 +80,7 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
                 temporaryBuildsCleanerAdapter.deleteTemporaryGroupBuild(groupBuild.getId());
                 log.info("Temporary BuildConfigSetRecord {} was deleted successfully", groupBuild);
             } catch (OrchInteractionException ex) {
+                warnCounter.increment();
                 log.warn("Deletion of temporary BuildConfigSetRecord {} failed!", groupBuild);
             }
         }
@@ -88,6 +99,7 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
                     temporaryBuildsCleanerAdapter.deleteTemporaryBuild(build.getId());
                     log.info("Temporary build {} was deleted successfully", build);
                 } catch (OrchInteractionException ex) {
+                    warnCounter.increment();
                     log.warn("Deletion of temporary build {} failed! Cause: {}", build, ex);
                     failedBuilds.add(build);
                 }
