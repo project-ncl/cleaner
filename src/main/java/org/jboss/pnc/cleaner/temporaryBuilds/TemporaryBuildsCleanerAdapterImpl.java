@@ -17,6 +17,7 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
+import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,8 @@ import java.util.Optional;
 @Slf4j
 public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleanerAdapter {
 
+    private static final String className = TemporaryBuildsCleanerAdapterImpl.class.getName();
+
     private String BASE_DELETE_BUILD_CALLBACK_URL;
 
     private String BASE_DELETE_BUILD_GROUP_CALLBACK_URL;
@@ -69,14 +72,16 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     @Inject
     BuildGroupDeleteCallbackManager buildGroupDeleteCallbackManager;
 
-    private final MeterRegistry registry;
-    private final Counter errCounter;
-    private final Counter warnCounter;
+    @Inject
+    MeterRegistry registry;
 
-    TemporaryBuildsCleanerAdapterImpl(MeterRegistry registry) {
-        this.registry = registry;
-        this.errCounter = registry.counter("error.count");
-        this.warnCounter = registry.counter("warning.count");
+    private Counter errCounter;
+    private Counter warnCounter;
+
+    @PostConstruct
+    void initMetrics() {
+        errCounter = registry.counter(className + ".error.count");
+        warnCounter = registry.counter(className + ".warning.count");
     }
 
     @PostConstruct
@@ -87,6 +92,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         BASE_DELETE_BUILD_GROUP_CALLBACK_URL = host + "/callbacks/delete/group-builds/";
     }
 
+    @Timed
     @Override
     public Collection<Build> findTemporaryBuildsOlderThan(Date expirationDate) {
         Collection<Build> buildsRest = new HashSet<>();
@@ -107,6 +113,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         return buildsRest;
     }
 
+    @Timed
     @Override
     public void deleteTemporaryBuild(String id) throws OrchInteractionException {
         buildDeleteCallbackManager.initializeHandler(id);
@@ -145,6 +152,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
     }
 
+    @Timed
     @Override
     public Collection<GroupBuild> findTemporaryGroupBuildsOlderThan(Date expirationDate) {
         Collection<GroupBuild> groupBuilds = new HashSet<>();
@@ -166,6 +174,7 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         return groupBuilds;
     }
 
+    @Timed
     @Override
     public void deleteTemporaryGroupBuild(String id) throws OrchInteractionException {
         buildGroupDeleteCallbackManager.initializeHandler(id);

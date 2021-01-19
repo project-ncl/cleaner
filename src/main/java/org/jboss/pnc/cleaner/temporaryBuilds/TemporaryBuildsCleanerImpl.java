@@ -17,6 +17,7 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
+import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -26,6 +27,7 @@ import org.jboss.pnc.dto.GroupBuild;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.util.Collection;
@@ -41,6 +43,8 @@ import java.util.Set;
 @ApplicationScoped
 public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
 
+    private static final String className = TemporaryBuildsCleanerImpl.class.getName();
+
     private final Logger log = LoggerFactory.getLogger(TemporaryBuildsCleanerImpl.class);
 
     @ConfigProperty(name = "temporaryBuildsCleaner.lifespan")
@@ -49,14 +53,17 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
     @Inject
     TemporaryBuildsCleanerAdapter temporaryBuildsCleanerAdapter;
 
-    private final MeterRegistry registry;
-    private final Counter warnCounter;
+    @Inject
+    MeterRegistry registry;
 
-    TemporaryBuildsCleanerImpl(MeterRegistry registry) {
-        this.registry = registry;
-        this.warnCounter = registry.counter("warning.count");
+    private Counter warnCounter;
+
+    @PostConstruct
+    void initMetrics() {
+        warnCounter = registry.counter(className + ".warning.count");
     }
 
+    @Timed
     @Override
     public void cleanupExpiredTemporaryBuilds() {
         log.info(
@@ -70,6 +77,7 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
         log.info("Regular cleanup of expired temporary builds finished.");
     }
 
+    @Timed
     void deleteExpiredBuildConfigSetRecords(Date expirationThreshold) {
         Collection<GroupBuild> expiredBCSRecords = temporaryBuildsCleanerAdapter
                 .findTemporaryGroupBuildsOlderThan(expirationThreshold);
@@ -86,6 +94,7 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
         }
     }
 
+    @Timed
     void deleteExpiredBuildRecords(Date expirationThreshold) {
         Set<Build> failedBuilds = new HashSet<>();
         Collection<Build> expiredBuilds = null;
