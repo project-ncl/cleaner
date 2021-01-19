@@ -32,6 +32,7 @@ import org.jboss.pnc.enums.BuildStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
@@ -51,6 +52,8 @@ import static org.commonjava.indy.pkg.maven.model.MavenPackageTypeDescriptor.MAV
 
 @ApplicationScoped
 public class FailedBuildsCleaner {
+
+    private static final String className = FailedBuildsCleaner.class.getName();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -82,14 +85,16 @@ public class FailedBuildsCleaner {
         failedStatuses.add(BuildStatus.FAILED);
     }
 
-    private final MeterRegistry registry;
-    private final Counter errCounter;
-    private final Counter warnCounter;
+    @Inject
+    MeterRegistry registry;
 
-    FailedBuildsCleaner(MeterRegistry registry) {
-        this.registry = registry;
-        this.errCounter = registry.counter("error.count");
-        this.warnCounter = registry.counter("warning.count");
+    private Counter errCounter;
+    private Counter warnCounter;
+
+    @PostConstruct
+    void initMetrics() {
+        errCounter = registry.counter(className + ".error.count");
+        warnCounter = registry.counter(className + ".warning.count");
     }
 
     @Scheduled(cron = "{failedbuildscleaner.cron}")

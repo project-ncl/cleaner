@@ -17,11 +17,16 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.pnc.dto.response.DeleteOperationResult;
 
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
@@ -37,10 +42,24 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class DeleteCallbackManager {
 
+    private static final String className = DeleteCallbackManager.class.getName();
+
     private Map<String, CallbackData> buildsMap = new ConcurrentHashMap<>();
 
     @ConfigProperty(name = "simpleCallbackHandler.max-delete-wait-time", defaultValue = "600")
     long MAX_WAIT_TIME;
+
+    @Inject
+    MeterRegistry registry;
+
+    private Counter errCounter;
+    private Counter warnCounter;
+
+    @PostConstruct
+    void initMetrics() {
+        errCounter = registry.counter(className + ".error.count");
+        warnCounter = registry.counter(className + ".warning.count");
+    }
 
     /**
      * Initialize data to wait for a completion of a deletion of a specific build
@@ -70,6 +89,7 @@ public class DeleteCallbackManager {
             callbackData.setCallbackResponse(result);
             callbackData.getCountDownLatch().countDown();
         } else {
+            warnCounter.increment();
             log.warn(
                     "Delete operation callback called for a delete operation, which was not initialized. BuildId: "
                             + "{}",
@@ -84,9 +104,11 @@ public class DeleteCallbackManager {
      * @return Result of the operation or null if the callback was not triggered
      * @throws InterruptedException Thrown if an error occurs while waiting for callback
      */
+    @Timed
     public DeleteOperationResult await(String buildId) throws InterruptedException {
         CallbackData callbackData = buildsMap.get(buildId);
         if (callbackData == null) {
+            errCounter.increment();
             throw new IllegalArgumentException(
                     "Await operation triggered for a build, which was not initiated using "
                             + "method initializeHandler. This method must be called first!");

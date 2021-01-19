@@ -17,6 +17,12 @@
  */
 package org.jboss.pnc.cleaner.auth.keycloakutil.util;
 
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -48,6 +54,19 @@ import static java.nio.file.Files.isRegularFile;
  */
 public class IoUtil {
 
+    private static final String className = IoUtil.class.getName();
+
+    @Inject
+    MeterRegistry registry;
+
+    private static Counter errCounter;
+
+    @PostConstruct
+    void initMetrics() {
+        errCounter = registry.counter(className + ".error.count");
+    }
+
+    @Timed
     public static String readFileOrStdin(String file) {
         String content;
         if ("-".equals(file)) {
@@ -56,8 +75,10 @@ public class IoUtil {
             try (InputStream is = new FileInputStream(file)) {
                 content = readFully(is);
             } catch (FileNotFoundException e) {
+                errCounter.increment();
                 throw new RuntimeException("File not found: " + file);
             } catch (IOException e) {
+                errCounter.increment();
                 throw new RuntimeException("Failed to read file: " + file, e);
             }
         }
@@ -68,10 +89,12 @@ public class IoUtil {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
+            errCounter.increment();
             throw new RuntimeException("Interrupted");
         }
     }
 
+    @Timed
     public static String readFully(InputStream is) {
         Charset charset = Charset.forName("utf-8");
         StringBuilder out = new StringBuilder();
@@ -83,11 +106,13 @@ public class IoUtil {
                 out.append(new String(buf, 0, rc, charset));
             }
         } catch (Exception e) {
+            errCounter.increment();
             throw new RuntimeException("Failed to read stream", e);
         }
         return out.toString();
     }
 
+    @Timed
     public static void copyStream(InputStream is, OutputStream os) {
 
         byte[] buf = new byte[8192];
@@ -98,16 +123,19 @@ public class IoUtil {
                 os.write(buf, 0, rc);
             }
         } catch (Exception e) {
+            errCounter.increment();
             throw new RuntimeException("Failed to read/write a stream: ", e);
         } finally {
             try {
                 os.flush();
             } catch (IOException e) {
+                errCounter.increment();
                 throw new RuntimeException("Failed to write a stream: ", e);
             }
         }
     }
 
+    @Timed
     public static void ensureFile(Path path) throws IOException {
 
         FileSystem fs = FileSystems.getDefault();
@@ -122,6 +150,7 @@ public class IoUtil {
             } else if (supportedViews.contains("acl")) {
                 setWindowsPermissions(parent);
             } else {
+                errCounter.increment();
                 warnErr("Failed to restrict access permissions on .keycloak directory: " + parent);
             }
         }
@@ -133,11 +162,13 @@ public class IoUtil {
             } else if (supportedViews.contains("acl")) {
                 setWindowsPermissions(path);
             } else {
+                errCounter.increment();
                 warnErr("Failed to restrict access permissions on config file: " + path);
             }
         }
     }
 
+    @Timed
     private static void setUnixPermissions(Path path) throws IOException {
         Set<PosixFilePermission> perms = new HashSet<>();
         perms.add(PosixFilePermission.OWNER_READ);
@@ -148,6 +179,7 @@ public class IoUtil {
         Files.setPosixFilePermissions(path, perms);
     }
 
+    @Timed
     private static void setWindowsPermissions(Path path) throws IOException {
         AclFileAttributeView view = Files.getFileAttributeView(path, AclFileAttributeView.class);
         UserPrincipal owner = view.getOwner();

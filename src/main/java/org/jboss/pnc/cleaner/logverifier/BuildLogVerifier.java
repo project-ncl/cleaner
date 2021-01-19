@@ -1,5 +1,8 @@
 package org.jboss.pnc.cleaner.logverifier;
 
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.api.bifrost.dto.MetaData;
@@ -12,6 +15,7 @@ import org.jboss.pnc.rest.api.parameters.BuildsFilterParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import java.io.IOException;
@@ -29,6 +33,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 @ApplicationScoped
 public class BuildLogVerifier {
 
+    private static final String className = BuildLogVerifier.class.getName();
+
     private final Logger logger = LoggerFactory.getLogger(BuildLogVerifier.class);
 
     @Inject
@@ -45,9 +51,22 @@ public class BuildLogVerifier {
 
     public static final String BUILD_OUTPUT_OK_KEY = "BUILD_OUTPUT_OK";
 
+    @Inject
+    MeterRegistry registry;
+
+    private Counter errCounter;
+    private Counter warnCounter;
+
+    @PostConstruct
+    void initMetrics() {
+        errCounter = registry.counter(className + ".error.count");
+        warnCounter = registry.counter(className + ".warning.count");
+    }
+
     public BuildLogVerifier() {
     }
 
+    @Timed
     public int verifyUnflaggedBuilds() {
         logger.info("Verifying log checksums ...");
         Collection<Build> unverifiedBuilds = getUnverifiedBuilds().getAll();
@@ -56,6 +75,7 @@ public class BuildLogVerifier {
         return unverifiedBuilds.size();
     }
 
+    @Timed
     private void verify(String buildId, String checksum) {
         try {
             logger.debug("Verifying log for build id: {}", buildId);
@@ -66,6 +86,7 @@ public class BuildLogVerifier {
 
                 removeRetryCounter(buildId);
             } else {
+                warnCounter.increment();
                 logger.warn(
                         "Build output checksum MISMATCH. BuildId: {}, Db checksum: {}, ElasticSearch checksum {}.",
                         buildId,
@@ -75,6 +96,7 @@ public class BuildLogVerifier {
                 handleMismatchWithRetries(buildId);
             }
         } catch (IOException e) {
+            errCounter.increment();
             logger.error("Cannot verify checksum for buildId: " + buildId + ".", e);
         }
     }
@@ -83,6 +105,7 @@ public class BuildLogVerifier {
         buildESLogErrorCounter.remove(buildId);
     }
 
+    @Timed
     private void handleMismatchWithRetries(String buildId) {
         if (!buildESLogErrorCounter.containsKey(buildId)) {
             buildESLogErrorCounter.put(buildId, new AtomicInteger(0));
@@ -90,16 +113,19 @@ public class BuildLogVerifier {
 
         AtomicInteger numOfRetries = buildESLogErrorCounter.get(buildId);
         if (numOfRetries.get() >= maxRetries) {
+            warnCounter.increment();
             logger.warn("Marking build with id: {} as mismatch", buildId);
             flagPncBuild(buildId, false);
             removeRetryCounter(buildId);
             return;
         }
 
+        warnCounter.increment();
         logger.warn("Increasing retry counter (counter: {}) for build with id: {}", numOfRetries, buildId);
         buildESLogErrorCounter.get(buildId).incrementAndGet();
     }
 
+    @Timed
     private String getESChecksum(String buildId) throws IOException {
         String matchFilters = "mdc.processContext.keyword:build-" + buildId;
         String prefixFilters = "loggerName.keyword:org.jboss.pnc._userlog_.build-log";
@@ -112,10 +138,12 @@ public class BuildLogVerifier {
         try {
             buildClient.addAttribute(buildId, BUILD_OUTPUT_OK_KEY, Boolean.toString(checksumMatch));
         } catch (RemoteResourceException e) {
+            errCounter.increment();
             logger.error("Cannot set {} attribute to build id: {}.", checksumMatch, buildId);
         }
     }
 
+    @Timed
     private RemoteCollection<Build> getUnverifiedBuilds() {
         BuildsFilterParameters buildsFilterParameters = new BuildsFilterParameters();
         buildsFilterParameters.setRunning(false);
@@ -124,6 +152,7 @@ public class BuildLogVerifier {
             String query = "buildOutputChecksum!=null";
             return buildClient.getAll(buildsFilterParameters, attributes, Optional.empty(), Optional.of(query));
         } catch (RemoteResourceException e) {
+            errCounter.increment();
             logger.error("Cannot read remote builds.", e);
             return RemoteCollection.empty();
         }
