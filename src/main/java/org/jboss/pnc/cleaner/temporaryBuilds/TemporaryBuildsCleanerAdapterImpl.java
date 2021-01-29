@@ -78,7 +78,6 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     private Counter errCounter;
     private Counter warnCounter;
 
-    @PostConstruct
     void initMetrics() {
         errCounter = registry.counter(className + ".error.count");
         warnCounter = registry.counter(className + ".warning.count");
@@ -90,6 +89,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
         BASE_DELETE_BUILD_CALLBACK_URL = host + "/callbacks/delete/builds/";
         BASE_DELETE_BUILD_GROUP_CALLBACK_URL = host + "/callbacks/delete/group-builds/";
+
+        initMetrics();
     }
 
     @Timed

@@ -59,6 +59,11 @@ public class DeleteCallbackManager {
     void initMetrics() {
         errCounter = registry.counter(className + ".error.count");
         warnCounter = registry.counter(className + ".warning.count");
+        registry.gauge(className + ".builds.map.size", this, DeleteCallbackManager::getBuildsMapSize);
+    }
+
+    private int getBuildsMapSize() {
+        return buildsMap.size();
     }
 
     /**
