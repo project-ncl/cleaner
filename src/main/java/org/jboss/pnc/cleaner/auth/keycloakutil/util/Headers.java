@@ -17,6 +17,9 @@
  */
 package org.jboss.pnc.cleaner.auth.keycloakutil.util;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
@@ -25,7 +28,21 @@ import java.util.LinkedHashMap;
  */
 public class Headers implements Iterable<Header> {
 
+    private static final String className = Headers.class.getName();
+
     private LinkedHashMap<String, Header> headers = new LinkedHashMap<>();
+
+    @Inject
+    MeterRegistry registry;
+
+    @PostConstruct
+    void initMetrics() {
+        registry.gauge(className + ".headers.map.size", this, Headers::getHeadersMapSize);
+    }
+
+    private int getHeadersMapSize() {
+        return headers.size();
+    }
 
     public void add(String header, String value) {
         headers.put(header.toLowerCase(), new Header(header, value));
