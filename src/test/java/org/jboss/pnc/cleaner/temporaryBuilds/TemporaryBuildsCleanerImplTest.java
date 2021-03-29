@@ -98,7 +98,7 @@ public class TemporaryBuildsCleanerImplTest {
                                         .withBodyFile(EMPTY_RESPONSE_FILE)));
 
         String deleteRequestRegex = BUILDS_ENDPOINT + "/" + buildId
-                + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fdelete%2Fbuilds%2F684";
+                + "\\?callback=0\\.0\\.0\\.0%3A8081%2Fcallbacks%2Fdelete%2Fbuilds%2F684";
         wireMockServer.stubFor(delete(urlMatching(deleteRequestRegex)).willReturn(aResponse().withStatus(200)));
 
         startCallbackThread("http://0.0.0.0:8081/callbacks/delete/builds/684");
