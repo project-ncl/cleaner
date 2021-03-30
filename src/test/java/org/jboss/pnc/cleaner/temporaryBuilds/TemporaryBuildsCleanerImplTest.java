@@ -101,7 +101,7 @@ public class TemporaryBuildsCleanerImplTest {
                 + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fdelete%2Fbuilds%2F684";
         wireMockServer.stubFor(delete(urlMatching(deleteRequestRegex)).willReturn(aResponse().withStatus(200)));
 
-        startCallbackThread("http://0.0.0.0:8081/callbacks/delete/builds/684");
+        startCallbackThread("http://localhost:8081/callbacks/delete/builds/684");
 
         // when
         assertTimeoutPreemptively(
@@ -179,7 +179,7 @@ public class TemporaryBuildsCleanerImplTest {
                 + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fdelete%2Fgroup-builds%2F166";
         wireMockServer.stubFor(delete(urlMatching(deleteRequestRegex)).willReturn(aResponse().withStatus(200)));
 
-        startCallbackThread("http://0.0.0.0:8081/callbacks/delete/group-builds/166");
+        startCallbackThread("http://localhost:8081/callbacks/delete/group-builds/166");
 
         // when
         assertTimeoutPreemptively(
