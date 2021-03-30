@@ -47,6 +47,7 @@
   </developers>
 
   <properties>
+    <quarkus.package.type>uber-jar</quarkus.package.type>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.source>11</maven.compiler.source>
@@ -56,7 +57,7 @@
     <keycloak.version>12.0.4</keycloak.version>
     <pnc.version>2.0.3</pnc.version>
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
-    <quarkus.version>1.10.1.Final</quarkus.version>
+    <quarkus.version>1.13.0.Final</quarkus.version>
     <resteasy.version>3.6.1.Final</resteasy.version>
     <tagSuffix />
   </properties>
@@ -332,7 +333,6 @@
         <artifactId>quarkus-maven-plugin</artifactId>
         <version>${quarkus.version}</version>
         <configuration>
-          <uberJar>true</uberJar>
           <ignoredEntries>
               <ignoredEntry>META-INF/BCKEY.DSA</ignoredEntry>
               <ignoredEntry>META-INF/BCKEY.SF</ignoredEntry>
