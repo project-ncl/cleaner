@@ -56,7 +56,7 @@
     <keycloak.version>12.0.4</keycloak.version>
     <pnc.version>2.0.3</pnc.version>
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
-    <quarkus.version>1.10.1.Final</quarkus.version>
+    <quarkus.version>1.13.0.Final</quarkus.version>
     <resteasy.version>3.6.1.Final</resteasy.version>
     <tagSuffix />
   </properties>

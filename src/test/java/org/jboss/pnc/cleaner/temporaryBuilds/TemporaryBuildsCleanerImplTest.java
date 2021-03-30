@@ -34,6 +34,7 @@ import javax.inject.Inject;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
+import org.eclipse.microprofile.config.Config;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
 import static com.github.tomakehurst.wiremock.client.WireMock.deleteRequestedFor;
@@ -41,6 +42,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.get;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static java.time.Duration.ofSeconds;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
 
 /**
@@ -77,6 +79,9 @@ public class TemporaryBuildsCleanerImplTest {
         wireMockServer.stop();
     }
 
+    @Inject
+    Config config;
+
     @Test
     public void shouldDeleteATemporaryBuild() {
         // given
@@ -97,8 +102,10 @@ public class TemporaryBuildsCleanerImplTest {
                                         .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                                         .withBodyFile(EMPTY_RESPONSE_FILE)));
 
+        String host = config.getValue("applicationUri", String.class);
+        assertEquals("0.0.0.0:8080", host);
         String deleteRequestRegex = BUILDS_ENDPOINT + "/" + buildId
-                + "\\?callback=0\\.0\\.0\\.0%3A8081%2Fcallbacks%2Fdelete%2Fbuilds%2F684";
+                + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fdelete%2Fbuilds%2F684";
         wireMockServer.stubFor(delete(urlMatching(deleteRequestRegex)).willReturn(aResponse().withStatus(200)));
 
         startCallbackThread("http://0.0.0.0:8081/callbacks/delete/builds/684");
