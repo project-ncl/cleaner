@@ -1,0 +1,32 @@
+version: 2
+updates:
+- package-ecosystem: maven
+  directory: "/"
+  schedule:
+    interval: weekly
+    time: "13:00"
+    timezone: America/New_York
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: io.quarkus:quarkus-maven-plugin
+    versions:
+    - 1.11.1.Final
+    - 1.11.3.Final
+    - 1.12.0.Final
+    - 1.12.1.Final
+    - 1.12.2.Final
+    - 1.13.0.Final
+  - dependency-name: io.quarkus:quarkus-bom
+    versions:
+    - 1.11.1.Final
+    - 1.11.3.Final
+    - 1.12.0.Final
+    - 1.12.1.Final
+    - 1.12.2.Final
+    - 1.13.0.Final
+  - dependency-name: org.commonjava.indy:indy-folo-client-java
+    versions:
+    - 2.5.4
+  - dependency-name: org.commonjava.indy:indy-client-core-java
+    versions:
+    - 2.5.4
