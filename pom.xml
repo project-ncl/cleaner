@@ -205,6 +205,11 @@
       <version>1.18.20</version>
       <scope>provided</scope>
     </dependency>
+
+    <dependency>
+      <groupId>javax.xml.bind</groupId>
+      <artifactId>jaxb-api</artifactId>
+    </dependency>
     <!-- Other dependencies END !-->
 
     <!-- Test dependencies !-->
