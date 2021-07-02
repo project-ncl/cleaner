@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.jboss.pnc.cleaner</groupId>
   <artifactId>cleaner</artifactId>
-  <version>2.1.0-SNAPSHOT</version>
+  <version>2.1.0</version>
 
   <name>Cleaner for PNC</name>
   <description>This project is a service, which performs cleanup and maintenance tasks for PNC eco-system.</description>
@@ -22,7 +22,7 @@
     <connection>scm:git:http://github.com/project-ncl/cleaner.git</connection>
     <developerConnection>scm:git:git@github.com:project-ncl/cleaner.git</developerConnection>
     <url>http://github.com/project-ncl/cleaner</url>
-    <tag>HEAD</tag>
+    <tag>2.1.0</tag>
   </scm>
 
   <developers>
