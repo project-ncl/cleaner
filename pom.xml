@@ -56,7 +56,7 @@
     <indy.version>2.5.5</indy.version>
     <keycloak.version>15.0.2</keycloak.version>
 
-    <pnc.version>2.1.1</pnc.version>
+    <pnc.version>2.1.2</pnc.version>
     <pnc-api.version>2.1.0</pnc-api.version>
     <pnc-common.version>2.1.0</pnc-common.version>
 
