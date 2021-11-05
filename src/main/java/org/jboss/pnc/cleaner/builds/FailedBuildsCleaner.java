@@ -49,6 +49,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.commonjava.indy.pkg.maven.model.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
+import static org.commonjava.indy.pkg.npm.model.NPMPackageTypeDescriptor.NPM_PKG_KEY;
 
 @ApplicationScoped
 public class FailedBuildsCleaner {
@@ -120,12 +121,15 @@ public class FailedBuildsCleaner {
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
         // get list of build group names from Indy
-        logger.info("Loading list of existing repository groups from Indy.");
-        List<String> groupNames = getGroupNames(session);
+        String[] packageTypes = new String[] { MAVEN_PKG_KEY, NPM_PKG_KEY };
+        for (String packageType : packageTypes) {
+            logger.info("Loading list of existing {} repository groups from Indy.", packageType);
+            List<String> groupNames = getGroupNames(packageType, session);
 
-        // cycle through them and clean one by one
-        for (String groupName : groupNames) {
-            cleanBuildIfNeeded(groupName, session);
+            // cycle through them and clean one by one
+            for (String groupName : groupNames) {
+                cleanBuildIfNeeded(packageType, groupName, session);
+            }
         }
     }
 
@@ -148,8 +152,7 @@ public class FailedBuildsCleaner {
                     .withMaxConnections(1)
                     .build();
 
-            IndyClientModule[] modules = new IndyClientModule[] {
-                    new IndyFoloAdminClientModule(),
+            IndyClientModule[] modules = new IndyClientModule[] { new IndyFoloAdminClientModule(),
                     new IndyFoloContentClientModule() };
 
             Map<String, String> mdcCopyMappings = new HashMap<>(); // TODO fill in these if needed
@@ -164,16 +167,17 @@ public class FailedBuildsCleaner {
      * Loads Maven build group names from Indy.
      *
      * @param session initialized Indy client, cannot be <code>null</code>
+     *
      * @return the loaded list of group names, can be empty, never <code>null</code>
      */
     @Timed
-    List<String> getGroupNames(FailedBuildsCleanerSession session) {
+    List<String> getGroupNames(String packageType, FailedBuildsCleanerSession session) {
         Pattern pattern = Pattern.compile("build(-\\d+|_.+_\\d{8}\\.\\d{4})");
         IndyStoresClientModule indyStores = session.getStores();
 
         List<Group> groups;
         try {
-            StoreListingDTO<Group> groupsListing = indyStores.listGroups(MAVEN_PKG_KEY);
+            StoreListingDTO<Group> groupsListing = indyStores.listGroups(packageType);
             if (groupsListing == null) {
                 errCounter.increment();
                 throw new RuntimeException(
@@ -200,19 +204,18 @@ public class FailedBuildsCleaner {
      * @param session cleaner session
      */
     @Timed
-    void cleanBuildIfNeeded(String groupName, FailedBuildsCleanerSession session) {
+    void cleanBuildIfNeeded(String packageType, String groupName, FailedBuildsCleanerSession session) {
         logger.debug("Loading build record for group {}.", groupName);
         try {
-            boolean clean = shouldClean(groupName, session);
+            boolean clean = shouldClean(packageType, groupName, session);
 
             if (clean) {
-                logger.info("Cleaning repositories for {}.", groupName);
+                logger.info("Cleaning {} repositories for {}.", packageType, groupName);
                 IndyStoresClientModule stores = session.getStores();
                 try {
                     // delete the content
-                    String pkgKey = MAVEN_PKG_KEY;
-                    logger.debug("Cleaning Maven group and hosted repository {}.", groupName);
-                    deleteGroupAndHostedRepo(pkgKey, groupName, stores);
+                    logger.debug("Cleaning {} group and hosted repository {}.", packageType, groupName);
+                    deleteGroupAndHostedRepo(packageType, groupName, stores);
 
                     logger.debug("Searching for generic-http stores for {}.", groupName);
                     List<StoreKey> genericRepos = findGenericRepos(groupName, session);
@@ -249,26 +252,35 @@ public class FailedBuildsCleaner {
      * @throws CleanerException in case of an error when loading the build record
      */
     @Timed
-    boolean shouldClean(String groupName, FailedBuildsCleanerSession session) throws CleanerException {
+    boolean shouldClean(String packageType, String groupName, FailedBuildsCleanerSession session)
+            throws CleanerException {
         Build build = getBuildRecord(groupName);
         boolean clean = false;
         if (build == null) {
             warnCounter.increment();
             logger.warn(
-                    "Build record for group {} not found. Assuming it was removed by "
+                    "Build record for {} group {} not found. Assuming it was removed by "
                             + "temporary builds cleaner before failed builds cleaner got to it. Cleaning...",
+                    packageType,
                     groupName);
             clean = true;
         } else if (failedStatuses.contains(build.getStatus())) {
             if (build.getEndTime().isBefore(session.getTo())) {
-                logger.debug("Build record for group {} is older than the limit. Cleaning...", groupName);
+                logger.debug(
+                        "Build record for {} group {} is older than the limit. Cleaning...",
+                        packageType,
+                        groupName);
                 clean = true;
             } else {
-                logger.debug("Build record for group {} is younger than the limit. Skipping.", groupName);
+                logger.debug(
+                        "Build record for {} group {} is younger than the limit. Skipping.",
+                        packageType,
+                        groupName);
             }
         } else {
             logger.debug(
-                    "Build record's status for group {} is {}, which is not one of statuses to be cleaned.",
+                    "Build record's status for {} group {} is {}, which is not one of statuses to be cleaned.",
+                    packageType,
                     groupName,
                     build.getStatus());
         }
