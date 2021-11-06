@@ -30,6 +30,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.head;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
+import static org.commonjava.indy.pkg.maven.model.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 import static org.commonjava.indy.model.core.GenericPackageTypeDescriptor.GENERIC_PKG_KEY;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -107,7 +108,7 @@ class FailedBuildsCleanerTest {
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
-        List<String> groupNames = failedBuildsCleaner.getGroupNames(session);
+        List<String> groupNames = failedBuildsCleaner.getGroupNames(MAVEN_PKG_KEY, session);
 
         assertEquals(3, groupNames.size());
         assertTrue(groupNames.contains("build_wildfly-swarm-keycloak-config-api_20170310.1332"));
@@ -132,7 +133,7 @@ class FailedBuildsCleanerTest {
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
-        List<String> groupNames = failedBuildsCleaner.getGroupNames(session);
+        List<String> groupNames = failedBuildsCleaner.getGroupNames(MAVEN_PKG_KEY, session);
 
         assertEquals(0, groupNames.size());
     }
@@ -155,7 +156,7 @@ class FailedBuildsCleanerTest {
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
-        boolean clean = failedBuildsCleaner.shouldClean("build-36000", session);
+        boolean clean = failedBuildsCleaner.shouldClean(MAVEN_PKG_KEY, "build-36000", session);
 
         assertTrue(clean);
     }
@@ -182,7 +183,7 @@ class FailedBuildsCleanerTest {
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
-        boolean clean = failedBuildsCleaner.shouldClean("build-36000", session);
+        boolean clean = failedBuildsCleaner.shouldClean(MAVEN_PKG_KEY, "build-36000", session);
 
         assertTrue(clean);
     }
@@ -209,7 +210,7 @@ class FailedBuildsCleanerTest {
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
-        boolean clean = failedBuildsCleaner.shouldClean("build-36000", session);
+        boolean clean = failedBuildsCleaner.shouldClean(MAVEN_PKG_KEY, "build-36000", session);
 
         assertFalse(clean);
     }
@@ -231,7 +232,7 @@ class FailedBuildsCleanerTest {
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
-        boolean clean = failedBuildsCleaner.shouldClean("build-36002", session);
+        boolean clean = failedBuildsCleaner.shouldClean(MAVEN_PKG_KEY, "build-36002", session);
 
         assertTrue(clean);
     }
@@ -254,7 +255,7 @@ class FailedBuildsCleanerTest {
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
-        boolean clean = failedBuildsCleaner.shouldClean("build-36735", session);
+        boolean clean = failedBuildsCleaner.shouldClean(MAVEN_PKG_KEY, "build-36735", session);
 
         assertFalse(clean);
     }
@@ -277,7 +278,7 @@ class FailedBuildsCleanerTest {
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
-        boolean clean = failedBuildsCleaner.shouldClean("build-36001", session);
+        boolean clean = failedBuildsCleaner.shouldClean(MAVEN_PKG_KEY, "build-36001", session);
 
         assertFalse(clean);
     }
@@ -300,7 +301,7 @@ class FailedBuildsCleanerTest {
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
-        boolean clean = failedBuildsCleaner.shouldClean("build-36000", session);
+        boolean clean = failedBuildsCleaner.shouldClean(MAVEN_PKG_KEY, "build-36000", session);
 
         assertFalse(clean);
     }
@@ -443,7 +444,7 @@ class FailedBuildsCleanerTest {
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
-        failedBuildsCleaner.cleanBuildIfNeeded("build-36000", session);
+        failedBuildsCleaner.cleanBuildIfNeeded(MAVEN_PKG_KEY, "build-36000", session);
 
         indyWireMockServer.verify(deleteRequestedFor(urlEqualTo(INDY_STORE_MAVEN_GROUP + "/build-36000")));
         indyWireMockServer.verify(deleteRequestedFor(urlEqualTo(INDY_STORE_MAVEN_HOSTED + "/build-36000")));
