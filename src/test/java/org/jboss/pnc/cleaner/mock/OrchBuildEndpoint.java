@@ -5,6 +5,7 @@ import org.jboss.pnc.dto.Artifact;
 import org.jboss.pnc.dto.Build;
 import org.jboss.pnc.dto.BuildConfigurationRevision;
 import org.jboss.pnc.dto.BuildPushResult;
+import org.jboss.pnc.dto.insights.BuildRecordInsights;
 import org.jboss.pnc.dto.requests.BuildPushParameters;
 import org.jboss.pnc.dto.response.Graph;
 import org.jboss.pnc.dto.response.Page;
@@ -163,6 +164,14 @@ public class OrchBuildEndpoint implements BuildEndpoint {
 
     @Override
     public void createBuiltArtifactsQualityLevelRevisions(String id, String quality, String reason) {
+        throw new UnsupportedOperationException("Not yet implemented in mock.");
+    }
+
+    @Override
+    public Page<BuildRecordInsights> getAllBuildRecordInsightsNewerThanTimestamp(
+            int pageSize,
+            int pageIndex,
+            long timestamp) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 }
