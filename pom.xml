@@ -57,7 +57,7 @@
     <keycloak.version>16.1.1</keycloak.version>
 
     <pnc.version>2.2.3</pnc.version>
-    <pnc-api.version>2.2.0</pnc-api.version>
+    <pnc-api.version>2.3.0</pnc-api.version>
     <pnc-common.version>2.1.0</pnc-common.version>
 
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
