@@ -62,7 +62,7 @@
 
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
     <quarkus.version>2.10.1.Final</quarkus.version>
-    <quarkus-logging-kafka.version>1.0.2</quarkus-logging-kafka.version>
+    <quarkus-logging-kafka.version>1.0.3</quarkus-logging-kafka.version>
     <resteasy.version>3.6.1.Final</resteasy.version>
     <tagSuffix />
   </properties>
