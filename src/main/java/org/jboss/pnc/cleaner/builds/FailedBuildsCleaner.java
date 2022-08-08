@@ -27,7 +27,6 @@ import org.jboss.pnc.client.RemoteCollection;
 import org.jboss.pnc.client.RemoteResourceException;
 import org.jboss.pnc.client.RemoteResourceNotFoundException;
 import org.jboss.pnc.dto.Build;
-import org.jboss.pnc.enums.BuildCoordinationStatus;
 import org.jboss.pnc.enums.BuildStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +50,7 @@ import java.util.stream.Collectors;
 import static org.commonjava.indy.pkg.maven.model.MavenPackageTypeDescriptor.MAVEN_PKG_KEY;
 import static org.commonjava.indy.pkg.npm.model.NPMPackageTypeDescriptor.NPM_PKG_KEY;
 
+@SuppressWarnings("deprecation")
 @ApplicationScoped
 public class FailedBuildsCleaner {
 
@@ -76,6 +76,18 @@ public class FailedBuildsCleaner {
 
     @ConfigProperty(name = "failedbuildscleaner.indy.requesttimeout")
     int indyRequestTimeout;
+
+    @ConfigProperty(name = "pnc-cleaner.indy-client.metrics.enabled", defaultValue = "false")
+    Boolean indyClientMetricsEnabled;
+
+    @ConfigProperty(name = "pnc-cleaner.indy-client.metrics.honeycombDataset")
+    Optional<String> indyClientMetricsHoneycombDataset;
+
+    @ConfigProperty(name = "pnc-cleaner.indy-client.metrics.honeycombWriteKey")
+    Optional<String> indyClientMetricsHoneycombWriteKey;
+
+    @ConfigProperty(name = "pnc-cleaner.indy-client.metrics.baseSampleRate")
+    Optional<Integer> indyClientMetricsBaseSampleRate;
 
     private static List<BuildStatus> failedStatuses;
 
@@ -147,10 +159,23 @@ public class FailedBuildsCleaner {
             authenticator = new OAuth20BearerTokenAuthenticator(accessToken);
         }
         try {
-            SiteConfig siteConfig = new SiteConfigBuilder("indy", indyUrl).withRequestTimeoutSeconds(indyRequestTimeout)
+            SiteConfigBuilder siteConfigBuilder = new SiteConfigBuilder("indy", indyUrl)
+                    .withRequestTimeoutSeconds(indyRequestTimeout)
                     // this client is used in single thread, we don't need more than 1 connection at a time
                     .withMaxConnections(1)
-                    .build();
+                    .withMetricEnabled(indyClientMetricsEnabled);
+            if (indyClientMetricsEnabled) {
+                if (indyClientMetricsHoneycombDataset.isPresent()) {
+                    siteConfigBuilder.withHoneycombDataset(indyClientMetricsHoneycombDataset.get());
+                }
+                if (indyClientMetricsHoneycombWriteKey.isPresent()) {
+                    siteConfigBuilder.withHoneycombWriteKey(indyClientMetricsHoneycombWriteKey.get());
+                }
+                if (indyClientMetricsBaseSampleRate.isPresent()) {
+                    siteConfigBuilder.withBaseSampleRate(indyClientMetricsBaseSampleRate.get());
+                }
+            }
+            SiteConfig siteConfig = siteConfigBuilder.build();
 
             IndyClientModule[] modules = new IndyClientModule[] {
                     new IndyFoloAdminClientModule(),
