@@ -111,9 +111,9 @@ class FailedBuildsCleanerTest {
         List<String> groupNames = failedBuildsCleaner.getGroupNames(MAVEN_PKG_KEY, session);
 
         assertEquals(3, groupNames.size());
-        assertTrue(groupNames.contains("build_wildfly-swarm-keycloak-config-api_20170310.1332"));
-        assertTrue(groupNames.contains("build-32064"));
-        assertTrue(groupNames.contains("build-30573"));
+        assertTrue(groupNames.contains("build-AK2BHPRY6QAAA"));
+        assertTrue(groupNames.contains("build-ALR4VS6X4AAAA"));
+        assertTrue(groupNames.contains("build-AK2VRKIH5GAAA"));
     }
 
     /**
@@ -196,10 +196,11 @@ class FailedBuildsCleanerTest {
     @Test
     public void shouldCleanNoContentIdTooYoung() throws CleanerException {
         orchWireMockServer.stubFor(
-                get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-36000")).willReturn(EMPTY_RESPONSE));
+                get(urlMatching(ORCH_BUILDS + "?.*q=buildContentId%3D%3Dbuild-AM64MA6WDVYAA"))
+                        .willReturn(EMPTY_RESPONSE));
 
         orchWireMockServer.stubFor(
-                get(urlMatching(ORCH_BUILDS + "/36000")).willReturn(
+                get(urlMatching(ORCH_BUILDS + "/AM64MA6WDVYAA")).willReturn(
                         aResponse().withStatus(200)
                                 .withHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON)
                                 .withBodyFile(BUILD_RECORD_FAILED_NO_CONTENTID_FILE)));
@@ -210,7 +211,7 @@ class FailedBuildsCleanerTest {
         Indy indyClient = failedBuildsCleaner.initIndy("");
         FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
 
-        boolean clean = failedBuildsCleaner.shouldClean(MAVEN_PKG_KEY, "build-36000", session);
+        boolean clean = failedBuildsCleaner.shouldClean(MAVEN_PKG_KEY, "build-AM64MA6WDVYAA", session);
 
         assertFalse(clean);
     }
