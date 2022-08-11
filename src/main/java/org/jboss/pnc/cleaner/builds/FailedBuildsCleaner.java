@@ -54,11 +54,13 @@ import static org.commonjava.indy.pkg.npm.model.NPMPackageTypeDescriptor.NPM_PKG
 @ApplicationScoped
 public class FailedBuildsCleaner {
 
+    /**
+     * Builds have format with build-{build-id} where {build-id} is a 13 characters long base32 number.
+     */
+    private static final Pattern INDY_BUILD_GROUP_PATTERN = Pattern.compile("build-([A-Z0-9]{13})");
     private static final String className = FailedBuildsCleaner.class.getName();
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
-
-    private final Pattern buildNumPattern = Pattern.compile("build-(\\d+)");
 
     @Inject
     KeycloakServiceClient serviceClient;
@@ -198,7 +200,6 @@ public class FailedBuildsCleaner {
      */
     @Timed
     List<String> getGroupNames(String packageType, FailedBuildsCleanerSession session) {
-        Pattern pattern = Pattern.compile("build(-\\d+|_.+_\\d{8}\\.\\d{4})");
         IndyStoresClientModule indyStores = session.getStores();
 
         List<Group> groups;
@@ -216,7 +217,7 @@ public class FailedBuildsCleaner {
         }
         List<String> result = groups.stream()
                 .map(g -> g.getName())
-                .filter(n -> pattern.matcher(n).matches())
+                .filter(n -> INDY_BUILD_GROUP_PATTERN.matcher(n).matches())
                 .collect(Collectors.toList());
         return result;
     }
@@ -358,7 +359,7 @@ public class FailedBuildsCleaner {
                 warnCounter.increment();
                 logger.warn("Build record NOT found for buildContentId = {}", buildContentId);
 
-                Matcher matcher = buildNumPattern.matcher(buildContentId);
+                Matcher matcher = INDY_BUILD_GROUP_PATTERN.matcher(buildContentId);
                 if (matcher.matches()) {
                     String id = matcher.group(1);
                     logger.debug("Attempting to find build record by id {}", id);
