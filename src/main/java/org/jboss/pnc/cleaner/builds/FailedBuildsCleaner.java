@@ -116,7 +116,7 @@ public class FailedBuildsCleaner {
     void cleanRegularly() {
         logger.info("Starting regular failed builds cleanup job.");
         Instant limit = Instant.now().minus(retention, ChronoUnit.HOURS);
-        logger.debug("Cleaning up failed builds older than {}.", limit);
+        logger.info("Cleaning up failed builds older than {}.", limit);
         cleanOlder(limit);
     }
 
@@ -157,7 +157,7 @@ public class FailedBuildsCleaner {
     Indy initIndy(String accessToken) {
         IndyClientAuthenticator authenticator = null;
         if (accessToken != null) {
-            logger.debug("Creating Indy authenticator.");
+            logger.info("Creating Indy authenticator.");
             authenticator = new OAuth20BearerTokenAuthenticator(accessToken);
         }
         try {
@@ -232,7 +232,7 @@ public class FailedBuildsCleaner {
      */
     @Timed
     void cleanBuildIfNeeded(String packageType, String groupName, FailedBuildsCleanerSession session) {
-        logger.debug("Loading build record for group {}.", groupName);
+        logger.info("Loading build record for group {}.", groupName);
         try {
             boolean clean = shouldClean(packageType, groupName, session);
 
@@ -241,10 +241,10 @@ public class FailedBuildsCleaner {
                 IndyStoresClientModule stores = session.getStores();
                 try {
                     // delete the content
-                    logger.debug("Cleaning {} group and hosted repository {}.", packageType, groupName);
+                    logger.info("Cleaning {} group and hosted repository {}.", packageType, groupName);
                     deleteGroupAndHostedRepo(packageType, groupName, stores);
 
-                    logger.debug("Searching for generic-http stores for {}.", groupName);
+                    logger.info("Searching for generic-http stores for {}.", groupName);
                     List<StoreKey> genericRepos = findGenericRepos(groupName, session);
                     for (StoreKey genericRepo : genericRepos) {
                         stores.delete(genericRepo, "Scheduled cleanup of failed builds.");
@@ -253,7 +253,7 @@ public class FailedBuildsCleaner {
                     // delete the tracking record - mostly not needed, only in case the build failed in
                     // promotion phase and the tracking report was already sealed
                     IndyFoloAdminClientModule foloAdmin = session.getFoloAdmin();
-                    logger.debug("Cleaning tracking record {} (if present).", groupName);
+                    logger.info("Cleaning tracking record {} (if present).", groupName);
                     foloAdmin.clearTrackingRecord(groupName);
                 } catch (IndyClientException e) {
                     errCounter.increment();
@@ -293,19 +293,19 @@ public class FailedBuildsCleaner {
             clean = true;
         } else if (failedStatuses.contains(build.getStatus())) {
             if (build.getEndTime().isBefore(session.getTo())) {
-                logger.debug(
+                logger.info(
                         "Build record for {} group {} is older than the limit. Cleaning...",
                         packageType,
                         groupName);
                 clean = true;
             } else {
-                logger.debug(
+                logger.info(
                         "Build record for {} group {} is younger than the limit. Skipping.",
                         packageType,
                         groupName);
             }
         } else {
-            logger.debug(
+            logger.info(
                     "Build record's status for {} group {} is {}, which is not one of statuses to be cleaned.",
                     packageType,
                     groupName,
@@ -344,7 +344,7 @@ public class FailedBuildsCleaner {
      */
     @Timed
     private Build getBuildRecord(String buildContentId) throws CleanerException {
-        logger.debug("Looking for build record with query \"buildContentId==" + buildContentId + "\"");
+        logger.info("Looking for build record with query \"buildContentId==" + buildContentId + "\"");
 
         try {
             RemoteCollection<Build> builds = buildClient
@@ -362,7 +362,7 @@ public class FailedBuildsCleaner {
                 Matcher matcher = INDY_BUILD_GROUP_PATTERN.matcher(buildContentId);
                 if (matcher.matches()) {
                     String id = matcher.group(1);
-                    logger.debug("Attempting to find build record by id {}", id);
+                    logger.info("Attempting to find build record by id {}", id);
                     try {
                         return buildClient.getSpecific(id);
                     } catch (RemoteResourceNotFoundException e) {
@@ -376,7 +376,7 @@ public class FailedBuildsCleaner {
                     return null;
                 }
             } else {
-                logger.debug("Build with buildContentId = {} found.", buildContentId);
+                logger.info("Build with buildContentId = {} found.", buildContentId);
                 return builds.iterator().next();
             }
         } catch (RemoteResourceException e) {
@@ -402,13 +402,13 @@ public class FailedBuildsCleaner {
             throws IndyClientException {
         StoreKey groupKey = new StoreKey(pkgKey, StoreType.group, repoName);
         if (stores.exists(groupKey)) {
-            logger.trace("{} group {} exists - deleting...", pkgKey, repoName);
+            logger.debug("{} group {} exists - deleting...", pkgKey, repoName);
             stores.delete(groupKey, "Scheduled cleanup of failed builds.");
         }
 
         StoreKey storeKey = new StoreKey(pkgKey, StoreType.hosted, repoName);
         if (stores.exists(storeKey)) {
-            logger.trace("{} hosted repo {} exists - deleting...", pkgKey, repoName);
+            logger.debug("{} hosted repo {} exists - deleting...", pkgKey, repoName);
             stores.delete(storeKey, "Scheduled cleanup of failed builds.");
         }
     }

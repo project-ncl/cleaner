@@ -2,6 +2,8 @@ package org.jboss.pnc.cleaner.startup;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
+
+import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.jboss.pnc.cleaner.common.AppInfo;
@@ -12,5 +14,9 @@ public class AppLifecycle {
 
     void onStart(@Observes StartupEvent ev) {
         log.info("The application is starting: {}", AppInfo.getAppInfoString());
+    }
+
+    void onShutdown(@Observes ShutdownEvent ev) {
+        log.info("The application is shutting down: {}", AppInfo.getAppInfoString());
     }
 }
