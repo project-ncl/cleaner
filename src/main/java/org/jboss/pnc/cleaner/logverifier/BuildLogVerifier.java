@@ -78,7 +78,7 @@ public class BuildLogVerifier {
     @Timed
     private void verify(String buildId, String checksum) {
         try {
-            logger.debug("Verifying log for build id: {}", buildId);
+            logger.info("Verifying log for build id: {}", buildId);
             String esChecksum = getESChecksum(buildId);
             if (checksum.equals(esChecksum)) {
                 logger.info("Build output checksum OK. BuildId: {}, Checksum: {}.", buildId, checksum);

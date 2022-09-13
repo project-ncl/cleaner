@@ -72,7 +72,7 @@ public class DefaultKeycloakServiceClient implements KeycloakServiceClient {
     @Override
     public String getAuthToken() {
         if (keycloakToken == null || refreshRequired()) {
-            logger.debug(
+            logger.info(
                     "Requesting new service account auth token using values:\n" + "authServerUrl {}\n" + "realm {}\n"
                             + "resource {}\n" + "secret {}\n" + "sslRequired {}",
                     authServerUrl,
