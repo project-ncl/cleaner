@@ -61,7 +61,7 @@
     <pnc-common.version>2.2.0</pnc-common.version>
 
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
-    <quarkus.version>2.12.1.Final</quarkus.version>
+    <quarkus.version>2.12.2.Final</quarkus.version>
     <quarkus-logging-kafka.version>1.0.3</quarkus-logging-kafka.version>
     <resteasy.version>3.6.1.Final</resteasy.version>
     <tagSuffix />
