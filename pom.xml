@@ -375,6 +375,8 @@
               <ignoredEntry>META-INF/BCKEY.SF</ignoredEntry>
           </ignoredEntries>
           <finalName>cleaner</finalName>
+          <!-- needed to publish to maven central -->
+          <skipOriginalJarRename>true</skipOriginalJarRename>
         </configuration>
         <executions>
           <execution>
