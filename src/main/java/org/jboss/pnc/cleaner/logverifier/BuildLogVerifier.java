@@ -20,6 +20,12 @@ package org.jboss.pnc.cleaner.logverifier;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanBuilder;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.context.Scope;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.api.bifrost.dto.MetaData;
@@ -27,6 +33,7 @@ import org.jboss.pnc.api.bifrost.enums.Direction;
 import org.jboss.pnc.client.BuildClient;
 import org.jboss.pnc.client.RemoteCollection;
 import org.jboss.pnc.client.RemoteResourceException;
+import org.jboss.pnc.common.otel.OtelUtils;
 import org.jboss.pnc.dto.Build;
 import org.jboss.pnc.rest.api.parameters.BuildsFilterParameters;
 import org.slf4j.Logger;
@@ -85,6 +92,7 @@ public class BuildLogVerifier {
 
     @Timed
     public int verifyUnflaggedBuilds() {
+
         logger.info("Verifying log checksums ...");
         Collection<Build> unverifiedBuilds = getUnverifiedBuilds().getAll();
         logger.info("Found {} unverified builds.", unverifiedBuilds.size());
@@ -94,6 +102,7 @@ public class BuildLogVerifier {
 
     @Timed
     private void verify(String buildId, String checksum) {
+
         try {
             logger.info("Verifying log for build id: {}", buildId);
             String esChecksum = getESChecksum(buildId);
