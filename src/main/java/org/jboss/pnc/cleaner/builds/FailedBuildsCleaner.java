@@ -20,6 +20,11 @@ package org.jboss.pnc.cleaner.builds;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanBuilder;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.context.Scope;
 import io.quarkus.scheduler.Scheduled;
 
 import org.commonjava.indy.client.core.Indy;
@@ -43,6 +48,7 @@ import org.jboss.pnc.client.BuildClient;
 import org.jboss.pnc.client.RemoteCollection;
 import org.jboss.pnc.client.RemoteResourceException;
 import org.jboss.pnc.client.RemoteResourceNotFoundException;
+import org.jboss.pnc.common.otel.OtelUtils;
 import org.jboss.pnc.dto.Build;
 import org.jboss.pnc.enums.BuildStatus;
 import org.slf4j.Logger;
@@ -144,23 +150,44 @@ public class FailedBuildsCleaner {
      */
     @Timed
     public void cleanOlder(Instant limit) {
-        logger.info("Retrieving service account auth token.");
-        String serviceAccountToken = serviceClient.getAuthToken();
 
-        logger.info("Initializing Indy client.");
-        Indy indyClient = initIndy(serviceAccountToken);
-        FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
+        // Create a parent child span with values from MDC
+        SpanBuilder spanBuilder = OtelUtils.buildChildSpan(
+                GlobalOpenTelemetry.get().getTracer(""),
+                "FailedBuildsCleaner.cleanOlder",
+                SpanKind.CLIENT,
+                null,
+                null,
+                null,
+                null,
+                Span.current().getSpanContext(),
+                Map.of());
 
-        // get list of build group names from Indy
-        String[] packageTypes = new String[] { MAVEN_PKG_KEY, NPM_PKG_KEY };
-        for (String packageType : packageTypes) {
-            logger.info("Loading list of existing {} repository groups from Indy.", packageType);
-            List<String> groupNames = getGroupNames(packageType, session);
+        Span span = spanBuilder.startSpan();
+        logger.debug("Started a new span :{}", span);
 
-            // cycle through them and clean one by one
-            for (String groupName : groupNames) {
-                cleanBuildIfNeeded(packageType, groupName, session);
+        // put the span into the current Context
+        try (Scope scope = span.makeCurrent()) {
+            logger.info("Retrieving service account auth token.");
+            String serviceAccountToken = serviceClient.getAuthToken();
+
+            logger.info("Initializing Indy client.");
+            Indy indyClient = initIndy(serviceAccountToken);
+            FailedBuildsCleanerSession session = new FailedBuildsCleanerSession(indyClient, limit);
+
+            // get list of build group names from Indy
+            String[] packageTypes = new String[] { MAVEN_PKG_KEY, NPM_PKG_KEY };
+            for (String packageType : packageTypes) {
+                logger.info("Loading list of existing {} repository groups from Indy.", packageType);
+                List<String> groupNames = getGroupNames(packageType, session);
+
+                // cycle through them and clean one by one
+                for (String groupName : groupNames) {
+                    cleanBuildIfNeeded(packageType, groupName, session);
+                }
             }
+        } finally {
+            span.end(); // closing the scope does not end the span, this has to be done manually
         }
     }
 

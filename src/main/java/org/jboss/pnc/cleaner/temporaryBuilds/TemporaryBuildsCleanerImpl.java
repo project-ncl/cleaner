@@ -20,10 +20,14 @@ package org.jboss.pnc.cleaner.temporaryBuilds;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.opentelemetry.instrumentation.annotations.SpanAttribute;
-import io.opentelemetry.instrumentation.annotations.WithSpan;
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanBuilder;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.context.Scope;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.pnc.common.otel.OtelUtils;
 import org.jboss.pnc.common.util.TimeUtils;
 import org.jboss.pnc.dto.Build;
 import org.jboss.pnc.dto.GroupBuild;
@@ -36,6 +40,7 @@ import javax.inject.Inject;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -74,15 +79,36 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
                         + TEMPORARY_BUILD_LIFESPAN + " days.");
         Date expirationThreshold = TimeUtils.getDateXDaysAgo(TEMPORARY_BUILD_LIFESPAN);
 
-        deleteExpiredBuildConfigSetRecords(expirationThreshold);
-        deleteExpiredBuildRecords(expirationThreshold);
+        // Create a parent child span with values from MDC
+        SpanBuilder spanBuilder = OtelUtils.buildChildSpan(
+                GlobalOpenTelemetry.get().getTracer(""),
+                "TemporaryBuildsCleanerImpl.cleanupExpiredTemporaryBuilds",
+                SpanKind.CLIENT,
+                null,
+                null,
+                null,
+                null,
+                Span.current().getSpanContext(),
+                Map.of(
+                        "expirationThreshold",
+                        String.format("%1$tY/%1$tm/%1$te %1$tH:%1$tM:%1$tS,%1$tL", expirationThreshold)));
+        Span span = spanBuilder.startSpan();
+        log.debug("Started a new span :{}", span);
 
-        log.info("Regular cleanup of expired temporary builds finished.");
+        // put the span into the current Context
+        try (Scope scope = span.makeCurrent()) {
+
+            deleteExpiredBuildConfigSetRecords(expirationThreshold);
+            deleteExpiredBuildRecords(expirationThreshold);
+
+            log.info("Regular cleanup of expired temporary builds finished.");
+        } finally {
+            span.end(); // closing the scope does not end the span, this has to be done manually
+        }
     }
 
     @Timed
-    @WithSpan
-    void deleteExpiredBuildConfigSetRecords(@SpanAttribute(value = "expirationThreshold") Date expirationThreshold) {
+    void deleteExpiredBuildConfigSetRecords(Date expirationThreshold) {
         Collection<GroupBuild> expiredBCSRecords = temporaryBuildsCleanerAdapter
                 .findTemporaryGroupBuildsOlderThan(expirationThreshold);
 
@@ -99,8 +125,7 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
     }
 
     @Timed
-    @WithSpan
-    void deleteExpiredBuildRecords(@SpanAttribute(value = "expirationThreshold") Date expirationThreshold) {
+    void deleteExpiredBuildRecords(Date expirationThreshold) {
         Set<Build> failedBuilds = new HashSet<>();
         Collection<Build> expiredBuilds = null;
         do {
@@ -119,6 +144,5 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
                 }
             }
         } while (!expiredBuilds.isEmpty());
-
     }
 }
