@@ -127,10 +127,9 @@ public class BuildLogVerifier {
 
     @Timed
     private String getESChecksum(String buildId) throws IOException {
-        String matchFilters = "mdc.processContext.keyword:build-" + buildId;
-        String prefixFilters = "loggerName.keyword:org.jboss.pnc._userlog_.build-log";
+        String matchFilters = "mdc.processContext.keyword:build-" + buildId + "," + "loggerName.keyword:org.jboss.pnc._userlog_.build-log";
 
-        MetaData metaData = bifrost.getMetaData(matchFilters, prefixFilters, null, Direction.ASC, null);
+        MetaData metaData = bifrost.getMetaData(matchFilters, null, null, Direction.ASC, null);
         return metaData.getMd5Digest();
     }
 
