@@ -20,6 +20,9 @@ package org.jboss.pnc.cleaner.temporaryBuilds;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.instrumentation.annotations.SpanAttribute;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.pnc.common.util.TimeUtils;
 import org.jboss.pnc.dto.Build;
@@ -78,7 +81,8 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
     }
 
     @Timed
-    void deleteExpiredBuildConfigSetRecords(Date expirationThreshold) {
+    @WithSpan
+    void deleteExpiredBuildConfigSetRecords(@SpanAttribute(value = "expirationThreshold") Date expirationThreshold) {
         Collection<GroupBuild> expiredBCSRecords = temporaryBuildsCleanerAdapter
                 .findTemporaryGroupBuildsOlderThan(expirationThreshold);
 
@@ -95,7 +99,8 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
     }
 
     @Timed
-    void deleteExpiredBuildRecords(Date expirationThreshold) {
+    @WithSpan
+    void deleteExpiredBuildRecords(@SpanAttribute(value = "expirationThreshold") Date expirationThreshold) {
         Set<Build> failedBuilds = new HashSet<>();
         Collection<Build> expiredBuilds = null;
         do {

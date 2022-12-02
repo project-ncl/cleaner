@@ -17,6 +17,7 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import io.quarkus.scheduler.Scheduled;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,6 +42,7 @@ public class TemporaryBuildsCleanupScheduler {
      * Schedules cleanup of old temporary builds
      */
     @Scheduled(cron = "{temporaryBuildsCleaner.cron}")
+    @WithSpan
     public void cleanupExpiredTemporaryBuilds() {
         log.info("Regular deletion of temporary builds triggered by clock.");
         temporaryBuildsCleanupScheduleWorker.cleanupExpiredTemporaryBuilds();

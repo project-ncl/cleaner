@@ -18,6 +18,9 @@
 package org.jboss.pnc.cleaner.rest;
 
 import io.micrometer.core.annotation.Timed;
+import io.opentelemetry.instrumentation.annotations.SpanAttribute;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
+
 import org.jboss.pnc.cleaner.temporaryBuilds.BuildDeleteCallbackManager;
 import org.jboss.pnc.cleaner.temporaryBuilds.BuildGroupDeleteCallbackManager;
 import org.jboss.pnc.dto.response.DeleteOperationResult;
@@ -46,9 +49,10 @@ public class Callbacks {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Timed
+    @WithSpan
     public Response buildRecordDeleteCallback(
-            @PathParam("buildId") String buildId,
-            DeleteOperationResult deleteOperation) {
+            @SpanAttribute(value = "buildId") @PathParam("buildId") String buildId,
+            @SpanAttribute(value = "deleteOperation") DeleteOperationResult deleteOperation) {
         buildDeleteCallbackManager.callback(buildId, deleteOperation);
         return Response.ok().build();
     }
@@ -57,9 +61,10 @@ public class Callbacks {
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Timed
+    @WithSpan
     public Response buildGroupRecordDeleteCallback(
-            @PathParam("buildId") String buildId,
-            DeleteOperationResult deleteOperation) {
+        @SpanAttribute(value = "buildId") @PathParam("buildId") String buildId,
+        @SpanAttribute(value = "deleteOperation") DeleteOperationResult deleteOperation) {
         buildGroupDeleteCallbackManager.callback(buildId, deleteOperation);
         return Response.ok().build();
     }
