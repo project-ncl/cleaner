@@ -22,6 +22,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
+
 import org.apache.http.HeaderIterator;
 import org.apache.http.HttpHeaders;
 import org.apache.http.HttpResponse;
@@ -39,10 +42,13 @@ import org.apache.http.entity.InputStreamEntity;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.ssl.SSLContexts;
+import org.jboss.pnc.api.constants.MDCHeaderKeys;
 import org.jboss.pnc.cleaner.auth.AuthenticationException;
 import org.jboss.pnc.cleaner.auth.keycloakutil.httpcomponents.HttpDelete;
 import org.jboss.pnc.cleaner.auth.keycloakutil.operations.LocalSearch;
 import org.jboss.pnc.cleaner.auth.keycloakutil.operations.RoleOperations;
+import org.jboss.pnc.common.Strings;
+import org.jboss.pnc.common.otel.OtelUtils;
 import org.keycloak.util.JsonSerialization;
 
 import javax.annotation.PostConstruct;
@@ -191,6 +197,7 @@ public class HttpUtil {
                 throw new RuntimeException("Method not supported: " + type);
         }
         addHeaders(req, request.getHeaders());
+        addOtel(req);
 
         if (request.getBody() != null) {
             if (req instanceof HttpEntityEnclosingRequestBase == false) {
@@ -249,6 +256,7 @@ public class HttpUtil {
     @SuppressWarnings("unchecked")
     private static InputStream doRequest(String authorization, HttpRequestBase request) throws IOException {
         addAuth(request, authorization);
+        addOtel(request);
 
         HttpResponse response = getHttpClient().execute(request);
         InputStream responseStream = null;
@@ -289,6 +297,15 @@ public class HttpUtil {
         if (authorization != null) {
             request.setHeader(HttpHeaders.AUTHORIZATION, authorization);
         }
+    }
+
+    private static void addOtel(HttpRequestBase request) {
+        SpanContext spanContext = Span.current().getSpanContext();
+        request.setHeader(MDCHeaderKeys.TRACE_ID.getHeaderName(), spanContext.getTraceId());
+        request.setHeader(MDCHeaderKeys.SPAN_ID.getHeaderName(), spanContext.getSpanId());
+        OtelUtils.createTraceStateHeader(spanContext).forEach((k, v) -> {if (!Strings.isEmpty(v)) {
+            request.setHeader(k, v);}});
+        OtelUtils.createTraceParentHeader(spanContext).forEach((k, v) -> {if (!Strings.isEmpty(v)) {request.setHeader(k, v);}});
     }
 
     @Timed
@@ -409,7 +426,7 @@ public class HttpUtil {
                 if (query.length() > 0) {
                     query.append("&");
                 }
-                query.append(params.getKey()).append("=").append(URLEncoder.encode(params.getValue(), "utf-8"));
+                query.append(params.getKey()).append("=").append(URLEncoder.encode(params.getValue(), UTF_8));
             } catch (Exception e) {
                 errCounter.increment();
                 throw new RuntimeException(
@@ -453,9 +470,9 @@ public class HttpUtil {
 
         Headers headers = new Headers();
         if (auth != null) {
-            headers.add("Authorization", auth);
+            headers.add(HttpHeaders.AUTHORIZATION, auth);
         }
-        headers.add("Accept", "application/json");
+        headers.add(HttpHeaders.ACCEPT, APPLICATION_JSON);
 
         HeadersBodyStatus response;
         try {
@@ -481,9 +498,9 @@ public class HttpUtil {
     public static void doPostJSON(String resourceUrl, String auth, Object content) {
         Headers headers = new Headers();
         if (auth != null) {
-            headers.add("Authorization", auth);
+            headers.add(HttpHeaders.AUTHORIZATION, auth);
         }
-        headers.add("Content-Type", "application/json");
+        headers.add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON);
 
         HeadersBodyStatus response;
 
@@ -509,9 +526,9 @@ public class HttpUtil {
     public static void doDeleteJSON(String resourceUrl, String auth, Object content) {
         Headers headers = new Headers();
         if (auth != null) {
-            headers.add("Authorization", auth);
+            headers.add(HttpHeaders.AUTHORIZATION, auth);
         }
-        headers.add("Content-Type", "application/json");
+        headers.add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON);
 
         HeadersBodyStatus response;
 
