@@ -63,8 +63,8 @@ public class Callbacks {
     @Timed
     @WithSpan
     public Response buildGroupRecordDeleteCallback(
-        @SpanAttribute(value = "buildId") @PathParam("buildId") String buildId,
-        @SpanAttribute(value = "deleteOperation") DeleteOperationResult deleteOperation) {
+            @SpanAttribute(value = "buildId") @PathParam("buildId") String buildId,
+            @SpanAttribute(value = "deleteOperation") DeleteOperationResult deleteOperation) {
         buildGroupDeleteCallbackManager.callback(buildId, deleteOperation);
         return Response.ok().build();
     }
