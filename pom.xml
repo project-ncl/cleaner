@@ -56,12 +56,12 @@
     <indy.version>2.7.5</indy.version>
     <keycloak.version>19.0.3</keycloak.version>
 
-    <pnc.version>2.3.2</pnc.version>
-    <pnc-api.version>2.4.1</pnc-api.version>
-    <pnc-common.version>2.2.0</pnc-common.version>
+    <pnc.version>2.5.0-SNAPSHOT</pnc.version>
+    <pnc-api.version>2.4.5-SNAPSHOT</pnc-api.version>
+    <pnc-common.version>2.2.1-SNAPSHOT</pnc-common.version>
 
     <surefire-plugin.version>2.22.2</surefire-plugin.version>
-    <quarkus.version>2.13.1.Final</quarkus.version>
+    <quarkus.version>2.14.1.Final</quarkus.version>
     <quarkus-logging-kafka.version>1.0.3</quarkus-logging-kafka.version>
     <resteasy.version>3.6.1.Final</resteasy.version>
     <tagSuffix />
@@ -183,6 +183,13 @@
     </dependency>
 
     <!-- PNC dependencies END !-->
+
+    <!-- OTEL dependencies !-->
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-opentelemetry-exporter-otlp</artifactId>
+    </dependency>
+    <!-- OTEL dependencies END !-->
 
     <!-- Other dependencies !-->
     <dependency>
