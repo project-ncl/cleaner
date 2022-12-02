@@ -303,9 +303,16 @@ public class HttpUtil {
         SpanContext spanContext = Span.current().getSpanContext();
         request.setHeader(MDCHeaderKeys.TRACE_ID.getHeaderName(), spanContext.getTraceId());
         request.setHeader(MDCHeaderKeys.SPAN_ID.getHeaderName(), spanContext.getSpanId());
-        OtelUtils.createTraceStateHeader(spanContext).forEach((k, v) -> {if (!Strings.isEmpty(v)) {
-            request.setHeader(k, v);}});
-        OtelUtils.createTraceParentHeader(spanContext).forEach((k, v) -> {if (!Strings.isEmpty(v)) {request.setHeader(k, v);}});
+        OtelUtils.createTraceStateHeader(spanContext).forEach((k, v) -> {
+            if (!Strings.isEmpty(v)) {
+                request.setHeader(k, v);
+            }
+        });
+        OtelUtils.createTraceParentHeader(spanContext).forEach((k, v) -> {
+            if (!Strings.isEmpty(v)) {
+                request.setHeader(k, v);
+            }
+        });
     }
 
     @Timed
