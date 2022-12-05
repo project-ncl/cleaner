@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.opentelemetry.api.GlobalOpenTelemetry;
 import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
+import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Scope;
 import io.quarkus.scheduler.Scheduled;
@@ -43,11 +44,13 @@ import org.commonjava.indy.model.core.io.IndyObjectMapper;
 import org.commonjava.util.jhttpc.model.SiteConfig;
 import org.commonjava.util.jhttpc.model.SiteConfigBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.pnc.api.constants.MDCHeaderKeys;
 import org.jboss.pnc.cleaner.auth.KeycloakServiceClient;
 import org.jboss.pnc.client.BuildClient;
 import org.jboss.pnc.client.RemoteCollection;
 import org.jboss.pnc.client.RemoteResourceException;
 import org.jboss.pnc.client.RemoteResourceNotFoundException;
+import org.jboss.pnc.common.Strings;
 import org.jboss.pnc.common.otel.OtelUtils;
 import org.jboss.pnc.dto.Build;
 import org.jboss.pnc.enums.BuildStatus;
@@ -228,6 +231,19 @@ public class FailedBuildsCleaner {
                     new IndyFoloContentClientModule() };
 
             Map<String, String> mdcCopyMappings = new HashMap<>(); // TODO fill in these if needed
+            SpanContext spanContext = Span.current().getSpanContext();
+            mdcCopyMappings.put(MDCHeaderKeys.TRACE_ID.getHeaderName(), spanContext.getTraceId());
+            mdcCopyMappings.put(MDCHeaderKeys.SPAN_ID.getHeaderName(), spanContext.getSpanId());
+            OtelUtils.createTraceStateHeader(spanContext).forEach((k, v) -> {
+                if (!Strings.isEmpty(v)) {
+                    mdcCopyMappings.put(k, v);
+                }
+            });
+            OtelUtils.createTraceParentHeader(spanContext).forEach((k, v) -> {
+                if (!Strings.isEmpty(v)) {
+                    mdcCopyMappings.put(k, v);
+                }
+            });
             return new Indy(siteConfig, authenticator, new IndyObjectMapper(true), mdcCopyMappings, modules);
         } catch (IndyClientException e) {
             errCounter.increment();
