@@ -61,6 +61,8 @@ public class TemporaryBuildsCleanerImplTest {
 
     static final String SINGLE_TEMPORARY_BUILD_GROUP_FILE = "singleTemporaryBuildGroup.json";
 
+    private static final String ARCHIVE_DELETE_ENDPOINT = "/api/archive/";
+
     private WireMockServer wireMockServer = new WireMockServer(
             options().port(8082).withRootDirectory("src/test/resources/wiremock/general"));
 
@@ -81,6 +83,7 @@ public class TemporaryBuildsCleanerImplTest {
     public void shouldDeleteATemporaryBuild() {
         // given
         final String buildId = "684";
+        final String buildConfigId = "100";
         wireMockServer.stubFor(
                 get(urlMatching(BUILDS_ENDPOINT + GET_TEMP_BUILDS_ENDPOINT + "\\?.*")).inScenario("scenario")
                         .whenScenarioStateIs(Scenario.STARTED)
@@ -100,6 +103,9 @@ public class TemporaryBuildsCleanerImplTest {
         String deleteRequestRegex = BUILDS_ENDPOINT + "/" + buildId
                 + "\\?callback=0\\.0\\.0\\.0%3A8080%2Fcallbacks%2Fdelete%2Fbuilds%2F684";
         wireMockServer.stubFor(delete(urlMatching(deleteRequestRegex)).willReturn(aResponse().withStatus(200)));
+
+        wireMockServer.stubFor(
+                delete(urlMatching(ARCHIVE_DELETE_ENDPOINT + buildConfigId)).willReturn(aResponse().withStatus(204)));
 
         startCallbackThread("http://localhost:8081/callbacks/delete/builds/684");
 

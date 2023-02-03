@@ -27,6 +27,7 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Scope;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.pnc.cleaner.archiveservice.ArchivesCleaner;
 import org.jboss.pnc.common.otel.OtelUtils;
 import org.jboss.pnc.common.util.TimeUtils;
 import org.jboss.pnc.dto.Build;
@@ -60,6 +61,9 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
 
     @Inject
     TemporaryBuildsCleanerAdapter temporaryBuildsCleanerAdapter;
+
+    @Inject
+    ArchivesCleaner archivesCleaner;
 
     @Inject
     MeterRegistry registry;
@@ -137,6 +141,13 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
                     log.info("Deleting temporary build {}", build);
                     temporaryBuildsCleanerAdapter.deleteTemporaryBuild(build.getId());
                     log.info("Temporary build {} was deleted successfully", build);
+
+                    log.info(
+                            "Deleting archive of temporary build {} with build config id {}",
+                            build,
+                            build.getBuildConfigRevision().getId());
+                    archivesCleaner.deleteArchive(build.getBuildConfigRevision().getId());
+
                 } catch (OrchInteractionException ex) {
                     warnCounter.increment();
                     log.warn("Deletion of temporary build {} failed! Cause: {}", build, ex);
