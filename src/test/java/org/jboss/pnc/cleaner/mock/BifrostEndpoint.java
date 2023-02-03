@@ -21,6 +21,7 @@ import io.quarkus.test.Mock;
 import org.jboss.pnc.api.bifrost.dto.Line;
 import org.jboss.pnc.api.bifrost.dto.MetaData;
 import org.jboss.pnc.api.bifrost.enums.Direction;
+import org.jboss.pnc.api.bifrost.enums.Format;
 import org.jboss.pnc.api.bifrost.rest.Bifrost;
 import org.jboss.pnc.common.Strings;
 
@@ -44,7 +45,10 @@ public class BifrostEndpoint implements Bifrost {
             String prefixFilters,
             Line afterLine,
             Direction direction,
+            Format format,
             Integer maxLines,
+            Integer batchSize,
+            Integer batchDelay,
             boolean follow,
             String timeoutProbeString) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
@@ -56,7 +60,8 @@ public class BifrostEndpoint implements Bifrost {
             String prefixFilters,
             Line afterLine,
             Direction direction,
-            Integer maxLines) throws IOException {
+            Integer maxLines,
+            Integer batchSize) throws IOException {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 
@@ -66,7 +71,8 @@ public class BifrostEndpoint implements Bifrost {
             String prefixFilters,
             Line afterLine,
             Direction direction,
-            Integer maxLines) throws IOException {
+            Integer maxLines,
+            Integer batchSize) throws IOException {
         String processContext = Strings.toMap(matchFilters).get("mdc.processContext.keyword").get(0);
         return provider.getMetaDataForContext(processContext);
     }
