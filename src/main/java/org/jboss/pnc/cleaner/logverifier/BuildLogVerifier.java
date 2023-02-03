@@ -60,6 +60,7 @@ public class BuildLogVerifier {
     private static final String className = BuildLogVerifier.class.getName();
 
     private final Logger logger = LoggerFactory.getLogger(BuildLogVerifier.class);
+    private final Integer DEFAULT_BIFROST_BATCH_SIZE = 1;
 
     @Inject
     @RestClient
@@ -156,7 +157,8 @@ public class BuildLogVerifier {
         String matchFilters = "mdc.processContext.keyword:build-" + buildId + ","
                 + "loggerName.keyword:org.jboss.pnc._userlog_.build-log";
 
-        MetaData metaData = bifrost.getMetaData(matchFilters, null, null, Direction.ASC, null);
+        MetaData metaData = bifrost
+                .getMetaData(matchFilters, null, null, Direction.ASC, null, DEFAULT_BIFROST_BATCH_SIZE);
         return metaData.getMd5Digest();
     }
 
