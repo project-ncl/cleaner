@@ -74,16 +74,9 @@ public class ArchivesCleanerImpl implements ArchivesCleaner {
     @Inject
     java.net.http.HttpClient httpClient;
 
-    private String DELETE_ARCHIVE_URL;
-
-    @PostConstruct
-    void init() {
-        DELETE_ARCHIVE_URL = config.getValue("archive-service.delete-api-url", String.class);
-    }
-
     @Override
     public void deleteArchive(String buildConfigurationId) {
-        if (!Strings.isEmpty(DELETE_ARCHIVE_URL)) {
+        if (!Strings.isEmpty(config.getValue("archive-service.delete-api-url", String.class))) {
             // Create a parent child span with values from MDC
             SpanBuilder spanBuilder = OtelUtils.buildChildSpan(
                     GlobalOpenTelemetry.get().getTracer(""),
@@ -111,7 +104,7 @@ public class ArchivesCleanerImpl implements ArchivesCleaner {
         log.debug("Deleting historical archive of build config id {} ...", buildConfigurationId);
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(DELETE_ARCHIVE_URL + buildConfigurationId))
+                .uri(URI.create(config.getValue("archive-service.delete-api-url", String.class) + buildConfigurationId))
                 .DELETE()
                 .timeout(Duration.ofSeconds(config.getValue("archive-service.http-client.request-timeout", Long.class)))
                 .header(AUTHORIZATION_STRING, "Bearer " + serviceClient.getAuthToken())
@@ -161,9 +154,13 @@ public class ArchivesCleanerImpl implements ArchivesCleaner {
 
     private Function<HttpResponse<String>, HttpResponse<String>> validateResponse() {
         return response -> {
-            if (response.statusCode() >= 200 && response.statusCode() < 300) {
+            if (response.statusCode() == 202) {
                 return response;
             } else {
+                log.error(
+                        "Call to archival service failed with status code {} and message {}",
+                        response.statusCode(),
+                        response.body());
                 throw new FailedResponseException("Response status code: " + response.statusCode());
             }
         };
