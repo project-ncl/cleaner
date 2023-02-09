@@ -154,7 +154,7 @@ public class ArchivesCleanerImpl implements ArchivesCleaner {
 
     private Function<HttpResponse<String>, HttpResponse<String>> validateResponse() {
         return response -> {
-            if (response.statusCode() == 202) {
+            if (response.statusCode() >= 200 && response.statusCode() < 300) {
                 return response;
             } else {
                 log.error(
