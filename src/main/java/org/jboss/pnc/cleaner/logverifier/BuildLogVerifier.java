@@ -60,7 +60,7 @@ public class BuildLogVerifier {
     private static final String className = BuildLogVerifier.class.getName();
 
     private final Logger logger = LoggerFactory.getLogger(BuildLogVerifier.class);
-    private final Integer DEFAULT_BIFROST_BATCH_SIZE = 1;
+    private final Integer DEFAULT_BIFROST_BATCH_SIZE = 10000;
 
     @Inject
     @RestClient
