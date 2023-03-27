@@ -338,7 +338,7 @@
         <plugin>
           <groupId>com.mycila</groupId>
           <artifactId>license-maven-plugin</artifactId>
-          <version>2.11</version>
+          <version>4.2</version>
           <configuration>
             <properties>
               <copyright-years>${project.inceptionYear}-2022</copyright-years>
