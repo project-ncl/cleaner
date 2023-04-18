@@ -147,12 +147,12 @@ public class OrchBuildEndpoint implements BuildEndpoint {
     }
 
     @Override
-    public Response getAlignLogs(String id) {
+    public StreamingOutput getAlignLogs(String id) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 
     @Override
-    public Response getBuildLogs(String id) {
+    public StreamingOutput getBuildLogs(String id) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 
