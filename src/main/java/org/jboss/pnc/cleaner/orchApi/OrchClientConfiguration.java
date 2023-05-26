@@ -52,7 +52,8 @@ public class OrchClientConfiguration {
     KeycloakServiceClient keycloakServiceClient;
 
     public Configuration getConfiguration() {
-        Configuration.ConfigurationBuilder configurationBuilder = Configuration.builder();
+        Configuration.ConfigurationBuilder configurationBuilder = Configuration.builder()
+                .addDefaultMdcToHeadersMappings();
 
         configurationBuilder.protocol(protocol);
         configurationBuilder.host(host);
