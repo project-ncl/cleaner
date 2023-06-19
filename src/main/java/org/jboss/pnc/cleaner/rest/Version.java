@@ -17,19 +17,29 @@
  */
 package org.jboss.pnc.cleaner.rest;
 
+import org.jboss.pnc.api.dto.ComponentVersion;
 import org.jboss.pnc.cleaner.common.AppInfo;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 @Path("/version")
 public class Version {
 
     @GET
-    @Produces(MediaType.TEXT_PLAIN)
-    public String getVersion() {
-        return AppInfo.getAppInfoString();
+    @Produces(MediaType.APPLICATION_JSON)
+    public ComponentVersion getVersion() {
+        return ComponentVersion.builder()
+                .name("PNC-Cleaner")
+                .version(AppInfo.getVersion())
+                .commit(AppInfo.getRevision())
+                .builtOn(
+                        ZonedDateTime
+                                .parse(AppInfo.getBuildTime(), DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ")))
+                .build();
     }
 }
