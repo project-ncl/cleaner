@@ -44,7 +44,7 @@ public class AppInfo {
     }
 
     public static String getRevision() {
-        return appProperties.getProperty("git.commit.id.describe-short");
+        return appProperties.getProperty("git.commit.id.abbrev");
     }
 
     public static String getBuildTime() {
