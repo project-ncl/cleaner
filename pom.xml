@@ -72,7 +72,7 @@
     <maven.compiler.source>11</maven.compiler.source>
     <maven.compiler.target>11</maven.compiler.target>
 
-    <indy.version>2.7.5</indy.version>
+    <indy.version>3.2.0</indy.version>
     <keycloak.version>19.0.3</keycloak.version>
 
     <pnc.version>2.5.0</pnc.version>
