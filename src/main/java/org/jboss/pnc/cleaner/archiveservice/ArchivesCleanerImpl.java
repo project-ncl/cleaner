@@ -18,7 +18,6 @@
 package org.jboss.pnc.cleaner.archiveservice;
 
 import java.net.URI;
-import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
@@ -26,14 +25,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 
+import io.quarkus.oidc.client.OidcClient;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.pnc.api.constants.MDCKeys;
-import org.jboss.pnc.cleaner.auth.KeycloakServiceClient;
 import org.jboss.pnc.common.Strings;
 import org.jboss.pnc.common.otel.OtelUtils;
 import org.slf4j.MDC;
@@ -63,7 +61,7 @@ import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
 public class ArchivesCleanerImpl implements ArchivesCleaner {
 
     @Inject
-    KeycloakServiceClient serviceClient;
+    OidcClient oidcClient;
 
     @Inject
     Config config;
@@ -107,7 +105,9 @@ public class ArchivesCleanerImpl implements ArchivesCleaner {
                 .uri(URI.create(config.getValue("archive-service.delete-api-url", String.class) + buildConfigurationId))
                 .DELETE()
                 .timeout(Duration.ofSeconds(config.getValue("archive-service.http-client.request-timeout", Long.class)))
-                .header(AUTHORIZATION_STRING, "Bearer " + serviceClient.getAuthToken())
+                .header(
+                        AUTHORIZATION_STRING,
+                        "Bearer " + oidcClient.getTokens().await().indefinitely().getAccessToken())
                 .header(CONTENT_TYPE_STRING, "application/json");
 
         HttpRequest request = builder.build();

@@ -73,7 +73,6 @@
     <compiler-plugin.version>3.11.0</compiler-plugin.version>
 
     <indy.version>2.7.5</indy.version>
-    <keycloak.version>19.0.3</keycloak.version>
 
     <pnc.version>2.5.0</pnc.version>
     <pnc-api.version>2.4.5</pnc-api.version>
@@ -82,7 +81,6 @@
     <surefire-plugin.version>3.1.2</surefire-plugin.version>
     <quarkus.version>2.16.6.Final</quarkus.version>
     <quarkus-logging-kafka.version>1.0.5</quarkus-logging-kafka.version>
-    <resteasy.version>3.6.1.Final</resteasy.version>
     <tagSuffix />
   </properties>
 
@@ -133,12 +131,6 @@
         <version>${indy.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.keycloak</groupId>
-        <artifactId>keycloak-core</artifactId>
-        <version>${keycloak.version}</version>
-      </dependency>
-
-      <dependency>
         <groupId>com.github.tomakehurst</groupId>
         <artifactId>wiremock-jre8</artifactId>
         <version>2.35.0</version>
@@ -176,6 +168,10 @@
     <dependency>
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-micrometer</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.quarkus</groupId>
+      <artifactId>quarkus-oidc-client</artifactId>
     </dependency>
     <dependency>
       <groupId>io.micrometer</groupId>
@@ -245,16 +241,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-        <groupId>org.keycloak</groupId>
-        <artifactId>keycloak-core</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpcore</artifactId>
-    </dependency>
-
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
