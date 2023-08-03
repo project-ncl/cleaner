@@ -26,6 +26,7 @@ import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Scope;
+import io.quarkus.oidc.client.OidcClient;
 import io.quarkus.scheduler.Scheduled;
 
 import org.commonjava.indy.client.core.Indy;
@@ -45,7 +46,6 @@ import org.commonjava.util.jhttpc.model.SiteConfig;
 import org.commonjava.util.jhttpc.model.SiteConfigBuilder;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.pnc.api.constants.MDCHeaderKeys;
-import org.jboss.pnc.cleaner.auth.KeycloakServiceClient;
 import org.jboss.pnc.client.BuildClient;
 import org.jboss.pnc.client.RemoteCollection;
 import org.jboss.pnc.client.RemoteResourceException;
@@ -89,7 +89,7 @@ public class FailedBuildsCleaner {
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     @Inject
-    KeycloakServiceClient serviceClient;
+    OidcClient oidcClient;
 
     @Inject
     BuildClient buildClient;
@@ -172,7 +172,7 @@ public class FailedBuildsCleaner {
         // put the span into the current Context
         try (Scope scope = span.makeCurrent()) {
             logger.info("Retrieving service account auth token.");
-            String serviceAccountToken = serviceClient.getAuthToken();
+            String serviceAccountToken = oidcClient.getTokens().await().indefinitely().getAccessToken();
 
             logger.info("Initializing Indy client.");
             Indy indyClient = initIndy(serviceAccountToken);
