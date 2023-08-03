@@ -17,8 +17,8 @@
  */
 package org.jboss.pnc.cleaner.orchApi;
 
+import io.quarkus.oidc.client.OidcClient;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.pnc.cleaner.auth.KeycloakServiceClient;
 import org.jboss.pnc.client.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,7 +49,7 @@ public class OrchClientConfiguration {
     protected Integer pageSize;
 
     @Inject
-    KeycloakServiceClient keycloakServiceClient;
+    OidcClient oidcClient;
 
     public Configuration getConfiguration() {
         Configuration.ConfigurationBuilder configurationBuilder = Configuration.builder()
@@ -59,7 +59,7 @@ public class OrchClientConfiguration {
         configurationBuilder.host(host);
         configurationBuilder.port(port);
         configurationBuilder.pageSize(pageSize);
-        configurationBuilder.bearerTokenSupplier(() -> keycloakServiceClient.getAuthToken());
+        configurationBuilder.bearerTokenSupplier(() -> oidcClient.getTokens().await().indefinitely().getAccessToken());
 
         return configurationBuilder.build();
     }
