@@ -72,7 +72,7 @@
     <maven.compiler.release>17</maven.compiler.release>
     <compiler-plugin.version>3.11.0</compiler-plugin.version>
 
-    <indy.version>2.7.5</indy.version>
+    <indy.version>3.2.2</indy.version>
 
     <pnc.version>2.5.0</pnc.version>
     <pnc-api.version>2.4.5</pnc-api.version>
