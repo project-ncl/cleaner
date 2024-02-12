@@ -45,22 +45,11 @@ public class FailedBuildsCleanerSession {
 
     private Instant to;
 
-    @Inject
-    MeterRegistry registry;
-
-    private Counter errCounter;
-
-    @PostConstruct
-    void initMetrics() {
-        errCounter = registry.counter(className + ".error.count");
-    }
-
     public FailedBuildsCleanerSession(Indy indyClient, Instant to) {
         try {
             this.stores = indyClient.stores();
             this.foloAdmin = indyClient.module(IndyFoloAdminClientModule.class);
         } catch (IndyClientException e) {
-            errCounter.increment();
             throw new RuntimeException("Unable to retrieve Indy client module: " + e, e);
         }
         this.to = to;
@@ -73,7 +62,6 @@ public class FailedBuildsCleanerSession {
                 StoreListingDTO<Group> groupListing = stores.listGroups(GENERIC_PKG_KEY);
                 genericGroups = groupListing.getItems();
             } catch (IndyClientException e) {
-                errCounter.increment();
                 throw new RuntimeException("Error in loading generic http groups: " + e, e);
             }
         }
