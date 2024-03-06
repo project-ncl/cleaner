@@ -74,7 +74,7 @@ public class ArchivesCleanerImpl implements ArchivesCleaner {
 
     @Override
     public void deleteArchive(String buildConfigurationId) {
-        if (!Strings.isEmpty(config.getValue("archive-service.delete-api-url", String.class))) {
+        if (config.getOptionalValue("archive-service.delete-api-url", String.class).isPresent()) {
             // Create a parent child span with values from MDC
             SpanBuilder spanBuilder = OtelUtils.buildChildSpan(
                     GlobalOpenTelemetry.get().getTracer(""),
