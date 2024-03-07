@@ -38,6 +38,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -81,7 +83,8 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
         log.info(
                 "Regular cleanup of expired temporary builds started. Removing builds older than "
                         + TEMPORARY_BUILD_LIFESPAN + " days.");
-        Date expirationThreshold = TimeUtils.getDateXDaysAgo(TEMPORARY_BUILD_LIFESPAN);
+        Date expirationThreshold = new Date(
+                Instant.now().minus(TEMPORARY_BUILD_LIFESPAN, ChronoUnit.DAYS).toEpochMilli());
 
         // Create a parent child span with values from MDC
         SpanBuilder spanBuilder = OtelUtils.buildChildSpan(
