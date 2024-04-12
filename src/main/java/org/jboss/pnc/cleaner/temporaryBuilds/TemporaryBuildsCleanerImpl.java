@@ -28,6 +28,7 @@ import io.opentelemetry.context.Scope;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.pnc.cleaner.archiveservice.ArchivesCleaner;
+import org.jboss.pnc.cleaner.bifrost.BifrostFinalLogCleaner;
 import org.jboss.pnc.common.otel.OtelUtils;
 import org.jboss.pnc.common.util.TimeUtils;
 import org.jboss.pnc.dto.Build;
@@ -66,6 +67,9 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
 
     @Inject
     ArchivesCleaner archivesCleaner;
+
+    @Inject
+    BifrostFinalLogCleaner bifrostFinalLogCleaner;
 
     @Inject
     MeterRegistry registry;
@@ -150,6 +154,10 @@ public class TemporaryBuildsCleanerImpl implements TemporaryBuildsCleaner {
                             build,
                             build.getBuildConfigRevision().getId());
                     archivesCleaner.deleteArchive(build.getBuildConfigRevision().getId());
+
+                    log.info("Deleting temporary build {} final-log in Bifrost", build);
+                    bifrostFinalLogCleaner.deleteFinalLog(build.getId());
+                    log.info("Temporary build {} final-log was deleted successfully", build);
 
                 } catch (OrchInteractionException ex) {
                     warnCounter.increment();
