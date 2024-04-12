@@ -74,9 +74,9 @@
 
     <indy.version>2.7.5</indy.version>
 
-    <pnc.version>2.5.0</pnc.version>
-    <pnc-api.version>2.4.5</pnc-api.version>
-    <pnc-common.version>2.2.1</pnc-common.version>
+    <pnc.version>2.7.5</pnc.version>
+    <pnc-api.version>2.5.2-SNAPSHOT</pnc-api.version>
+    <pnc-common.version>2.4.1</pnc-common.version>
 
     <surefire-plugin.version>3.2.5</surefire-plugin.version>
     <quarkus.version>2.16.12.Final</quarkus.version>
