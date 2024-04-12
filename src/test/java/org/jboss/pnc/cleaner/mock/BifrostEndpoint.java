@@ -23,6 +23,7 @@ import org.jboss.pnc.api.bifrost.dto.MetaData;
 import org.jboss.pnc.api.bifrost.enums.Direction;
 import org.jboss.pnc.api.bifrost.enums.Format;
 import org.jboss.pnc.api.bifrost.rest.Bifrost;
+import org.jboss.pnc.api.dto.ComponentVersion;
 import org.jboss.pnc.common.Strings;
 
 import javax.inject.Inject;
@@ -75,5 +76,10 @@ public class BifrostEndpoint implements Bifrost {
             Integer batchSize) throws IOException {
         String processContext = Strings.toMap(matchFilters).get("mdc.processContext.keyword").get(0);
         return provider.getMetaDataForContext(processContext);
+    }
+
+    @Override
+    public ComponentVersion getVersion() {
+        return ComponentVersion.builder().build();
     }
 }
