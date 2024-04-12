@@ -62,6 +62,7 @@ public class TemporaryBuildsCleanerImplTest {
     static final String SINGLE_TEMPORARY_BUILD_GROUP_FILE = "singleTemporaryBuildGroup.json";
 
     private static final String ARCHIVE_DELETE_ENDPOINT = "/api/archive/";
+    private static final String BIFROST_DELETE_ENDPOINT = "/bifrost";
 
     private WireMockServer wireMockServer = new WireMockServer(
             options().port(8082).withRootDirectory("src/test/resources/wiremock/general"));
@@ -106,6 +107,10 @@ public class TemporaryBuildsCleanerImplTest {
 
         wireMockServer.stubFor(
                 delete(urlMatching(ARCHIVE_DELETE_ENDPOINT + buildConfigId)).willReturn(aResponse().withStatus(204)));
+
+        wireMockServer.stubFor(
+                delete(urlMatching(BIFROST_DELETE_ENDPOINT + "/final-log/" + buildId + "/delete"))
+                        .willReturn(aResponse().withStatus(200)));
 
         startCallbackThread("http://localhost:8081/callbacks/delete/builds/684");
 
