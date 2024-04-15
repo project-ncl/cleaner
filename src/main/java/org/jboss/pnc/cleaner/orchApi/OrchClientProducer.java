@@ -23,6 +23,8 @@ import javax.inject.Inject;
 
 import org.jboss.pnc.client.BuildClient;
 import org.jboss.pnc.client.GroupBuildClient;
+import org.jboss.pnc.client.ProductMilestoneClient;
+import org.jboss.pnc.client.ProductVersionClient;
 
 /**
  * Producer for Orchestrator clients
@@ -44,4 +46,15 @@ public class OrchClientProducer {
     public GroupBuildClient getBuildGroupClient() {
         return new GroupBuildClient(orchClientConfiguration.getConfiguration());
     }
+
+    @Produces
+    public ProductVersionClient getProductVersionClient() {
+        return new ProductVersionClient(orchClientConfiguration.getConfiguration());
+    }
+
+    @Produces
+    public ProductMilestoneClient getProductMilestoneClient() {
+        return new ProductMilestoneClient(orchClientConfiguration.getConfiguration());
+    }
+
 }
