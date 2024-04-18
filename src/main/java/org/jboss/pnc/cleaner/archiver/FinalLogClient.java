@@ -18,12 +18,14 @@
 package org.jboss.pnc.cleaner.archiver;
 
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
-import org.jboss.pnc.api.bifrost.rest.Bifrost;
 import org.jboss.pnc.api.bifrost.rest.FinalLogRest;
+
+import javax.ws.rs.Path;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.opecom">Matej Lazar</a>
  */
+@Path("/final-log")
 @RegisterRestClient
 public interface FinalLogClient extends FinalLogRest {
 }
