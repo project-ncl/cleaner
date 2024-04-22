@@ -77,7 +77,7 @@ public class BuildArchiver {
     Integer trimmedLogMaxSize;
 
     @Timed
-    @Scheduled(cron = "{buildArchiverScheduler.cron}")
+    @Scheduled(cron = "{buildArchiverScheduler.cron}", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     public void archiveBuilds() {
         logger.info("Archiving Builds ...");
         Collection<Build> unverifiedBuilds = getUnarchivedBuilds().getAll();
