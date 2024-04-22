@@ -44,6 +44,7 @@ import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.core.Response;
 import java.io.BufferedReader;
+import java.io.Reader;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoField;
 import java.time.temporal.IsoFields;
@@ -120,7 +121,7 @@ public class BuildArchiver {
         logger.info("Reading " + tag + " of build " + buildID);
         LogParser buildLog = BuildCategorizer.getLogParser(trimLogSize);
         try (Response response = finalLogs.getFinalLog(buildID, tag)) {
-            buildLog.findMatches(response.readEntity(BufferedReader.class));
+            buildLog.findMatches(new BufferedReader(response.readEntity(Reader.class)));
         }
         return buildLog;
     }
