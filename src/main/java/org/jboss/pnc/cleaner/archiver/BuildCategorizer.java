@@ -131,6 +131,10 @@ public class BuildCategorizer {
     public static final String HTTPS_INDY = "https://indy";
     public static final String READ_TIMED_OUT_ = "Read timed out ";
     public static final String FRONTEND_MAVEN_PLUGIN = "--- frontend-maven-plugin";
+    public static final String EXECUTION_ROOT_NAME_PARAMETER_HAS_AS_VALUE_THE_WRONG_FORMAT = "EXECUTION_ROOT_NAME parameter has as value the wrong format";
+    public static final String FILE = "--file=";
+    public static final String FAILED_CONNECTION_REFUSED = "failed: Connection refused";
+    public static final String FAILED_CONNECT_TIMED_OUT = "failed: connect timed out";
     public static final String DBREW_PULL_ACTIVE_TRUE = "-DbrewPullActive=true";
     static final String[] literalErrors = {
             UNAUTHORIZED_TO_ACCESS_RESOURCE,
@@ -188,6 +192,10 @@ public class BuildCategorizer {
             HTTPS_INDY,
             READ_TIMED_OUT_,
             FRONTEND_MAVEN_PLUGIN,
+            EXECUTION_ROOT_NAME_PARAMETER_HAS_AS_VALUE_THE_WRONG_FORMAT,
+            FILE,
+            FAILED_CONNECTION_REFUSED,
+            FAILED_CONNECT_TIMED_OUT,
             DBREW_PULL_ACTIVE_TRUE, };
 
     public static LogParser getLogParser(long trimLogSize) {
@@ -242,11 +250,11 @@ public class BuildCategorizer {
                     && (alignmentLog.contains(DMANIPULATION_DISABLE_TRUE)
                             || alignmentLog.contains(DMANIPULATION_DISABLE_TRUE1))) {
                 return new DetectedCategory(PNC, "user did not specify BREW_BUILD_VERSION or BREW_BUILD_NAME", true);
-            } else if (alignmentLog.contains("EXECUTION_ROOT_NAME parameter has as value the wrong format")
+            } else if (alignmentLog.contains(EXECUTION_ROOT_NAME_PARAMETER_HAS_AS_VALUE_THE_WRONG_FORMAT)
                     && (alignmentLog.contains(DMANIPULATION_DISABLE_TRUE)
                             || alignmentLog.contains(DMANIPULATION_DISABLE_TRUE1))) {
                 return new DetectedCategory(PNC, "user wrongly specified BREW_BUILD_VERSION or BREW_BUILD_NAME", true);
-            } else if (alignmentLog.contains(NO_SUCH_FILE_OR_DIRECTORY) && alignmentLog.contains("--file=")) {
+            } else if (alignmentLog.contains(NO_SUCH_FILE_OR_DIRECTORY) && alignmentLog.contains(FILE)) {
                 return new DetectedCategory(PNC, "user wrongly specified custom pom.xml location", true);
             } else if (alignmentLog.isEmpty()) {
                 return new DetectedCategory(
@@ -320,9 +328,9 @@ public class BuildCategorizer {
             return new DetectedCategory(
                     PNC,
                     "DEVEL - Error while trying to startBuilding with BpmBuildScheduler on new RHPAM server");
-        } else if (buildLog.contains(CONNECT_TO_INDY) && buildLog.contains("failed: Connection refused")) {
+        } else if (buildLog.contains(CONNECT_TO_INDY) && buildLog.contains(FAILED_CONNECTION_REFUSED)) {
             return new DetectedCategory(INDY, "INDY - Connection refused");
-        } else if (buildLog.contains(CONNECT_TO_INDY) && buildLog.contains("failed: connect timed out")) {
+        } else if (buildLog.contains(CONNECT_TO_INDY) && buildLog.contains(FAILED_CONNECT_TIMED_OUT)) {
             return new DetectedCategory(INDY, "INDY - Connection timeout");
         } else if (buildLog.contains(INDY_80_FAILED_TO_RESPOND)) {
             return new DetectedCategory(INDY, "INDY - Failed to respond");
