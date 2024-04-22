@@ -24,6 +24,8 @@ import org.jboss.pnc.enums.BuildStatus;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.Lob;
@@ -60,6 +62,7 @@ public class ArchivedBuildRecord extends PanacheEntityBase {
     int submitQuarter;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     BuildStatus status;
 
     @Column(name = "buildtype", length = 100)
@@ -87,6 +90,7 @@ public class ArchivedBuildRecord extends PanacheEntityBase {
     String categorizedErrorMessage;
 
     @Column(name = "categorized_error_group")
+    @Enumerated(EnumType.STRING)
     ErrorGroup categorizedErrorGroup;
 
     @Column(name = "brewpullactive")
