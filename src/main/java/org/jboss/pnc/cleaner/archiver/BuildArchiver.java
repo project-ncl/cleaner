@@ -82,7 +82,13 @@ public class BuildArchiver {
         logger.info("Archiving Builds ...");
         Collection<Build> unverifiedBuilds = getUnarchivedBuilds().getAll();
         logger.info("Found {} unverified builds.", unverifiedBuilds.size());
-        unverifiedBuilds.forEach(this::archiveBuild);
+        unverifiedBuilds.forEach(b -> {
+            try {
+                archiveBuild(b);
+            } catch (Exception ex) {
+                logger.error("Failed to archive build {}", ex);
+            }
+        });
     }
 
     @Timed
