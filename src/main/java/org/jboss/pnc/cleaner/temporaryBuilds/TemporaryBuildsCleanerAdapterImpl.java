@@ -42,6 +42,8 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
 
+import static org.jboss.pnc.cleaner.archiver.BuildArchiver.BUILD_ARCHIVED;
+
 /**
  * Implementation of an adapter providing high-level operations on Orchestrator REST API
  *
@@ -101,7 +103,18 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
         try {
             RemoteCollection<Build> remoteCollection = buildClient
                     .getAllIndependentTempBuildsOlderThanTimestamp(expirationDate.getTime());
-            remoteCollection.forEach(buildsRest::add);
+            boolean isWarning = false;
+            for (Build build : remoteCollection) {
+                if (!build.getAttributes().containsKey(BUILD_ARCHIVED)) {
+                    log.warn("Not deleting Build " + build.getId() + ", because it's not archived.");
+                    isWarning = true;
+                    continue;
+                }
+                buildsRest.add(build);
+            }
+            if (isWarning) {
+                warnCounter.increment();
+            }
         } catch (RemoteResourceException e) {
             warnCounter.increment();
             log.warn(

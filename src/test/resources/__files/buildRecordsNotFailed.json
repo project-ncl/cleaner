@@ -45,7 +45,8 @@
       },
       "attributes": {
         "BREW_BUILD_VERSION": "2.0.0.jboss-00001",
-        "BREW_BUILD_NAME": "org.jboss.da:parent"
+        "BREW_BUILD_NAME": "org.jboss.da:parent",
+        "BUILD_ARCHIVED": "true"
       },
       "user": {
         "id": "103",
