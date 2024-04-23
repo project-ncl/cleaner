@@ -43,7 +43,9 @@
         "systemImageType": "DOCKER_IMAGE",
         "deprecated": false
       },
-      "attributes": {},
+      "attributes": {
+        "BUILD_ARCHIVED": "true"
+      },
       "user": {
         "id": "115",
         "username": "jbartece"

@@ -62,7 +62,7 @@ import static org.jboss.pnc.cleaner.archiver.BuildCategorizer.*;
 @ApplicationScoped
 public class BuildArchiver {
     private final Logger logger = LoggerFactory.getLogger(BuildArchiver.class);
-    private static final String BUILD_ARCHIVED = "BUILD_ARCHIVED";
+    public static final String BUILD_ARCHIVED = "BUILD_ARCHIVED";
     @Inject
     @RestClient
     FinalLogClient finalLogs;
