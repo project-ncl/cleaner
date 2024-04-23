@@ -51,6 +51,7 @@ import java.time.temporal.IsoFields;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.jboss.pnc.cleaner.archiver.ArchivedBuildRecord.ErrorGroup.INDY;
 import static org.jboss.pnc.cleaner.archiver.BuildCategorizer.*;
@@ -111,8 +112,16 @@ public class BuildArchiver {
             trimLogSize = trimmedLogMaxSize;
         }
 
-        LogParser alignmentLog = getLogParser("alignment-log", trimLogSize, build.getId());
-        LogParser buildLog = getLogParser("build-log", trimLogSize, build.getId());
+        LogParser alignmentLog;
+        LogParser buildLog;
+        if (build.getStatus() == BuildStatus.NO_REBUILD_REQUIRED
+                || build.getStatus() == BuildStatus.REJECTED_FAILED_DEPENDENCIES) {
+            alignmentLog = BuildCategorizer.getLogParser(0);
+            buildLog = BuildCategorizer.getLogParser(0);
+        } else {
+            alignmentLog = getLogParser("alignment-log", trimLogSize, build.getId());
+            buildLog = getLogParser("build-log", trimLogSize, build.getId());
+        }
 
         self.archiveBuildRecord(build, buildLog, alignmentLog);
 
