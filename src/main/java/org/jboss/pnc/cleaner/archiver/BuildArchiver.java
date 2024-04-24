@@ -171,9 +171,12 @@ public class BuildArchiver {
     }
 
     private ArchivedBuildRecord mapBuild(Build build) throws RemoteResourceException {
-        ArchivedBuildRecord archived = new ArchivedBuildRecord();
-
-        archived.buildRecordId = parseBuildID(build.getId());
+        long dbID = parseBuildID(build.getId());
+        ArchivedBuildRecord archived = ArchivedBuildRecord.findById(dbID);
+        if (archived == null) {
+            archived = new ArchivedBuildRecord();
+            archived.buildRecordId = dbID;
+        }
 
         archived.submitTime = build.getSubmitTime();
         archived.startTime = build.getStartTime();
