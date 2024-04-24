@@ -51,7 +51,6 @@ import java.time.temporal.IsoFields;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static org.jboss.pnc.cleaner.archiver.ArchivedBuildRecord.ErrorGroup.INDY;
 import static org.jboss.pnc.cleaner.archiver.BuildCategorizer.*;
@@ -87,7 +86,7 @@ public class BuildArchiver {
             try {
                 archiveBuild(b);
             } catch (Exception ex) {
-                logger.error("Failed to archive build {}", ex);
+                logger.error("Failed to archive build " + b.getId(), ex);
             }
         });
     }
@@ -107,6 +106,7 @@ public class BuildArchiver {
 
     @Timed
     public void archiveBuild(Build build) {
+        logger.info("Archiving build {}", build.getId());
         long trimLogSize = 0;
         if (build.getTemporaryBuild() && build.getStatus() != BuildStatus.SUCCESS) {
             trimLogSize = trimmedLogMaxSize;
