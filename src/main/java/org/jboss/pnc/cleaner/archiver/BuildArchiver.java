@@ -136,7 +136,9 @@ public class BuildArchiver {
         logger.info("Reading " + tag + " of build " + buildID);
         LogParser buildLog = BuildCategorizer.getLogParser(trimLogSize);
         try (Response response = finalLogs.getFinalLog(buildID, tag)) {
-            buildLog.findMatches(new BufferedReader(response.readEntity(Reader.class)));
+            if (response.getStatus() == 200) {
+                buildLog.findMatches(new BufferedReader(response.readEntity(Reader.class)));
+            }
         }
         return buildLog;
     }
