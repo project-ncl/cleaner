@@ -29,7 +29,7 @@ import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.util.HashMap;
 
 import static org.jboss.pnc.cleaner.logverifier.BuildLogVerifier.BUILD_OUTPUT_OK_KEY;

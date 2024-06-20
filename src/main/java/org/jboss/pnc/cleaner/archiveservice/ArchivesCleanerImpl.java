@@ -25,8 +25,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.function.Function;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import io.quarkus.oidc.client.OidcClient;
 import org.eclipse.microprofile.config.Config;

@@ -17,6 +17,7 @@
  */
 package org.jboss.pnc.cleaner.startup;
 
+import jakarta.annotation.PostConstruct;
 import org.commonjava.cdi.util.weft.config.DefaultWeftConfig;
 import org.commonjava.cdi.util.weft.config.WeftConfig;
 import org.commonjava.indy.client.core.metric.ClientGoldenSignalsMetricSet;
@@ -34,10 +35,9 @@ import java.net.http.HttpClient;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 import javax.net.ssl.SSLContext;
 
 @ApplicationScoped

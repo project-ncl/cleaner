@@ -20,7 +20,7 @@ package org.jboss.pnc.cleaner.logverifier;
 import io.quarkus.test.Mock;
 import org.jboss.pnc.cleaner.orchApi.OrchClientConfiguration;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>

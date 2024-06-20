@@ -26,8 +26,8 @@ import org.jboss.pnc.api.bifrost.rest.Bifrost;
 import org.jboss.pnc.api.dto.ComponentVersion;
 import org.jboss.pnc.common.Strings;
 
-import javax.inject.Inject;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.List;
 

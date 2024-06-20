@@ -21,15 +21,15 @@ import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import org.hibernate.annotations.Type;
 import org.jboss.pnc.enums.BuildStatus;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 import java.time.Instant;
 
 @Table(name = "_archived_buildrecords")
@@ -140,13 +140,11 @@ public class ArchivedBuildRecord extends PanacheEntityBase {
 
     @Column(name = "trimmed_buildlog")
     @Lob
-    @Type(type = "org.hibernate.type.TextType")
     @Basic(fetch = FetchType.LAZY)
     String trimmedBuildLog;
 
     @Column(name = "trimmed_repourlog")
     @Lob
-    @Type(type = "org.hibernate.type.TextType")
     @Basic(fetch = FetchType.LAZY)
     String trimmedAlignLog;
 

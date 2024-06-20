@@ -38,7 +38,7 @@ import io.micrometer.core.annotation.Timed;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
 import io.quarkus.scheduler.Scheduled;
 
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>

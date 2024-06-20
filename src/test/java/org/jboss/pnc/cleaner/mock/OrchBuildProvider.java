@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jboss.pnc.dto.Build;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.Collection;
 
