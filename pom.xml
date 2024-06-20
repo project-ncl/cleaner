@@ -66,7 +66,6 @@
   </developers>
 
   <properties>
-    <quarkus.package.type>uber-jar</quarkus.package.type>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>17</maven.compiler.release>
@@ -74,14 +73,15 @@
 
     <indy.version>2.7.5</indy.version>
 
-    <pnc.version>2.7.5</pnc.version>
+    <pnc.version>2.7.6</pnc.version>
     <pnc-api.version>3.0.0</pnc-api.version>
     <pnc-common.version>3.0.1</pnc-common.version>
 
     <surefire-plugin.version>3.3.0</surefire-plugin.version>
-    <quarkus.version>2.16.12.Final</quarkus.version>
+    <quarkus.version>3.12.0</quarkus.version>
     <quarkus-logging-kafka.version>1.0.5</quarkus-logging-kafka.version>
     <tagSuffix />
+    <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
   </properties>
 
   <dependencyManagement>
@@ -106,18 +106,20 @@
 
       <dependency>
         <groupId>org.jboss.pnc</groupId>
-        <artifactId>rest-client</artifactId>
+        <artifactId>rest-client-jakarta</artifactId>
         <version>${pnc.version}</version>
       </dependency>
       <dependency>
         <groupId>org.jboss.pnc</groupId>
         <artifactId>pnc-api</artifactId>
         <version>${pnc-api.version}</version>
+        <classifier>jakarta</classifier>
       </dependency>
       <dependency>
         <groupId>org.jboss.pnc</groupId>
         <artifactId>pnc-common</artifactId>
         <version>${pnc-common.version}</version>
+        <classifier>jakarta</classifier>
       </dependency>
 
       <dependency>
@@ -143,7 +145,7 @@
     <!-- Quarkus dependencies !-->
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-rest-client-jackson</artifactId>
+      <artifactId>quarkus-resteasy-client-jackson</artifactId>
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
@@ -190,15 +192,17 @@
     <!-- PNC dependencies !-->
     <dependency>
       <groupId>org.jboss.pnc</groupId>
-      <artifactId>rest-client</artifactId>
+      <artifactId>rest-client-jakarta</artifactId>
     </dependency>
     <dependency>
       <groupId>org.jboss.pnc</groupId>
       <artifactId>pnc-api</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>org.jboss.pnc</groupId>
       <artifactId>pnc-common</artifactId>
+      <classifier>jakarta</classifier>
     </dependency>
     <dependency>
       <groupId>org.jboss.pnc.logging</groupId>
@@ -257,9 +261,8 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.xml.bind</groupId>
-      <artifactId>jaxb-api</artifactId>
-      <version>2.4.0-b180830.0359</version>
+      <groupId>jakarta.xml.bind</groupId>
+      <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
 
     <dependency>
@@ -481,10 +484,6 @@
       <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${compiler-plugin.version}</version>
-          <configuration>
-              <!-- Add this to explicitly show the error -->
-              <forceJavacCompilerUse>true</forceJavacCompilerUse>
-          </configuration>
       </plugin>
       <plugin>
           <groupId>org.apache.maven.plugins</groupId>

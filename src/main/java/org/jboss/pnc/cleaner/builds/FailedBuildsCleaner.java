@@ -26,6 +26,8 @@ import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanContext;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Scope;
+import jakarta.annotation.PostConstruct;
+
 import io.quarkus.oidc.client.OidcClient;
 import io.quarkus.scheduler.Scheduled;
 
@@ -57,9 +59,8 @@ import org.jboss.pnc.enums.BuildStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 
 import java.text.MessageFormat;
 import java.time.Instant;
@@ -403,7 +404,7 @@ public class FailedBuildsCleaner {
      * @return found build record or null
      */
     @Timed
-    private Build getBuildRecord(String buildContentId) throws CleanerException {
+    Build getBuildRecord(String buildContentId) throws CleanerException {
         logger.info("Looking for build record with query \"buildContentId==" + buildContentId + "\"");
 
         try {
@@ -458,7 +459,7 @@ public class FailedBuildsCleaner {
      * @throws IndyClientException in case of an error happening in Indy
      */
     @Timed
-    private void deleteGroupAndHostedRepo(String pkgKey, String repoName, IndyStoresClientModule stores)
+    void deleteGroupAndHostedRepo(String pkgKey, String repoName, IndyStoresClientModule stores)
             throws IndyClientException {
         StoreKey groupKey = new StoreKey(pkgKey, StoreType.group, repoName);
         if (stores.exists(groupKey)) {

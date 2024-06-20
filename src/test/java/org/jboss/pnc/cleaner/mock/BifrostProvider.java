@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jboss.pnc.api.bifrost.dto.MetaData;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 import java.util.HashMap;
 import java.util.Map;
 

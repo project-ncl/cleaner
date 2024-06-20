@@ -39,10 +39,10 @@ import org.jboss.pnc.rest.api.parameters.BuildsFilterParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.core.Response;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
 import java.io.BufferedReader;
 import java.io.Reader;
 import java.time.ZoneOffset;
@@ -92,7 +92,7 @@ public class BuildArchiver {
     }
 
     @Timed
-    private RemoteCollection<Build> getUnarchivedBuilds() {
+    RemoteCollection<Build> getUnarchivedBuilds() {
         BuildsFilterParameters buildsFilterParameters = new BuildsFilterParameters();
         buildsFilterParameters.setRunning(false);
         List<String> attributes = Collections.singletonList("!" + BUILD_ARCHIVED);

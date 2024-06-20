@@ -25,13 +25,13 @@ import org.jboss.pnc.cleaner.temporaryBuilds.BuildDeleteCallbackManager;
 import org.jboss.pnc.cleaner.temporaryBuilds.BuildGroupDeleteCallbackManager;
 import org.jboss.pnc.dto.response.DeleteOperationResult;
 
-import javax.inject.Inject;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.inject.Inject;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * @author Jakub Bartecek

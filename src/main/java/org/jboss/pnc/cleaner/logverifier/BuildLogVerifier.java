@@ -25,7 +25,7 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Scope;
-
+import jakarta.annotation.PostConstruct;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.api.bifrost.dto.MetaData;
@@ -39,9 +39,8 @@ import org.jboss.pnc.rest.api.parameters.BuildsFilterParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -102,7 +101,7 @@ public class BuildLogVerifier {
     }
 
     @Timed
-    private void verify(String buildId, String checksum) {
+    void verify(String buildId, String checksum) {
 
         try {
             logger.info("Verifying log for build id: {}", buildId);
@@ -133,7 +132,7 @@ public class BuildLogVerifier {
     }
 
     @Timed
-    private void handleMismatchWithRetries(String buildId) {
+    void handleMismatchWithRetries(String buildId) {
         if (!buildESLogErrorCounter.containsKey(buildId)) {
             buildESLogErrorCounter.put(buildId, new AtomicInteger(0));
         }
@@ -153,7 +152,7 @@ public class BuildLogVerifier {
     }
 
     @Timed
-    private String getESChecksum(String buildId) throws IOException {
+    String getESChecksum(String buildId) throws IOException {
         String matchFilters = "mdc.processContext.keyword:build-" + buildId + ","
                 + "loggerName.keyword:org.jboss.pnc._userlog_.build-log";
 
@@ -172,7 +171,7 @@ public class BuildLogVerifier {
     }
 
     @Timed
-    private RemoteCollection<Build> getUnverifiedBuilds() {
+    RemoteCollection<Build> getUnverifiedBuilds() {
         BuildsFilterParameters buildsFilterParameters = new BuildsFilterParameters();
         buildsFilterParameters.setRunning(false);
         List<String> attributes = Collections.singletonList("!" + BUILD_OUTPUT_OK_KEY);

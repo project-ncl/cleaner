@@ -27,8 +27,7 @@ import org.commonjava.indy.folo.client.IndyFoloAdminClientModule;
 import org.commonjava.indy.model.core.Group;
 import org.commonjava.indy.model.core.dto.StoreListingDTO;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
+import jakarta.inject.Inject;
 import java.time.Instant;
 import java.util.List;
 

@@ -17,7 +17,7 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 /**
  * CDI bean, which manages delete operation callbacks for BUILDS and provides a blocking was of waiting fot the

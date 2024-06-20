@@ -17,9 +17,9 @@
  */
 package org.jboss.pnc.cleaner.orchApi;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.Produces;
+import jakarta.inject.Inject;
 
 import org.jboss.pnc.client.BuildClient;
 import org.jboss.pnc.client.GroupBuildClient;

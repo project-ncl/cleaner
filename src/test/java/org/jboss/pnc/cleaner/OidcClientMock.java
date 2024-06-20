@@ -36,12 +36,12 @@ public class OidcClientMock implements OidcClient {
     }
 
     @Override
-    public Uni<Tokens> refreshTokens(String refreshToken) {
+    public Uni<Tokens> refreshTokens(String refreshToken, Map<String, String> something) {
         return null;
     }
 
     @Override
-    public Uni<Boolean> revokeAccessToken(String accessToken) {
+    public Uni<Boolean> revokeAccessToken(String accessToken, Map<String, String> something) {
         return null;
     }
 

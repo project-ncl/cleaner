@@ -33,8 +33,8 @@ import org.jboss.pnc.cleaner.archiveservice.FailedResponseException;
 import org.jboss.pnc.common.otel.OtelUtils;
 import org.slf4j.MDC;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
