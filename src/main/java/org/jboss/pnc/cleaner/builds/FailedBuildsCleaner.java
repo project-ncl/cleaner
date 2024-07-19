@@ -122,7 +122,7 @@ public class FailedBuildsCleaner {
 
     static {
         failedStatuses = new ArrayList<>(5);
-        failedStatuses.add(BuildStatus.CANCELLED); // added for old data, now cancellation cleans up the Indy data
+        failedStatuses.add(BuildStatus.CANCELLED);
         failedStatuses.add(BuildStatus.SYSTEM_ERROR);
         failedStatuses.add(BuildStatus.FAILED);
     }
