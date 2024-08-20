@@ -53,10 +53,10 @@ public class ArchivedBuildRecord extends PanacheEntityBase {
     Instant endTime;
 
     @Column(name = "submit_year")
-    int submitYear;
+    Integer submitYear;
 
     @Column(name = "submit_month")
-    int submitMonth;
+    Integer submitMonth;
 
     @Column(name = "submit_quarter")
     int submitQuarter;
@@ -75,16 +75,16 @@ public class ArchivedBuildRecord extends PanacheEntityBase {
     String executionRootVersion;
 
     @Column(name = "user_id")
-    long userId;
+    Long userId;
 
     @Column(name = "username", length = 50)
     String username;
 
     @Column(name = "temporarybuild")
-    boolean temporaryBuild;
+    Boolean temporaryBuild;
 
     @Column(name = "autoalign")
-    boolean autoAlign;
+    Boolean autoAlign;
 
     @Column(name = "categorized_error_msg")
     String categorizedErrorMessage;
@@ -94,22 +94,22 @@ public class ArchivedBuildRecord extends PanacheEntityBase {
     ErrorGroup categorizedErrorGroup;
 
     @Column(name = "brewpullactive")
-    boolean brewPullActive;
+    Boolean brewPullActive;
 
     @Column(name = "buildconfiguration_id")
-    long buildConfigID;
+    Long buildConfigID;
 
     @Column(name = "buildconfiguration_rev")
-    long buildConfigRev;
+    Integer buildConfigRev;
 
     @Column(name = "buildconfiguration_name")
     String buildConfigName;
 
     @Column(name = "buildenvironment_id")
-    long buildEnvironmentID;
+    Long buildEnvironmentID;
 
     @Column(name = "project_id")
-    long projectID;
+    Long projectID;
 
     @Column(name = "project_name")
     String projectName;
