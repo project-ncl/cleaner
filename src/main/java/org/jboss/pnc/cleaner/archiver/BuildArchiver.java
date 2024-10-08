@@ -245,7 +245,7 @@ public class BuildArchiver {
         if (nullableID == null) {
             return null;
         }
-        return Long.parseLong(nullableID);
+        return LongBase32IdConverter.toLong(nullableID);
     }
 
     private long parseEnvironmentID(String id) {
