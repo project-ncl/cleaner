@@ -51,7 +51,7 @@ public class OrchClientConfiguration {
     @Inject
     OidcClient oidcClient;
 
-    public Configuration getConfiguration() {
+    public Configuration getConfiguration(boolean authenticated) {
         Configuration.ConfigurationBuilder configurationBuilder = Configuration.builder()
                 .addDefaultMdcToHeadersMappings();
 
@@ -59,8 +59,20 @@ public class OrchClientConfiguration {
         configurationBuilder.host(host);
         configurationBuilder.port(port);
         configurationBuilder.pageSize(pageSize);
-        configurationBuilder.bearerTokenSupplier(() -> oidcClient.getTokens().await().indefinitely().getAccessToken());
+        if (authenticated) {
+            configurationBuilder
+                    .bearerTokenSupplier(() -> oidcClient.getTokens().await().indefinitely().getAccessToken());
+        }
 
         return configurationBuilder.build();
+    }
+
+    /**
+     * By default, we don't want authentication
+     *
+     * @return
+     */
+    public Configuration getConfiguration() {
+        return getConfiguration(false);
     }
 }

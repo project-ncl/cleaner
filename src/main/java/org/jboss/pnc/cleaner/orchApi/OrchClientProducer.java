@@ -42,9 +42,17 @@ public class OrchClientProducer {
         return new BuildClient(orchClientConfiguration.getConfiguration());
     }
 
+    public BuildClient getAuthenticatedBuildClient() {
+        return new BuildClient(orchClientConfiguration.getConfiguration(true));
+    }
+
     @Produces
     public GroupBuildClient getBuildGroupClient() {
         return new GroupBuildClient(orchClientConfiguration.getConfiguration());
+    }
+
+    public GroupBuildClient getAuthenticatedBuildGroupClient() {
+        return new GroupBuildClient(orchClientConfiguration.getConfiguration(true));
     }
 
     @Produces

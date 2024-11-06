@@ -30,6 +30,7 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.api.bifrost.dto.MetaData;
 import org.jboss.pnc.api.bifrost.enums.Direction;
+import org.jboss.pnc.cleaner.orchApi.OrchClientProducer;
 import org.jboss.pnc.client.BuildClient;
 import org.jboss.pnc.client.RemoteCollection;
 import org.jboss.pnc.client.RemoteResourceException;
@@ -67,6 +68,9 @@ public class BuildLogVerifier {
 
     @Inject
     BuildClient buildClient;
+
+    @Inject
+    OrchClientProducer orchClientProducer;
 
     @ConfigProperty(name = "buildLogVerifierScheduler.maxRetries")
     private Integer maxRetries;
@@ -162,8 +166,8 @@ public class BuildLogVerifier {
     }
 
     private void flagPncBuild(String buildId, boolean checksumMatch) {
-        try {
-            buildClient.addAttribute(buildId, BUILD_OUTPUT_OK_KEY, Boolean.toString(checksumMatch));
+        try (BuildClient buildClientAuthenticated = orchClientProducer.getAuthenticatedBuildClient()) {
+            buildClientAuthenticated.addAttribute(buildId, BUILD_OUTPUT_OK_KEY, Boolean.toString(checksumMatch));
         } catch (RemoteResourceException e) {
             errCounter.increment();
             logger.error("Cannot set {} attribute to build id: {}.", checksumMatch, buildId);

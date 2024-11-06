@@ -23,6 +23,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.Config;
+import org.jboss.pnc.cleaner.orchApi.OrchClientProducer;
 import org.jboss.pnc.client.BuildClient;
 import org.jboss.pnc.client.GroupBuildClient;
 import org.jboss.pnc.client.RemoteCollection;
@@ -76,6 +77,9 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
 
     @Inject
     MeterRegistry registry;
+
+    @Inject
+    OrchClientProducer orchClientProducer;
 
     private Counter errCounter;
     private Counter warnCounter;
@@ -131,8 +135,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     @Override
     public void deleteTemporaryBuild(String id) throws OrchInteractionException {
         buildDeleteCallbackManager.initializeHandler(id);
-        try {
-            buildClient.delete(id, BASE_DELETE_BUILD_CALLBACK_URL + id);
+        try (BuildClient buildClientAuthenticated = orchClientProducer.getAuthenticatedBuildClient()) {
+            buildClientAuthenticated.delete(id, BASE_DELETE_BUILD_CALLBACK_URL + id);
             DeleteOperationResult result = buildDeleteCallbackManager.await(id);
 
             if (result != null && result.getStatus() != null && result.getStatus().isSuccess()) {
@@ -193,8 +197,8 @@ public class TemporaryBuildsCleanerAdapterImpl implements TemporaryBuildsCleaner
     public void deleteTemporaryGroupBuild(String id) throws OrchInteractionException {
         buildGroupDeleteCallbackManager.initializeHandler(id);
 
-        try {
-            groupBuildClient.delete(id, BASE_DELETE_BUILD_GROUP_CALLBACK_URL + id);
+        try (GroupBuildClient groupBuildClientAuthenticated = orchClientProducer.getAuthenticatedBuildGroupClient()) {
+            groupBuildClientAuthenticated.delete(id, BASE_DELETE_BUILD_GROUP_CALLBACK_URL + id);
             DeleteOperationResult result = buildGroupDeleteCallbackManager.await(id);
 
             if (result != null && result.getStatus() != null && result.getStatus().isSuccess()) {
