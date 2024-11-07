@@ -49,7 +49,7 @@ public class BuildLogVerifierScheduler {
     BuildLogVerifier buildLogVerifier;
 
     @Timed
-    @Scheduled(cron = "{buildLogVerifierScheduler.cron}")
+    @Scheduled(cron = "{buildLogVerifierScheduler.cron}", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     @WithSpan
     public void verifyBuildLogs() {
         buildLogVerifier.verifyUnflaggedBuilds();
