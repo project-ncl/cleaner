@@ -41,7 +41,7 @@ public class TemporaryBuildsCleanupScheduler {
     /**
      * Schedules cleanup of old temporary builds
      */
-    @Scheduled(cron = "{temporaryBuildsCleaner.cron}")
+    @Scheduled(cron = "{temporaryBuildsCleaner.cron}", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     @WithSpan
     public void cleanupExpiredTemporaryBuilds() {
         log.info("Regular deletion of temporary builds triggered by clock.");
