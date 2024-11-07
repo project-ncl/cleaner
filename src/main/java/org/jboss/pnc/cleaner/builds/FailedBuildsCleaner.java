@@ -139,7 +139,7 @@ public class FailedBuildsCleaner {
         warnCounter = registry.counter(className + ".warning.count");
     }
 
-    @Scheduled(cron = "{failedbuildscleaner.cron}")
+    @Scheduled(cron = "{failedbuildscleaner.cron}", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     void cleanRegularly() {
         logger.info("Starting regular failed builds cleanup job.");
         Instant limit = Instant.now().minus(retention, ChronoUnit.HOURS);
