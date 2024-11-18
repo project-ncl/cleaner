@@ -21,8 +21,10 @@ import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.pnc.api.bifrost.rest.Bifrost;
 
 /**
- * @author <a href="mailto:matejonnet@gmail.opecom">Matej Lazar</a>
+ * @author <a href="mailto:matejonnet@gmail.opecom">Matej Lazar</a> We don't need build-log-verifier anymore. Candidate
+ *         for removal
  */
 @RegisterRestClient
+@Deprecated
 public interface BifrostClient extends Bifrost {
 }

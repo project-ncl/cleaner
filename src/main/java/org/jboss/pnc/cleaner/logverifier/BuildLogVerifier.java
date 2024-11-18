@@ -52,9 +52,11 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
+ * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a> We don't need build-log-verifier anymore. Candidate for
+ *         removal
  */
 @ApplicationScoped
+@Deprecated
 public class BuildLogVerifier {
 
     private static final String className = BuildLogVerifier.class.getName();

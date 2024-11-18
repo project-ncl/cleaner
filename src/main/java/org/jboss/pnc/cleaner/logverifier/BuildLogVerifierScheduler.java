@@ -41,16 +41,22 @@ import io.quarkus.scheduler.Scheduled;
 import jakarta.inject.Inject;
 
 /**
- * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>
+ * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a> We don't need build-log-verifier anymore. Candidate for
+ *         removal
  */
+@Deprecated
 public class BuildLogVerifierScheduler {
 
     @Inject
     BuildLogVerifier buildLogVerifier;
 
+    /**
+     * We don't need build-log-verifier anymore. Candidate for removal
+     */
     @Timed
     @Scheduled(cron = "{buildLogVerifierScheduler.cron}", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
     @WithSpan
+    @Deprecated
     public void verifyBuildLogs() {
         buildLogVerifier.verifyUnflaggedBuilds();
     }
