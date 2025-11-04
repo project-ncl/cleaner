@@ -78,8 +78,8 @@
     <pnc-common.version>3.2.0</pnc-common.version>
 
     <surefire-plugin.version>3.5.4</surefire-plugin.version>
-    <quarkus.version>3.25.3</quarkus.version>
-    <quarkus-logging-kafka.version>1.0.5</quarkus-logging-kafka.version>
+    <quarkus.version>3.29.0</quarkus.version>
+    <quarkus-logging-kafka.version>3.0.3</quarkus-logging-kafka.version>
     <tagSuffix />
     <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
   </properties>
