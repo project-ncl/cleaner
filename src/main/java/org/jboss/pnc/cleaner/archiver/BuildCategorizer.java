@@ -130,7 +130,7 @@ public class BuildCategorizer {
     public static final String HTTP_INDY = "http://indy";
     public static final String HTTPS_INDY = "https://indy";
     public static final String READ_TIMED_OUT_ = "Read timed out ";
-    public static final String FRONTEND_MAVEN_PLUGIN = "--- frontend-maven-plugin";
+    public static final String FRONTEND_MAVEN_PLUGIN = "--- frontend";
     public static final String EXECUTION_ROOT_NAME_PARAMETER_HAS_AS_VALUE_THE_WRONG_FORMAT = "EXECUTION_ROOT_NAME parameter has as value the wrong format";
     public static final String FILE = "--file=";
     public static final String FAILED_CONNECTION_REFUSED = "failed: Connection refused";
