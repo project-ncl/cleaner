@@ -18,17 +18,20 @@
 package org.jboss.pnc.cleaner.mock;
 
 import io.quarkus.test.Mock;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import org.jboss.pnc.api.causeway.dto.push.BuildPushCompleted;
 import org.jboss.pnc.dto.Artifact;
 import org.jboss.pnc.dto.Build;
 import org.jboss.pnc.dto.BuildConfigurationRevision;
-import org.jboss.pnc.dto.BuildPushResult;
+import org.jboss.pnc.dto.BuildPushOperation;
+import org.jboss.pnc.dto.BuildPushReport;
 import org.jboss.pnc.dto.insights.BuildRecordInsights;
 import org.jboss.pnc.dto.requests.BuildPushParameters;
 import org.jboss.pnc.dto.response.Graph;
 import org.jboss.pnc.dto.response.Page;
 import org.jboss.pnc.dto.response.RunningBuildCount;
 import org.jboss.pnc.dto.response.SSHCredentials;
-import org.jboss.pnc.enums.BuildStatus;
 import org.jboss.pnc.rest.api.endpoints.BuildEndpoint;
 import org.jboss.pnc.rest.api.parameters.BuildsFilterParameters;
 import org.jboss.pnc.rest.api.parameters.PageParameters;
@@ -112,12 +115,17 @@ public class OrchBuildEndpoint implements BuildEndpoint {
     }
 
     @Override
-    public BuildPushResult getPushResult(String id) {
+    public BuildPushReport getPushResult(String id) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 
     @Override
-    public BuildPushResult push(String id, BuildPushParameters buildPushParameters) {
+    public Page<BuildPushOperation> getPushOperations(String s, @Valid PageParameters pageParameters) {
+        throw new UnsupportedOperationException("Not yet implemented in mock.");
+    }
+
+    @Override
+    public BuildPushOperation push(String id, BuildPushParameters buildPushParameters) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 
@@ -127,7 +135,7 @@ public class OrchBuildEndpoint implements BuildEndpoint {
     }
 
     @Override
-    public BuildPushResult completePush(String id, BuildPushResult buildPushResult) {
+    public void completePush(String s, BuildPushCompleted buildPushCompleted) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 
@@ -162,14 +170,6 @@ public class OrchBuildEndpoint implements BuildEndpoint {
     }
 
     @Override
-    public Page<Build> getAllByStatusAndLogContaining(
-            BuildStatus status,
-            String search,
-            @Valid PageParameters pageParameters) {
-        throw new UnsupportedOperationException("Not yet implemented in mock.");
-    }
-
-    @Override
     public RunningBuildCount getCount() {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
@@ -189,6 +189,11 @@ public class OrchBuildEndpoint implements BuildEndpoint {
             int pageSize,
             int pageIndex,
             long timestamp) {
+        throw new UnsupportedOperationException("Not yet implemented in mock.");
+    }
+
+    @Override
+    public Graph<Build> getImplicitDependencyGraph(String s, @Min(0L) @Max(5L) Integer integer) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 }

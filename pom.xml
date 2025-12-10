@@ -71,11 +71,11 @@
     <maven.compiler.release>17</maven.compiler.release>
     <compiler-plugin.version>3.14.1</compiler-plugin.version>
 
-    <indy.version>3.3.3</indy.version>
+    <indy.version>3.4.5</indy.version>
 
-    <pnc.version>2.7.6</pnc.version>
-    <pnc-api.version>3.2.0</pnc-api.version>
-    <pnc-common.version>3.2.0</pnc-common.version>
+    <pnc.version>3.3.1</pnc.version>
+    <pnc-api.version>3.2.4</pnc-api.version>
+    <pnc-common.version>3.3.4</pnc-common.version>
 
     <surefire-plugin.version>3.5.4</surefire-plugin.version>
     <quarkus.version>3.30.2</quarkus.version>
