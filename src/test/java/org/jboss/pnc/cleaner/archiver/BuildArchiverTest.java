@@ -17,7 +17,6 @@
  */
 package org.jboss.pnc.cleaner.archiver;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 import io.quarkus.test.junit.QuarkusMock;
 import io.quarkus.test.junit.QuarkusTest;
 import org.jboss.pnc.api.enums.AlignmentPreference;
@@ -32,7 +31,6 @@ import org.jboss.pnc.dto.Environment;
 import org.jboss.pnc.dto.ProductMilestone;
 import org.jboss.pnc.dto.ProductRef;
 import org.jboss.pnc.dto.ProductVersion;
-import org.jboss.pnc.dto.ProductVersionRef;
 import org.jboss.pnc.dto.ProjectRef;
 import org.jboss.pnc.dto.SCMRepository;
 import org.jboss.pnc.dto.User;
@@ -40,7 +38,6 @@ import org.jboss.pnc.enums.BuildProgress;
 import org.jboss.pnc.enums.BuildStatus;
 import org.jboss.pnc.enums.BuildType;
 import org.jboss.pnc.enums.SystemImageType;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
