@@ -28,12 +28,11 @@ import java.util.function.Function;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 
-import io.quarkus.oidc.client.OidcClient;
 import org.eclipse.microprofile.config.Config;
 import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.pnc.api.constants.MDCKeys;
-import org.jboss.pnc.common.Strings;
 import org.jboss.pnc.common.otel.OtelUtils;
+import org.jboss.pnc.quarkus.client.auth.runtime.PNCClientAuth;
 import org.slf4j.MDC;
 
 import io.opentelemetry.api.GlobalOpenTelemetry;
@@ -61,7 +60,7 @@ import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
 public class ArchivesCleanerImpl implements ArchivesCleaner {
 
     @Inject
-    OidcClient oidcClient;
+    PNCClientAuth pncClientAuth;
 
     @Inject
     Config config;
@@ -105,9 +104,7 @@ public class ArchivesCleanerImpl implements ArchivesCleaner {
                 .uri(URI.create(config.getValue("archive-service.delete-api-url", String.class) + buildConfigurationId))
                 .DELETE()
                 .timeout(Duration.ofSeconds(config.getValue("archive-service.http-client.request-timeout", Long.class)))
-                .header(
-                        AUTHORIZATION_STRING,
-                        "Bearer " + oidcClient.getTokens().await().indefinitely().getAccessToken())
+                .header(AUTHORIZATION_STRING, pncClientAuth.getHttpAuthorizationHeaderValue())
                 .header(CONTENT_TYPE_STRING, "application/json");
 
         HttpRequest request = builder.build();
