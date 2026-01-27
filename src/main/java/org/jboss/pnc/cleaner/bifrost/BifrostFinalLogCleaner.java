@@ -22,7 +22,6 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Scope;
-import io.quarkus.oidc.client.OidcClient;
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.RetryPolicy;
@@ -31,6 +30,7 @@ import org.eclipse.microprofile.context.ManagedExecutor;
 import org.jboss.pnc.api.constants.MDCKeys;
 import org.jboss.pnc.cleaner.archiveservice.FailedResponseException;
 import org.jboss.pnc.common.otel.OtelUtils;
+import org.jboss.pnc.quarkus.client.auth.runtime.PNCClientAuth;
 import org.slf4j.MDC;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -54,7 +54,7 @@ public class BifrostFinalLogCleaner {
     Config config;
 
     @Inject
-    OidcClient oidcClient;
+    PNCClientAuth pncClientAuth;
 
     @Inject
     ManagedExecutor executor;
@@ -94,9 +94,7 @@ public class BifrostFinalLogCleaner {
                                         + "/delete"))
                 .DELETE()
                 .timeout(Duration.ofSeconds(config.getValue("bifrost-service.http-client.request-timeout", Long.class)))
-                .header(
-                        AUTHORIZATION_STRING,
-                        "Bearer " + oidcClient.getTokens().await().indefinitely().getAccessToken())
+                .header(AUTHORIZATION_STRING, pncClientAuth.getHttpAuthorizationHeaderValue())
                 .header(CONTENT_TYPE_STRING, "application/json");
 
         HttpRequest request = builder.build();

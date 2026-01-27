@@ -89,6 +89,7 @@ public class FailedBuildsCleaner {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
+    /** Exceptionally used here for Indy, which requires OIDC only (No LDAP) */
     @Inject
     OidcClient oidcClient;
 
