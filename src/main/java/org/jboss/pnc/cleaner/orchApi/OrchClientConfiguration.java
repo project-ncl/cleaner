@@ -17,14 +17,16 @@
  */
 package org.jboss.pnc.cleaner.orchApi;
 
-import io.quarkus.oidc.client.OidcClient;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.pnc.client.Configuration;
+import org.jboss.pnc.quarkus.client.auth.runtime.PNCClientAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
+
+import java.io.IOException;
 
 /**
  * Configuration for the Orchestrator client configurable using properties
@@ -49,7 +51,10 @@ public class OrchClientConfiguration {
     protected Integer pageSize;
 
     @Inject
-    OidcClient oidcClient;
+    PNCClientAuth pncClientAuth;
+
+    @ConfigProperty(name = "pnc_client_auth.type")
+    PNCClientAuth.ClientAuthType clientAuthType;
 
     public Configuration getConfiguration(boolean authenticated) {
         Configuration.ConfigurationBuilder configurationBuilder = Configuration.builder()
@@ -60,8 +65,18 @@ public class OrchClientConfiguration {
         configurationBuilder.port(port);
         configurationBuilder.pageSize(pageSize);
         if (authenticated) {
-            configurationBuilder
-                    .bearerTokenSupplier(() -> oidcClient.getTokens().await().indefinitely().getAccessToken());
+            switch (clientAuthType) {
+                case OIDC -> configurationBuilder.bearerTokenSupplier(() -> pncClientAuth.getAuthToken());
+                case LDAP -> {
+                    try {
+                        PNCClientAuth.LDAPCredentials ldapCredentials = pncClientAuth.getLDAPCredentials();
+                        configurationBuilder.basicAuth(
+                                new Configuration.BasicAuth(ldapCredentials.username(), ldapCredentials.password()));
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
         }
 
         return configurationBuilder.build();

@@ -17,16 +17,32 @@
  */
 package org.jboss.pnc.cleaner;
 
-import io.quarkus.oidc.client.Tokens;
 import io.quarkus.test.Mock;
-import io.vertx.core.json.JsonObject;
+import jakarta.enterprise.context.ApplicationScoped;
+import org.jboss.pnc.quarkus.client.auth.runtime.PNCClientAuth;
 
-import java.time.Duration;
+import java.io.IOException;
 
 @Mock
-public class TokensMock extends Tokens {
+@ApplicationScoped
+public class PNCClientAuthMock implements PNCClientAuth {
+    @Override
+    public String getAuthToken() {
+        return "1234";
+    }
 
-    public TokensMock() {
-        super("1", 1L, Duration.ZERO, "2", 2L, null, "dot");
+    @Override
+    public String getHttpAuthorizationHeaderValue() {
+        return "Bearer 1234";
+    }
+
+    @Override
+    public String getHttpAuthorizationHeaderValueWithCachedToken() {
+        return getHttpAuthorizationHeaderValue();
+    }
+
+    @Override
+    public LDAPCredentials getLDAPCredentials() throws IOException {
+        return new LDAPCredentials("user", "password");
     }
 }
