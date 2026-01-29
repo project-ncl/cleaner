@@ -28,7 +28,6 @@ import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Scope;
 import jakarta.annotation.PostConstruct;
 
-import io.quarkus.oidc.client.OidcClient;
 import io.quarkus.scheduler.Scheduled;
 
 import org.commonjava.indy.client.core.Indy;
@@ -56,6 +55,7 @@ import org.jboss.pnc.common.Strings;
 import org.jboss.pnc.common.otel.OtelUtils;
 import org.jboss.pnc.dto.Build;
 import org.jboss.pnc.enums.BuildStatus;
+import org.jboss.pnc.quarkus.client.auth.runtime.PNCClientAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -89,9 +89,8 @@ public class FailedBuildsCleaner {
 
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    /** Exceptionally used here for Indy, which requires OIDC only (No LDAP) */
     @Inject
-    OidcClient oidcClient;
+    PNCClientAuth pncClientAuth;
 
     @Inject
     BuildClient buildClient;
@@ -174,7 +173,7 @@ public class FailedBuildsCleaner {
         // put the span into the current Context
         try (Scope scope = span.makeCurrent()) {
             logger.info("Retrieving service account auth token.");
-            String serviceAccountToken = oidcClient.getTokens().await().indefinitely().getAccessToken();
+            String serviceAccountToken = pncClientAuth.getAuthToken();
 
             logger.info("Initializing Indy client.");
             Indy indyClient = initIndy(serviceAccountToken);
