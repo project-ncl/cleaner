@@ -73,7 +73,7 @@
 
     <indy.version>3.4.5</indy.version>
 
-    <pnc.version>3.3.1</pnc.version>
+    <pnc.version>3.4.2</pnc.version>
     <pnc-api.version>3.2.4</pnc-api.version>
     <pnc-common.version>3.3.4</pnc-common.version>
 
