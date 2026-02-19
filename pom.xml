@@ -78,8 +78,8 @@
     <pnc-common.version>3.3.4</pnc-common.version>
 
     <surefire-plugin.version>3.5.4</surefire-plugin.version>
-    <quarkus.version>3.30.6</quarkus.version>
-    <quarkus-logging-kafka.version>3.0.3</quarkus-logging-kafka.version>
+    <quarkus.version>3.31.3</quarkus.version>
+    <quarkus-logging-kafka.version>3.0.4-SNAPSHOT</quarkus-logging-kafka.version>
     <tagSuffix />
     <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
   </properties>
@@ -280,7 +280,7 @@
     <!-- Test dependencies !-->
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5</artifactId>
+      <artifactId>quarkus-junit</artifactId>
       <scope>test</scope>
     </dependency>
 
@@ -304,7 +304,7 @@
     </dependency>
     <dependency>
       <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-junit5-mockito</artifactId>
+      <artifactId>quarkus-junit-mockito</artifactId>
       <scope>test</scope>
     </dependency>
     <!-- Test dependencies END !-->
@@ -438,6 +438,7 @@
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
         <version>${quarkus.version}</version>
+        <extensions>true</extensions>
         <configuration>
           <ignoredEntries>
               <ignoredEntry>META-INF/BCKEY.DSA</ignoredEntry>
