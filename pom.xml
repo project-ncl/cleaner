@@ -79,7 +79,7 @@
 
     <surefire-plugin.version>3.5.5</surefire-plugin.version>
     <quarkus.version>3.34.2</quarkus.version>
-    <quarkus-logging-kafka.version>3.0.4-SNAPSHOT</quarkus-logging-kafka.version>
+    <quarkus-logging-kafka.version>3.0.4</quarkus-logging-kafka.version>
     <tagSuffix />
     <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
   </properties>
