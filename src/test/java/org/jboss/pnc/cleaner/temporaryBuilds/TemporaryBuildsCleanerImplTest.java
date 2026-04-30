@@ -18,11 +18,12 @@
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.stubbing.Scenario;
 import io.quarkus.test.junit.QuarkusTest;
 import org.jboss.pnc.cleaner.common.TestConstants;
-import org.jboss.pnc.common.util.HttpUtils;
+import org.jboss.pnc.common.http.HttpUtils;
 import org.jboss.pnc.common.util.TimeUtils;
 import org.jboss.pnc.dto.response.DeleteOperationResult;
 import org.jboss.pnc.enums.ResultStatus;
@@ -66,6 +67,8 @@ public class TemporaryBuildsCleanerImplTest {
 
     private WireMockServer wireMockServer = new WireMockServer(
             options().port(8082).withRootDirectory("src/test/resources/wiremock/general"));
+
+    static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     @Inject
     TemporaryBuildsCleanerImpl temporaryBuildsCleaner;
@@ -144,7 +147,7 @@ public class TemporaryBuildsCleanerImplTest {
         deleteOperationResult.setStatus(ResultStatus.SUCCESS);
         deleteOperationResult.setMessage("Build 100 was deleted successfully!");
 
-        HttpUtils.performHttpPostRequest(callbackUrl, deleteOperationResult);
+        HttpUtils.performHttpPostRequest(callbackUrl, OBJECT_MAPPER.writeValueAsString(deleteOperationResult), null);
     }
 
     @Test
