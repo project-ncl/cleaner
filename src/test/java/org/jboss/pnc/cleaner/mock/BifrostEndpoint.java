@@ -18,6 +18,8 @@
 package org.jboss.pnc.cleaner.mock;
 
 import io.quarkus.test.Mock;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import org.jboss.pnc.api.bifrost.dto.Line;
 import org.jboss.pnc.api.bifrost.dto.MetaData;
 import org.jboss.pnc.api.bifrost.enums.Direction;
@@ -48,8 +50,9 @@ public class BifrostEndpoint implements Bifrost {
             Direction direction,
             Format format,
             Integer maxLines,
-            Integer batchSize,
-            Integer batchDelay,
+            @Positive Integer tailLines,
+            @Positive Integer batchSize,
+            @Min(200L) Integer batchDelay,
             boolean follow,
             String timeoutProbeString) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
