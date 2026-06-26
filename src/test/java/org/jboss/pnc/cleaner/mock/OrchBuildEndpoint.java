@@ -22,6 +22,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import org.jboss.pnc.api.causeway.dto.push.BuildPushCompleted;
 import org.jboss.pnc.dto.Artifact;
+import org.jboss.pnc.dto.Attachment;
 import org.jboss.pnc.dto.Build;
 import org.jboss.pnc.dto.BuildConfigurationRevision;
 import org.jboss.pnc.dto.BuildPushOperation;
@@ -194,6 +195,11 @@ public class OrchBuildEndpoint implements BuildEndpoint {
 
     @Override
     public Graph<Build> getImplicitDependencyGraph(String s, @Min(0L) @Max(5L) Integer integer) {
+        throw new UnsupportedOperationException("Not yet implemented in mock.");
+    }
+
+    @Override
+    public Page<Attachment> getAttachments(String id, @Valid PageParameters pageParameters) {
         throw new UnsupportedOperationException("Not yet implemented in mock.");
     }
 }
