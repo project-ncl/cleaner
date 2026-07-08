@@ -24,6 +24,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.pnc.common.log.LogSanitizer;
 import org.jboss.pnc.dto.response.DeleteOperationResult;
 
 import jakarta.inject.Inject;
@@ -98,7 +99,7 @@ public class DeleteCallbackManager {
             log.warn(
                     "Delete operation callback called for a delete operation, which was not initialized. BuildId: "
                             + "{}",
-                    buildId);
+                    LogSanitizer.clean(buildId));
         }
     }
 
