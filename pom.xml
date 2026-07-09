@@ -75,7 +75,7 @@
 
     <pnc.version>3.5.4</pnc.version>
     <pnc-api.version>3.5.1</pnc-api.version>
-    <pnc-common.version>3.5.2-SNAPSHOT</pnc-common.version>
+    <pnc-common.version>3.5.2</pnc-common.version>
 
     <surefire-plugin.version>3.5.6</surefire-plugin.version>
     <quarkus.version>3.37.0</quarkus.version>
