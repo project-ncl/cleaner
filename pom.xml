@@ -77,7 +77,7 @@
     <pnc-api.version>3.5.2</pnc-api.version>
     <pnc-common.version>3.5.5-SNAPSHOT</pnc-common.version>
 
-    <surefire-plugin.version>3.5.6</surefire-plugin.version>
+    <surefire-plugin.version>3.6.0</surefire-plugin.version>
     <quarkus.version>3.39.1</quarkus.version>
     <quarkus-logging-kafka.version>3.0.5</quarkus-logging-kafka.version>
     <tagSuffix />
