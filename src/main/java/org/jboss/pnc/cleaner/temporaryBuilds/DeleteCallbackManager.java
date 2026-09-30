@@ -1,37 +1,26 @@
 /*
- * JBoss, Home of Professional Open Source.
- * Copyright 2019-2022 Red Hat, Inc., and individual contributors
- * as indicated by the @author tags.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-FileCopyrightText: Copyright © 2019 Red Hat, Inc., and individual contributors as indicated by the @author tags.
+ * SPDX-License-Identifier: Apache-2.0
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
-import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import jakarta.annotation.PostConstruct;
-import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.pnc.common.log.LogSanitizer;
-import org.jboss.pnc.dto.response.DeleteOperationResult;
-
-import jakarta.inject.Inject;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.inject.Inject;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.pnc.common.log.LogSanitizer;
+import org.jboss.pnc.dto.response.DeleteOperationResult;
+
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Manages delete operation callbacks and provides a blocking was of waiting fot the operation completion. First the

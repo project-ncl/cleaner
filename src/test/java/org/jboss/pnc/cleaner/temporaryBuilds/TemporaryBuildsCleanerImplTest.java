@@ -1,39 +1,8 @@
 /*
- * JBoss, Home of Professional Open Source.
- * Copyright 2019-2022 Red Hat, Inc., and individual contributors
- * as indicated by the @author tags.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-FileCopyrightText: Copyright © 2019 Red Hat, Inc., and individual contributors as indicated by the @author tags.
+ * SPDX-License-Identifier: Apache-2.0
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.github.tomakehurst.wiremock.stubbing.Scenario;
-import io.quarkus.test.junit.QuarkusTest;
-import org.jboss.pnc.cleaner.common.TestConstants;
-import org.jboss.pnc.common.http.HttpUtils;
-import org.jboss.pnc.common.util.TimeUtils;
-import org.jboss.pnc.dto.response.DeleteOperationResult;
-import org.jboss.pnc.enums.ResultStatus;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import jakarta.inject.Inject;
-import jakarta.ws.rs.core.HttpHeaders;
-import jakarta.ws.rs.core.MediaType;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.delete;
@@ -43,6 +12,26 @@ import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.options;
 import static java.time.Duration.ofSeconds;
 import static org.junit.jupiter.api.Assertions.assertTimeoutPreemptively;
+
+import jakarta.inject.Inject;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+
+import org.jboss.pnc.cleaner.common.TestConstants;
+import org.jboss.pnc.common.http.HttpUtils;
+import org.jboss.pnc.common.util.TimeUtils;
+import org.jboss.pnc.dto.response.DeleteOperationResult;
+import org.jboss.pnc.enums.ResultStatus;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.tomakehurst.wiremock.WireMockServer;
+import com.github.tomakehurst.wiremock.stubbing.Scenario;
+
+import io.quarkus.test.junit.QuarkusTest;
 
 /**
  * @author Jakub Bartecek

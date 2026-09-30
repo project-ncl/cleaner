@@ -1,21 +1,11 @@
 /*
- * JBoss, Home of Professional Open Source.
- * Copyright 2019-2022 Red Hat, Inc., and individual contributors
- * as indicated by the @author tags.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-FileCopyrightText: Copyright © 2019 Red Hat, Inc., and individual contributors as indicated by the @author tags.
+ * SPDX-License-Identifier: Apache-2.0
  */
 package org.jboss.pnc.cleaner.archiveservice;
+
+import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
+import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
 
 import java.net.URI;
 import java.net.http.HttpRequest;
@@ -40,13 +30,9 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Scope;
-
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.RetryPolicy;
-
-import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
-import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
 
 /**
  * Implementation of the ArchivesCleaner interface which provides methods to clean the historical archives stored in the
