@@ -1,21 +1,8 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-    JBoss, Home of Professional Open Source.
-    Copyright 2019-2022 Red Hat, Inc., and individual contributors
-    as indicated by the @author tags.
-
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
-
-    http://www.apache.org/licenses/LICENSE-2.0
-
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+    SPDX-FileCopyrightText: Copyright © 2019 Red Hat, Inc., and individual contributors as indicated by the @author tags.
+    SPDX-License-Identifier: Apache-2.0
 
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -26,44 +13,44 @@
 
   <name>Cleaner for PNC</name>
   <description>This project is a service, which performs cleanup and maintenance tasks for PNC eco-system.</description>
-  <inceptionYear>2019</inceptionYear>
   <url>http://github.com/project-ncl/cleaner</url>
+  <inceptionYear>2019</inceptionYear>
 
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
-      <distribution>repo</distribution>
       <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+      <distribution>repo</distribution>
     </license>
   </licenses>
-
-  <scm>
-    <connection>scm:git:http://github.com/project-ncl/cleaner.git</connection>
-    <developerConnection>scm:git:git@github.com:project-ncl/cleaner.git</developerConnection>
-    <url>http://github.com/project-ncl/cleaner</url>
-    <tag>HEAD</tag>
-  </scm>
 
   <developers>
     <developer>
       <id>jbartece</id>
-      <email>jbartece@redhat.com</email>
       <name>Jakub Bartecek</name>
+      <email>jbartece@redhat.com</email>
       <organization>Red Hat</organization>
     </developer>
     <developer>
       <id>pkocandr</id>
-      <email>pkocandr@redhat.com</email>
       <name>Petr Kocandrle</name>
+      <email>pkocandr@redhat.com</email>
       <organization>Red Hat</organization>
     </developer>
     <developer>
       <id>dcheung</id>
-      <email>dcheung@redhat.com</email>
       <name>Dustin Kut Moy Cheung</name>
+      <email>dcheung@redhat.com</email>
       <organization>Red Hat</organization>
     </developer>
   </developers>
+
+  <scm>
+    <connection>scm:git:http://github.com/project-ncl/cleaner.git</connection>
+    <developerConnection>scm:git:git@github.com:project-ncl/cleaner.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>http://github.com/project-ncl/cleaner</url>
+  </scm>
 
   <properties>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -80,7 +67,7 @@
     <surefire-plugin.version>3.6.0</surefire-plugin.version>
     <quarkus.version>3.40.0</quarkus.version>
     <quarkus-logging-kafka.version>3.0.5</quarkus-logging-kafka.version>
-    <tagSuffix />
+    <tagSuffix/>
     <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
   </properties>
 
@@ -319,23 +306,23 @@
 
   <repositories>
     <repository>
-      <id>jboss-snapshots</id>
-      <name>jboss-snapshots</name>
-      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
+      <id>jboss-snapshots</id>
+      <name>jboss-snapshots</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
     </repository>
     <repository>
-      <name>Central Portal Snapshots</name>
-      <id>central-portal-snapshots</id>
-      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
+      <id>central-portal-snapshots</id>
+      <name>Central Portal Snapshots</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     </repository>
 
   </repositories>
@@ -348,23 +335,24 @@
           <artifactId>license-maven-plugin</artifactId>
           <version>5.1.2</version>
           <configuration>
-            <properties>
-              <copyright-years>${project.inceptionYear}-2022</copyright-years>
-            </properties>
-            <header>.license-header.txt</header>
-            <excludes>
-              <exclude>**/README</exclude>
-              <exclude>**/LICENSE.txt</exclude>
-              <exclude>**/eclipse-codeStyle.xml</exclude>
-              <exclude>.license-header.txt</exclude>
-              <exclude>**/plugins.txt</exclude>
-              <exclude>**/Dockerfile</exclude>
-              <exclude>**/application.properties</exclude>
-              <exclude>**/nbactions.xml</exclude>
+            <licenseSets>
+              <licenseSet>
+                <inlineHeader><![CDATA[SPDX-FileCopyrightText: Copyright © ${project.inceptionYear} Red Hat, Inc., and individual contributors as indicated by the @author tags.
+SPDX-License-Identifier: Apache-2.0
+]]></inlineHeader>
+                <excludes>
+                  <exclude>**/README</exclude>
+                  <exclude>**/LICENSE.txt</exclude>
+                  <exclude>**/plugins.txt</exclude>
+                  <exclude>**/Dockerfile</exclude>
+                  <exclude>**/application.properties</exclude>
+                  <exclude>**/nbactions.xml</exclude>
 
-              <!-- Exclude downloaded/generated -->
-              <exclude>**/.cache/**</exclude>
-            </excludes>
+                  <!-- Exclude downloaded/generated -->
+                  <exclude>**/.cache/**</exclude>
+                </excludes>
+              </licenseSet>
+            </licenseSets>
           </configuration>
         </plugin>
         <plugin>
@@ -400,10 +388,10 @@
           <executions>
             <execution>
               <id>sign-artifacts</id>
-              <phase>verify</phase>
               <goals>
                 <goal>sign</goal>
               </goals>
+              <phase>verify</phase>
             </execution>
           </executions>
         </plugin>
@@ -415,10 +403,10 @@
         <artifactId>license-maven-plugin</artifactId>
         <executions>
           <execution>
-            <phase>verify</phase>
             <goals>
               <goal>check</goal>
             </goals>
+            <phase>verify</phase>
           </execution>
         </executions>
       </plugin>
@@ -426,13 +414,6 @@
         <groupId>pl.project13.maven</groupId>
         <artifactId>git-commit-id-plugin</artifactId>
         <version>4.9.10</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>revision</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
           <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
           <generateGitPropertiesFile>true</generateGitPropertiesFile>
@@ -440,6 +421,13 @@
           <dateFormatTimeZone>UTC</dateFormatTimeZone>
           <verbose>false</verbose>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>io.quarkus</groupId>
@@ -448,8 +436,8 @@
         <extensions>true</extensions>
         <configuration>
           <ignoredEntries>
-              <ignoredEntry>META-INF/BCKEY.DSA</ignoredEntry>
-              <ignoredEntry>META-INF/BCKEY.SF</ignoredEntry>
+            <ignoredEntry>META-INF/BCKEY.DSA</ignoredEntry>
+            <ignoredEntry>META-INF/BCKEY.SF</ignoredEntry>
           </ignoredEntries>
           <finalName>cleaner</finalName>
           <!-- needed to publish to maven central -->
@@ -473,44 +461,67 @@
         </configuration>
       </plugin>
       <plugin>
-          <groupId>net.revelc.code.formatter</groupId>
-          <artifactId>formatter-maven-plugin</artifactId>
-          <version>2.29.0</version>
-          <configuration>
-              <configFile>eclipse-codeStyle.xml</configFile>
-              <cachedir>${project.build.directory}</cachedir>
-          </configuration>
-          <executions>
-              <execution>
-                  <id>java-format</id>
-                  <goals>
-                      <goal>format</goal>
-                  </goals>
-              </execution>
-          </executions>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${compiler-plugin.version}</version>
       </plugin>
       <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>${compiler-plugin.version}</version>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagNameFormat>@{project.version}${tagSuffix}</tagNameFormat>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <releaseProfiles>release</releaseProfiles>
+        </configuration>
       </plugin>
       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <configuration>
-              <tagNameFormat>@{project.version}${tagSuffix}</tagNameFormat>
-              <autoVersionSubmodules>true</autoVersionSubmodules>
-              <releaseProfiles>release</releaseProfiles>
-          </configuration>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.11.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <!-- as defined in your settings.xml -->
+          <publishingServerId>central-publisher</publishingServerId>
+        </configuration>
       </plugin>
       <plugin>
-          <groupId>org.sonatype.central</groupId>
-          <artifactId>central-publishing-maven-plugin</artifactId>
-          <version>0.11.0</version>
-          <extensions>true</extensions>
-          <configuration>
-              <!-- as defined in your settings.xml -->
-              <publishingServerId>central-publisher</publishingServerId>
-          </configuration>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>3.10.2</version>
+        <configuration>
+          <pom>
+            <includes>
+              <include>pom.xml</include>
+            </includes>
+            <sortPom>
+              <expandEmptyElements>false</expandEmptyElements>
+            </sortPom>
+          </pom>
+          <java>
+            <removeUnusedImports/>
+            <importOrder>
+              <file>java-import-order.txt</file>
+            </importOrder>
+            <eclipse>
+              <file>java-formatter.xml</file>
+            </eclipse>
+            <lineEndings>UNIX</lineEndings>
+          </java>
+        </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.jboss.pnc</groupId>
+            <artifactId>ide-config</artifactId>
+            <version>1.1.0</version>
+          </dependency>
+        </dependencies>
+        <executions>
+          <execution>
+            <goals>
+              <goal>apply</goal>
+            </goals>
+            <phase>compile</phase>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
@@ -587,10 +598,10 @@
             <artifactId>license-maven-plugin</artifactId>
             <executions>
               <execution>
-                <phase>process-sources</phase>
                 <goals>
                   <goal>format</goal>
                 </goals>
+                <phase>process-sources</phase>
               </execution>
             </executions>
           </plugin>

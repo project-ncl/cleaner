@@ -1,39 +1,11 @@
 /*
- * JBoss, Home of Professional Open Source.
- * Copyright 2019-2022 Red Hat, Inc., and individual contributors
- * as indicated by the @author tags.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * SPDX-FileCopyrightText: Copyright © 2019 Red Hat, Inc., and individual contributors as indicated by the @author tags.
+ * SPDX-License-Identifier: Apache-2.0
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
-import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.Config;
-import org.jboss.pnc.cleaner.orchApi.OrchClientProducer;
-import org.jboss.pnc.client.BuildClient;
-import org.jboss.pnc.client.GroupBuildClient;
-import org.jboss.pnc.client.RemoteCollection;
-import org.jboss.pnc.client.RemoteResourceException;
-import org.jboss.pnc.dto.Build;
-import org.jboss.pnc.dto.response.DeleteOperationResult;
-import org.jboss.pnc.dto.GroupBuild;
+import static org.jboss.pnc.cleaner.archiver.BuildArchiver.BUILD_ARCHIVED;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -43,7 +15,24 @@ import java.util.HashSet;
 import java.util.Locale;
 import java.util.Optional;
 
-import static org.jboss.pnc.cleaner.archiver.BuildArchiver.BUILD_ARCHIVED;
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+import org.eclipse.microprofile.config.Config;
+import org.jboss.pnc.cleaner.orchApi.OrchClientProducer;
+import org.jboss.pnc.client.BuildClient;
+import org.jboss.pnc.client.GroupBuildClient;
+import org.jboss.pnc.client.RemoteCollection;
+import org.jboss.pnc.client.RemoteResourceException;
+import org.jboss.pnc.dto.Build;
+import org.jboss.pnc.dto.GroupBuild;
+import org.jboss.pnc.dto.response.DeleteOperationResult;
+
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Implementation of an adapter providing high-level operations on Orchestrator REST API
