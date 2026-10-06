@@ -7,6 +7,14 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jboss</groupId>
+    <artifactId>jboss-parent</artifactId>
+    <version>54</version>
+    <relativePath/>
+  </parent>
+
   <groupId>org.jboss.pnc.cleaner</groupId>
   <artifactId>cleaner</artifactId>
   <version>3.5.1-SNAPSHOT</version>
@@ -53,10 +61,8 @@
   </scm>
 
   <properties>
-    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>17</maven.compiler.release>
-    <compiler-plugin.version>3.16.0</compiler-plugin.version>
+    <jdk.min.version>17</jdk.min.version>
 
     <indy.version>3.4.5</indy.version>
 
@@ -358,7 +364,6 @@ SPDX-License-Identifier: Apache-2.0
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-source-plugin</artifactId>
-          <version>3.4.0</version>
           <executions>
             <execution>
               <id>attach-sources</id>
@@ -371,7 +376,6 @@ SPDX-License-Identifier: Apache-2.0
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-javadoc-plugin</artifactId>
-          <version>3.12.0</version>
           <executions>
             <execution>
               <id>attach-javadocs</id>
@@ -384,7 +388,6 @@ SPDX-License-Identifier: Apache-2.0
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-gpg-plugin</artifactId>
-          <version>3.2.8</version>
           <executions>
             <execution>
               <id>sign-artifacts</id>
@@ -453,7 +456,6 @@ SPDX-License-Identifier: Apache-2.0
       </plugin>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>${surefire-plugin.version}</version>
         <configuration>
           <systemProperties>
             <java.util.logging.manager>org.jboss.logmanager.LogManager</java.util.logging.manager>
@@ -462,7 +464,6 @@ SPDX-License-Identifier: Apache-2.0
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>${compiler-plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -470,7 +471,7 @@ SPDX-License-Identifier: Apache-2.0
         <configuration>
           <tagNameFormat>@{project.version}${tagSuffix}</tagNameFormat>
           <autoVersionSubmodules>true</autoVersionSubmodules>
-          <releaseProfiles>release</releaseProfiles>
+          <releaseProfiles>central-release</releaseProfiles>
         </configuration>
       </plugin>
       <plugin>
@@ -516,25 +517,6 @@ SPDX-License-Identifier: Apache-2.0
     </plugins>
   </build>
   <profiles>
-    <profile>
-      <id>release</id>
-      <build>
-        <plugins>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-source-plugin</artifactId>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-javadoc-plugin</artifactId>
-          </plugin>
-          <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-gpg-plugin</artifactId>
-          </plugin>
-        </plugins>
-      </build>
-    </profile>
     <profile>
       <id>native</id>
       <activation>
