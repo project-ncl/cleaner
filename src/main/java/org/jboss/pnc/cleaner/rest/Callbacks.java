@@ -4,6 +4,10 @@
  */
 package org.jboss.pnc.cleaner.rest;
 
+import static org.jboss.pnc.cleaner.common.Roles.PNC_APP_CLEANER_USER;
+import static org.jboss.pnc.cleaner.common.Roles.PNC_USERS_ADMIN;
+
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -35,6 +39,7 @@ public class Callbacks {
     @Path("/delete/builds/{buildId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ PNC_APP_CLEANER_USER, PNC_USERS_ADMIN })
     @Timed
     @WithSpan
     public Response buildRecordDeleteCallback(
@@ -47,6 +52,7 @@ public class Callbacks {
     @Path("/delete/group-builds/{buildId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
+    @RolesAllowed({ PNC_APP_CLEANER_USER, PNC_USERS_ADMIN })
     @Timed
     @WithSpan
     public Response buildGroupRecordDeleteCallback(
