@@ -4,13 +4,8 @@
  */
 package org.jboss.pnc.cleaner.rest;
 
-import io.micrometer.core.annotation.Timed;
-import io.opentelemetry.instrumentation.annotations.SpanAttribute;
-import io.opentelemetry.instrumentation.annotations.WithSpan;
-
-import org.jboss.pnc.cleaner.temporaryBuilds.BuildDeleteCallbackManager;
-import org.jboss.pnc.cleaner.temporaryBuilds.BuildGroupDeleteCallbackManager;
-import org.jboss.pnc.dto.response.DeleteOperationResult;
+import static org.jboss.pnc.cleaner.common.Roles.PNC_APP_CLEANER_USER;
+import static org.jboss.pnc.cleaner.common.Roles.PNC_USERS_ADMIN;
 
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -20,6 +15,14 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import org.jboss.pnc.cleaner.temporaryBuilds.BuildDeleteCallbackManager;
+import org.jboss.pnc.cleaner.temporaryBuilds.BuildGroupDeleteCallbackManager;
+import org.jboss.pnc.dto.response.DeleteOperationResult;
+
+import io.micrometer.core.annotation.Timed;
+import io.opentelemetry.instrumentation.annotations.SpanAttribute;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 
 /**
  * @author Jakub Bartecek
@@ -36,7 +39,7 @@ public class Callbacks {
     @Path("/delete/builds/{buildId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ "pnc-app-cleaner-user", "pnc-users-admin" })
+    @RolesAllowed({ PNC_APP_CLEANER_USER, PNC_USERS_ADMIN })
     @Timed
     @WithSpan
     public Response buildRecordDeleteCallback(
@@ -49,7 +52,7 @@ public class Callbacks {
     @Path("/delete/group-builds/{buildId}")
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
-    @RolesAllowed({ "pnc-app-cleaner-user", "pnc-users-admin" })
+    @RolesAllowed({ PNC_APP_CLEANER_USER, PNC_USERS_ADMIN })
     @Timed
     @WithSpan
     public Response buildGroupRecordDeleteCallback(

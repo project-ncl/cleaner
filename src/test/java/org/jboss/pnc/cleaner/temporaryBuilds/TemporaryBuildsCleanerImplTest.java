@@ -32,6 +32,7 @@ import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.stubbing.Scenario;
 
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.security.TestSecurity;
 
 /**
  * @author Jakub Bartecek
@@ -73,6 +74,7 @@ public class TemporaryBuildsCleanerImplTest {
     }
 
     @Test
+    @TestSecurity(authorizationEnabled = false)
     public void shouldDeleteATemporaryBuild() {
         // given
         final String buildId = "684";
@@ -169,6 +171,7 @@ public class TemporaryBuildsCleanerImplTest {
     }
 
     @Test
+    @TestSecurity(authorizationEnabled = false)
     public void shouldDeleteATemporaryBuildGroup() {
         // given
         final String buildId = "166";

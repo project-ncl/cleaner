@@ -6,20 +6,6 @@ package org.jboss.pnc.cleaner.temporaryBuilds;
 
 import static org.jboss.pnc.cleaner.archiver.BuildArchiver.BUILD_ARCHIVED;
 
-import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
-import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
-import org.eclipse.microprofile.config.Config;
-import org.jboss.pnc.client.BuildClient;
-import org.jboss.pnc.client.GroupBuildClient;
-import org.jboss.pnc.client.RemoteCollection;
-import org.jboss.pnc.client.RemoteResourceException;
-import org.jboss.pnc.dto.Build;
-import org.jboss.pnc.dto.response.DeleteOperationResult;
-import org.jboss.pnc.dto.GroupBuild;
-
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
