@@ -69,12 +69,7 @@ public class OrchClientConfiguration {
         return configurationBuilder.build();
     }
 
-    /**
-     * By default, we don't want authentication
-     *
-     * @return
-     */
     public Configuration getConfiguration() {
-        return getConfiguration(false);
+        return getConfiguration(true);
     }
 }

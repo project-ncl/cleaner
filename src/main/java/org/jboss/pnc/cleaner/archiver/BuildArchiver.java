@@ -23,7 +23,6 @@ import jakarta.ws.rs.core.Response;
 
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
-import org.jboss.pnc.cleaner.orchApi.OrchClientProducer;
 import org.jboss.pnc.client.BuildClient;
 import org.jboss.pnc.client.ProductMilestoneClient;
 import org.jboss.pnc.client.ProductVersionClient;
@@ -65,9 +64,6 @@ public class BuildArchiver {
     BuildArchiver self;
     @ConfigProperty(name = "buildArchiver.trimmedLogMaxSize", defaultValue = "1000000")
     Integer trimmedLogMaxSize;
-
-    @Inject
-    OrchClientProducer orchClientProducer;
 
     @Timed
     @Scheduled(cron = "{buildArchiverScheduler.cron}", concurrentExecution = Scheduled.ConcurrentExecution.SKIP)
@@ -118,8 +114,8 @@ public class BuildArchiver {
 
         self.archiveBuildRecord(build, buildLog, alignmentLog);
 
-        try (BuildClient buildClientAuthenticated = orchClientProducer.getAuthenticatedBuildClient()) {
-            buildClientAuthenticated.addAttribute(build.getId(), BUILD_ARCHIVED, "true");
+        try {
+            buildClient.addAttribute(build.getId(), BUILD_ARCHIVED, "true");
         } catch (RemoteResourceException ex) {
             logger.error("Failed to mark build as archived in PNC", ex);
         }
