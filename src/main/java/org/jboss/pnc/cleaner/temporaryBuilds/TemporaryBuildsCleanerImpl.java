@@ -4,6 +4,27 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import jakarta.annotation.PostConstruct;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.pnc.cleaner.archiveservice.ArchivesCleaner;
+import org.jboss.pnc.cleaner.bifrost.BifrostFinalLogCleaner;
+import org.jboss.pnc.common.otel.OtelUtils;
+import org.jboss.pnc.dto.Build;
+import org.jboss.pnc.dto.GroupBuild;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.Counter;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -12,26 +33,6 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Scope;
-import jakarta.annotation.PostConstruct;
-import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.pnc.cleaner.archiveservice.ArchivesCleaner;
-import org.jboss.pnc.cleaner.bifrost.BifrostFinalLogCleaner;
-import org.jboss.pnc.common.otel.OtelUtils;
-import org.jboss.pnc.common.util.TimeUtils;
-import org.jboss.pnc.dto.Build;
-import org.jboss.pnc.dto.GroupBuild;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
 /**
  * Deletes temporary builds via Orchestrator REST API

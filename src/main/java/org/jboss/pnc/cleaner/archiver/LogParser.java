@@ -4,8 +4,6 @@
  */
 package org.jboss.pnc.cleaner.archiver;
 
-import lombok.Getter;
-
 import java.io.BufferedReader;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,6 +11,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import lombok.Getter;
 
 public class LogParser {
 

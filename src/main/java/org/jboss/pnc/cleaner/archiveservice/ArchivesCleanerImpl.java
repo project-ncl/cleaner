@@ -4,6 +4,9 @@
  */
 package org.jboss.pnc.cleaner.archiveservice;
 
+import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
+import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
+
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -27,13 +30,9 @@ import io.opentelemetry.api.trace.Span;
 import io.opentelemetry.api.trace.SpanBuilder;
 import io.opentelemetry.api.trace.SpanKind;
 import io.opentelemetry.context.Scope;
-
 import lombok.extern.slf4j.Slf4j;
 import net.jodah.failsafe.Failsafe;
 import net.jodah.failsafe.RetryPolicy;
-
-import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
-import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
 
 /**
  * Implementation of the ArchivesCleaner interface which provides methods to clean the historical archives stored in the

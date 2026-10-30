@@ -4,16 +4,16 @@
  */
 package org.jboss.pnc.cleaner.orchApi;
 
+import java.io.IOException;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.pnc.client.Configuration;
 import org.jboss.pnc.quarkus.client.auth.runtime.PNCClientAuth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-
-import java.io.IOException;
 
 /**
  * Configuration for the Orchestrator client configurable using properties

@@ -4,13 +4,15 @@
  */
 package org.jboss.pnc.cleaner.mock;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.jboss.pnc.dto.Build;
-
-import jakarta.enterprise.context.ApplicationScoped;
 import java.util.ArrayList;
 import java.util.Collection;
+
+import jakarta.enterprise.context.ApplicationScoped;
+
+import org.jboss.pnc.dto.Build;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.opecom">Matej Lazar</a>

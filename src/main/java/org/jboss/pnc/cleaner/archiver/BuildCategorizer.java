@@ -4,12 +4,12 @@
  */
 package org.jboss.pnc.cleaner.archiver;
 
-import lombok.Value;
-
 import static org.jboss.pnc.cleaner.archiver.ArchivedBuildRecord.ErrorGroup.INDY;
 import static org.jboss.pnc.cleaner.archiver.ArchivedBuildRecord.ErrorGroup.ND;
 import static org.jboss.pnc.cleaner.archiver.ArchivedBuildRecord.ErrorGroup.PNC;
 import static org.jboss.pnc.cleaner.archiver.ArchivedBuildRecord.ErrorGroup.PSI;
+
+import lombok.Value;
 
 public class BuildCategorizer {
     public static final String EXCEPTION_TRYING_TO_GET_HTTPS_PAAS_HEALTHZ_READY = "Exception trying to GET https://paas.*/healthz/ready";

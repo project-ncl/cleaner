@@ -7,10 +7,11 @@ package org.jboss.pnc.cleaner.startup;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.event.Observes;
 
+import org.jboss.pnc.cleaner.common.AppInfo;
+
 import io.quarkus.runtime.ShutdownEvent;
 import io.quarkus.runtime.StartupEvent;
 import lombok.extern.slf4j.Slf4j;
-import org.jboss.pnc.cleaner.common.AppInfo;
 
 @ApplicationScoped
 @Slf4j

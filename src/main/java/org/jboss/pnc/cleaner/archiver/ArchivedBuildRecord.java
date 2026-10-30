@@ -4,9 +4,7 @@
  */
 package org.jboss.pnc.cleaner.archiver;
 
-import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
-import org.hibernate.annotations.Type;
-import org.jboss.pnc.enums.BuildStatus;
+import java.time.Instant;
 
 import jakarta.persistence.Basic;
 import jakarta.persistence.Column;
@@ -17,7 +15,10 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
-import java.time.Instant;
+
+import org.jboss.pnc.enums.BuildStatus;
+
+import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
 @Table(name = "_archived_buildrecords")
 @Entity

@@ -4,15 +4,16 @@
  */
 package org.jboss.pnc.cleaner.rest;
 
-import org.jboss.pnc.api.dto.ComponentVersion;
-import org.jboss.pnc.cleaner.common.AppInfo;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
+
+import org.jboss.pnc.api.dto.ComponentVersion;
+import org.jboss.pnc.cleaner.common.AppInfo;
 
 @Path("/version")
 public class Version {

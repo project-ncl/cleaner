@@ -4,12 +4,12 @@
  */
 package org.jboss.pnc.cleaner.archiver;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.io.BufferedReader;
 import java.io.StringReader;
 
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
 
 class LogParserTest {
 

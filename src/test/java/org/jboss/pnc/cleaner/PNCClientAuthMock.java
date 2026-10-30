@@ -4,11 +4,13 @@
  */
 package org.jboss.pnc.cleaner;
 
-import io.quarkus.test.Mock;
+import java.io.IOException;
+
 import jakarta.enterprise.context.ApplicationScoped;
+
 import org.jboss.pnc.quarkus.client.auth.runtime.PNCClientAuth;
 
-import java.io.IOException;
+import io.quarkus.test.Mock;
 
 @Mock
 @ApplicationScoped

@@ -4,8 +4,23 @@
  */
 package org.jboss.pnc.cleaner.archiver;
 
-import io.micrometer.core.annotation.Timed;
-import io.quarkus.scheduler.Scheduled;
+import static org.jboss.pnc.cleaner.archiver.ArchivedBuildRecord.ErrorGroup.INDY;
+import static org.jboss.pnc.cleaner.archiver.BuildCategorizer.*;
+
+import java.io.BufferedReader;
+import java.io.Reader;
+import java.time.ZoneOffset;
+import java.time.temporal.ChronoField;
+import java.time.temporal.IsoFields;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.core.Response;
+
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 import org.jboss.pnc.cleaner.orchApi.OrchClientProducer;
@@ -27,21 +42,8 @@ import org.jboss.pnc.rest.api.parameters.BuildsFilterParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
-import jakarta.transaction.Transactional;
-import jakarta.ws.rs.core.Response;
-import java.io.BufferedReader;
-import java.io.Reader;
-import java.time.ZoneOffset;
-import java.time.temporal.ChronoField;
-import java.time.temporal.IsoFields;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-
-import static org.jboss.pnc.cleaner.archiver.ArchivedBuildRecord.ErrorGroup.INDY;
-import static org.jboss.pnc.cleaner.archiver.BuildCategorizer.*;
+import io.micrometer.core.annotation.Timed;
+import io.quarkus.scheduler.Scheduled;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.com">Matej Lazar</a>

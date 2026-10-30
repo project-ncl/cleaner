@@ -4,11 +4,11 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
-import org.jboss.pnc.dto.Build;
-import org.jboss.pnc.dto.GroupBuild;
-
 import java.util.Collection;
 import java.util.Date;
+
+import org.jboss.pnc.dto.Build;
+import org.jboss.pnc.dto.GroupBuild;
 
 /**
  * Adapter, which provides high level operations on Orchestrator REST API

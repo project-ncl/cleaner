@@ -4,8 +4,15 @@
  */
 package org.jboss.pnc.cleaner.archiver;
 
-import io.quarkus.test.junit.QuarkusMock;
-import io.quarkus.test.junit.QuarkusTest;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.io.BufferedReader;
+import java.io.StringReader;
+import java.time.Instant;
+import java.util.Map;
+
+import jakarta.inject.Inject;
+
 import org.jboss.pnc.api.enums.AlignmentPreference;
 import org.jboss.pnc.cleaner.orchApi.OrchClientProducer;
 import org.jboss.pnc.client.ProductMilestoneClient;
@@ -29,13 +36,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import jakarta.inject.Inject;
-import java.io.BufferedReader;
-import java.io.StringReader;
-import java.time.Instant;
-import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import io.quarkus.test.junit.QuarkusMock;
+import io.quarkus.test.junit.QuarkusTest;
 
 @QuarkusTest
 class BuildArchiverTest {

@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     SPDX-FileCopyrightText: Copyright © 2019 Red Hat, Inc., and individual contributors as indicated by the @author tags.
@@ -13,44 +13,44 @@
 
   <name>Cleaner for PNC</name>
   <description>This project is a service, which performs cleanup and maintenance tasks for PNC eco-system.</description>
-  <inceptionYear>2019</inceptionYear>
   <url>http://github.com/project-ncl/cleaner</url>
+  <inceptionYear>2019</inceptionYear>
 
   <licenses>
     <license>
       <name>Apache License, Version 2.0</name>
-      <distribution>repo</distribution>
       <url>http://www.apache.org/licenses/LICENSE-2.0.html</url>
+      <distribution>repo</distribution>
     </license>
   </licenses>
-
-  <scm>
-    <connection>scm:git:http://github.com/project-ncl/cleaner.git</connection>
-    <developerConnection>scm:git:git@github.com:project-ncl/cleaner.git</developerConnection>
-    <url>http://github.com/project-ncl/cleaner</url>
-    <tag>HEAD</tag>
-  </scm>
 
   <developers>
     <developer>
       <id>jbartece</id>
-      <email>jbartece@redhat.com</email>
       <name>Jakub Bartecek</name>
+      <email>jbartece@redhat.com</email>
       <organization>Red Hat</organization>
     </developer>
     <developer>
       <id>pkocandr</id>
-      <email>pkocandr@redhat.com</email>
       <name>Petr Kocandrle</name>
+      <email>pkocandr@redhat.com</email>
       <organization>Red Hat</organization>
     </developer>
     <developer>
       <id>dcheung</id>
-      <email>dcheung@redhat.com</email>
       <name>Dustin Kut Moy Cheung</name>
+      <email>dcheung@redhat.com</email>
       <organization>Red Hat</organization>
     </developer>
   </developers>
+
+  <scm>
+    <connection>scm:git:http://github.com/project-ncl/cleaner.git</connection>
+    <developerConnection>scm:git:git@github.com:project-ncl/cleaner.git</developerConnection>
+    <tag>HEAD</tag>
+    <url>http://github.com/project-ncl/cleaner</url>
+  </scm>
 
   <properties>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
@@ -67,7 +67,7 @@
     <surefire-plugin.version>3.5.5</surefire-plugin.version>
     <quarkus.version>3.35.0</quarkus.version>
     <quarkus-logging-kafka.version>3.0.4</quarkus-logging-kafka.version>
-    <tagSuffix />
+    <tagSuffix/>
     <quarkus.package.jar.type>uber-jar</quarkus.package.jar.type>
   </properties>
 
@@ -299,23 +299,23 @@
 
   <repositories>
     <repository>
-      <id>jboss-snapshots</id>
-      <name>jboss-snapshots</name>
-      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
+      <id>jboss-snapshots</id>
+      <name>jboss-snapshots</name>
+      <url>https://repository.jboss.org/nexus/content/repositories/snapshots/</url>
     </repository>
     <repository>
-      <name>Central Portal Snapshots</name>
-      <id>central-portal-snapshots</id>
-      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
       <releases>
         <enabled>false</enabled>
       </releases>
       <snapshots>
         <enabled>true</enabled>
       </snapshots>
+      <id>central-portal-snapshots</id>
+      <name>Central Portal Snapshots</name>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     </repository>
 
   </repositories>
@@ -381,10 +381,10 @@ SPDX-License-Identifier: Apache-2.0
           <executions>
             <execution>
               <id>sign-artifacts</id>
-              <phase>verify</phase>
               <goals>
                 <goal>sign</goal>
               </goals>
+              <phase>verify</phase>
             </execution>
           </executions>
         </plugin>
@@ -396,10 +396,10 @@ SPDX-License-Identifier: Apache-2.0
         <artifactId>license-maven-plugin</artifactId>
         <executions>
           <execution>
-            <phase>verify</phase>
             <goals>
               <goal>check</goal>
             </goals>
+            <phase>verify</phase>
           </execution>
         </executions>
       </plugin>
@@ -407,13 +407,6 @@ SPDX-License-Identifier: Apache-2.0
         <groupId>pl.project13.maven</groupId>
         <artifactId>git-commit-id-plugin</artifactId>
         <version>4.9.10</version>
-        <executions>
-          <execution>
-            <goals>
-              <goal>revision</goal>
-            </goals>
-          </execution>
-        </executions>
         <configuration>
           <dotGitDirectory>${project.basedir}/.git</dotGitDirectory>
           <generateGitPropertiesFile>true</generateGitPropertiesFile>
@@ -421,6 +414,13 @@ SPDX-License-Identifier: Apache-2.0
           <dateFormatTimeZone>UTC</dateFormatTimeZone>
           <verbose>false</verbose>
         </configuration>
+        <executions>
+          <execution>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
       <plugin>
         <groupId>io.quarkus</groupId>
@@ -429,8 +429,8 @@ SPDX-License-Identifier: Apache-2.0
         <extensions>true</extensions>
         <configuration>
           <ignoredEntries>
-              <ignoredEntry>META-INF/BCKEY.DSA</ignoredEntry>
-              <ignoredEntry>META-INF/BCKEY.SF</ignoredEntry>
+            <ignoredEntry>META-INF/BCKEY.DSA</ignoredEntry>
+            <ignoredEntry>META-INF/BCKEY.SF</ignoredEntry>
           </ignoredEntries>
           <finalName>cleaner</finalName>
           <!-- needed to publish to maven central -->
@@ -454,27 +454,27 @@ SPDX-License-Identifier: Apache-2.0
         </configuration>
       </plugin>
       <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>${compiler-plugin.version}</version>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>${compiler-plugin.version}</version>
       </plugin>
       <plugin>
-          <groupId>org.apache.maven.plugins</groupId>
-          <artifactId>maven-release-plugin</artifactId>
-          <configuration>
-              <tagNameFormat>@{project.version}${tagSuffix}</tagNameFormat>
-              <autoVersionSubmodules>true</autoVersionSubmodules>
-              <releaseProfiles>release</releaseProfiles>
-          </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagNameFormat>@{project.version}${tagSuffix}</tagNameFormat>
+          <autoVersionSubmodules>true</autoVersionSubmodules>
+          <releaseProfiles>release</releaseProfiles>
+        </configuration>
       </plugin>
       <plugin>
-          <groupId>org.sonatype.central</groupId>
-          <artifactId>central-publishing-maven-plugin</artifactId>
-          <version>0.10.0</version>
-          <extensions>true</extensions>
-          <configuration>
-              <!-- as defined in your settings.xml -->
-              <publishingServerId>central-publisher</publishingServerId>
-          </configuration>
+        <groupId>org.sonatype.central</groupId>
+        <artifactId>central-publishing-maven-plugin</artifactId>
+        <version>0.10.0</version>
+        <extensions>true</extensions>
+        <configuration>
+          <!-- as defined in your settings.xml -->
+          <publishingServerId>central-publisher</publishingServerId>
+        </configuration>
       </plugin>
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
@@ -591,10 +591,10 @@ SPDX-License-Identifier: Apache-2.0
             <artifactId>license-maven-plugin</artifactId>
             <executions>
               <execution>
-                <phase>process-sources</phase>
                 <goals>
                   <goal>format</goal>
                 </goals>
+                <phase>process-sources</phase>
               </execution>
             </executions>
           </plugin>

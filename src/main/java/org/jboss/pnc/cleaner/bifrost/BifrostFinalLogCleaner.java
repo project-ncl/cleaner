@@ -4,24 +4,9 @@
  */
 package org.jboss.pnc.cleaner.bifrost;
 
-import io.opentelemetry.api.GlobalOpenTelemetry;
-import io.opentelemetry.api.trace.Span;
-import io.opentelemetry.api.trace.SpanBuilder;
-import io.opentelemetry.api.trace.SpanKind;
-import io.opentelemetry.context.Scope;
-import lombok.extern.slf4j.Slf4j;
-import net.jodah.failsafe.Failsafe;
-import net.jodah.failsafe.RetryPolicy;
-import org.eclipse.microprofile.config.Config;
-import org.eclipse.microprofile.context.ManagedExecutor;
-import org.jboss.pnc.api.constants.MDCKeys;
-import org.jboss.pnc.cleaner.archiveservice.FailedResponseException;
-import org.jboss.pnc.common.otel.OtelUtils;
-import org.jboss.pnc.quarkus.client.auth.runtime.PNCClientAuth;
-import org.slf4j.MDC;
+import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
+import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
 import java.net.URI;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -30,8 +15,25 @@ import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.function.Function;
 
-import static org.jboss.pnc.api.constants.HttpHeaders.AUTHORIZATION_STRING;
-import static org.jboss.pnc.api.constants.HttpHeaders.CONTENT_TYPE_STRING;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.context.ManagedExecutor;
+import org.jboss.pnc.api.constants.MDCKeys;
+import org.jboss.pnc.cleaner.archiveservice.FailedResponseException;
+import org.jboss.pnc.common.otel.OtelUtils;
+import org.jboss.pnc.quarkus.client.auth.runtime.PNCClientAuth;
+import org.slf4j.MDC;
+
+import io.opentelemetry.api.GlobalOpenTelemetry;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanBuilder;
+import io.opentelemetry.api.trace.SpanKind;
+import io.opentelemetry.context.Scope;
+import lombok.extern.slf4j.Slf4j;
+import net.jodah.failsafe.Failsafe;
+import net.jodah.failsafe.RetryPolicy;
 
 @ApplicationScoped
 @Slf4j

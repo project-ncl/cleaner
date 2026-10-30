@@ -4,13 +4,15 @@
  */
 package org.jboss.pnc.cleaner.mock;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.jboss.pnc.api.bifrost.dto.MetaData;
-
-import jakarta.enterprise.context.ApplicationScoped;
 import java.util.HashMap;
 import java.util.Map;
+
+import jakarta.enterprise.context.ApplicationScoped;
+
+import org.jboss.pnc.api.bifrost.dto.MetaData;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.opecom">Matej Lazar</a>

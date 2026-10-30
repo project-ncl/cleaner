@@ -4,14 +4,6 @@
  */
 package org.jboss.pnc.cleaner.rest;
 
-import io.micrometer.core.annotation.Timed;
-import io.opentelemetry.instrumentation.annotations.SpanAttribute;
-import io.opentelemetry.instrumentation.annotations.WithSpan;
-
-import org.jboss.pnc.cleaner.temporaryBuilds.BuildDeleteCallbackManager;
-import org.jboss.pnc.cleaner.temporaryBuilds.BuildGroupDeleteCallbackManager;
-import org.jboss.pnc.dto.response.DeleteOperationResult;
-
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
@@ -19,6 +11,14 @@ import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import org.jboss.pnc.cleaner.temporaryBuilds.BuildDeleteCallbackManager;
+import org.jboss.pnc.cleaner.temporaryBuilds.BuildGroupDeleteCallbackManager;
+import org.jboss.pnc.dto.response.DeleteOperationResult;
+
+import io.micrometer.core.annotation.Timed;
+import io.opentelemetry.instrumentation.annotations.SpanAttribute;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 
 /**
  * @author Jakub Bartecek

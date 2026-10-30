@@ -4,10 +4,10 @@
  */
 package org.jboss.pnc.cleaner.archiver;
 
+import jakarta.ws.rs.Path;
+
 import org.eclipse.microprofile.rest.client.inject.RegisterRestClient;
 import org.jboss.pnc.api.bifrost.rest.FinalLogRest;
-
-import jakarta.ws.rs.Path;
 
 /**
  * @author <a href="mailto:matejonnet@gmail.opecom">Matej Lazar</a>

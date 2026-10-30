@@ -4,9 +4,11 @@
  */
 package org.jboss.pnc.cleaner.builds;
 
-import io.micrometer.core.annotation.Timed;
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
+import static org.commonjava.indy.model.core.GenericPackageTypeDescriptor.GENERIC_PKG_KEY;
+
+import java.time.Instant;
+import java.util.List;
+
 import org.commonjava.indy.client.core.Indy;
 import org.commonjava.indy.client.core.IndyClientException;
 import org.commonjava.indy.client.core.module.IndyStoresClientModule;
@@ -14,11 +16,7 @@ import org.commonjava.indy.folo.client.IndyFoloAdminClientModule;
 import org.commonjava.indy.model.core.Group;
 import org.commonjava.indy.model.core.dto.StoreListingDTO;
 
-import jakarta.inject.Inject;
-import java.time.Instant;
-import java.util.List;
-
-import static org.commonjava.indy.model.core.GenericPackageTypeDescriptor.GENERIC_PKG_KEY;
+import io.micrometer.core.annotation.Timed;
 
 public class FailedBuildsCleanerSession {
 

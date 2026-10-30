@@ -4,19 +4,19 @@
  */
 package org.jboss.pnc.cleaner.startup;
 
-import jakarta.annotation.PostConstruct;
-import org.eclipse.microprofile.context.ManagedExecutor;
-
-import org.eclipse.microprofile.config.Config;
-
 import java.net.http.HttpClient;
 import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 
+import javax.net.ssl.SSLContext;
+
+import jakarta.annotation.PostConstruct;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Produces;
 import jakarta.inject.Inject;
-import javax.net.ssl.SSLContext;
+
+import org.eclipse.microprofile.config.Config;
+import org.eclipse.microprofile.context.ManagedExecutor;
 
 @ApplicationScoped
 public class BeanFactory {

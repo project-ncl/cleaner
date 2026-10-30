@@ -4,13 +4,14 @@
  */
 package org.jboss.pnc.cleaner.temporaryBuilds;
 
-import io.opentelemetry.instrumentation.annotations.WithSpan;
-import io.quarkus.scheduler.Scheduled;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.enterprise.context.ApplicationScoped;
-import jakarta.inject.Inject;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
+import io.quarkus.scheduler.Scheduled;
 
 /**
  * Executes regular cleanup of old temporary builds after expiration.
